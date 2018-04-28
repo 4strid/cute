@@ -1,4 +1,4 @@
 import Cute from './lib/cute'
 import App from './App'
 
-Cute.attach(<App/>, document.getElementsByTagName('canvas')[0])
+Cute.attach(<App/>, document.querySelector('.cute-container'), 600, 400)

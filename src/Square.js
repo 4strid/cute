@@ -7,9 +7,14 @@ const Square = Cute.Constructor({
 				<fill color={this.props.color} />
 			</rect>
 		)
-		//return (
-			//<fill-rect w={this.w} h={this.h} x={0} y={0} color={this.props.color}/>
-		//)
+	},
+	states: {
+		Ready () {
+			this.on('clickG', () => {
+				console.log('I got clicked on!')
+				console.log('my color is ' + this.props.color)
+			})
+		},
 	},
 })
 

@@ -3,7 +3,7 @@ function Constructor (plan) {
 	// attach methods from plan
 	prototype.render = plan.render
 	// attach State functions from plan
-	function constructor (props) {
+	function Component (props) {
 		// put object in Screen
 		// run Ready state
 		this.props = props
@@ -11,10 +11,16 @@ function Constructor (plan) {
 		this.y = props.y
 		this.w = props.w
 		this.h = props.h
-	}
-	constructor.prototype = prototype
 
-	return constructor
+		this.handlers = {}
+
+		if (plan.states.Ready) {
+			plan.states.Ready.call(this)
+		}
+	}
+	Component.prototype = prototype
+
+	return Component
 }
 
 Constructor.prototype = {
@@ -26,6 +32,17 @@ Constructor.prototype = {
 		this.render.call(this)(ctx)
 		// or this.draw.call(this, ctx)
 		ctx.restore()
+	},
+	on (evtype, handler) {
+		this.handlers[evtype] = handler
+	},
+	handleEvent (evtype, evt, global) {
+		if (global === true) {
+			evtype += 'G'
+		}
+		if (evtype in this.handlers) {
+			this.handlers[evtype].call(this, evt)
+		}
 	},
 }
 

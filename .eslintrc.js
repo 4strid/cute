@@ -22,7 +22,7 @@ module.exports = {
     },
 	"settings": {
 		"react": {
-			pragma: 'Cute.createElement'
+			"pragma": 'Cute'
 		}
 	},
     "rules": {
