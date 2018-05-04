@@ -30,25 +30,29 @@ Cute.createElement = function (Type, props, ...children) {
 	// could shove this into the Screen, but better not: separation of
 	// concerns
 	
-	console.log(Type)
+	//console.log(Type)
 	//console.log(props)
 	//console.log(children)
 
-	if (props === null) {
-		props = {}
-	}
+	//if (props === null) {
+		//props = {}
+	//}
 
-	props.children = children
-	// if Type came from the Cute Constructor
-	if (Constructor.prototype.isPrototypeOf(Type.prototype)) {
-		const component = new Type(props)
-		this.screen.add(component)
-		return component
+	//props.children = children
+	//// if Type came from the Cute Constructor
+	//if (Constructor.prototype.isPrototypeOf(Type.prototype)) {
+		//const component = new Type(props)
+		//return component
+	//}
+	//if (Type instanceof Function) {
+		//return Type(props)
+	//}
+	//return primitives._lookup(Type)(props)
+	
+	if (typeof Type === 'string') {
+		return Screen.Node(primitives._lookup(Type), props, children)
 	}
-	if (Type instanceof Function) {
-		return Type(props)
-	}
-	return primitives._lookup(Type)(props)
+	return Screen.Node(Type, props, children)
 }
 
 Cute.Constructor = Constructor

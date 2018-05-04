@@ -1,18 +1,61 @@
 import rbush from 'rbush'
-import SortedArray from 'sorted-array'
+import Constructor from './constructor'
 
 function Screen () {
 	// map from component to screen element
 	this.map = new Map()
 	// r-tree for calculating intersections
 	this.tree = rbush()
-	// each ScreenObject determines its z index through insertion order
-	// it gets its value from here
-	this.zIndex = 0
+
+	// screen is the parent of the root node so it must have coordinates
+	this.x = 0
+	this.y = 0
 }
 
-Screen.prototype.add = function (el) {
-	const screenObj = new ScreenObject(el)
+Screen.Node = function (Component, props, children) {
+	this.x = props.x || 0
+	this.y = props.y || 0
+	props = props || {}
+	if (children.length) {
+		props.children = children
+	}
+	if (Constructor.prototype.isPrototypeOf(Component.prototype)) {
+		this.component = Component(props, this)
+	} else {
+		this.render = Component
+		this.props = props
+	}
+}
+
+Screen.prototype.setRootElement = function (node) {
+	this.root = this.addNode(node, this)
+}
+
+// node is the node to add, parent is its parent node
+Screen.prototype.addNode = function (node, parent) {
+	let rendered
+	// node is a Constructor component
+	if (node.component) {
+		rendered = node.component.render()
+		// stateful components are added to the r-tree
+		this.addToRTree(node.component, parent)
+	} else {
+		// node is a primitive or functional component
+		rendered = node.render(node.props)
+	}
+	if (rendered instanceof Screen.Node) {
+		// node is a component, primitives do not return a Node
+		node.children = rendered.children.map(child => this.addNode(child, node))
+	}
+	if (node.render.children) {
+		// node is a primitive with children
+		node.children = node.render.children.map(child => this.addNode(child, node))
+	}
+	return node
+}
+
+Screen.prototype.add = function (el, parent) {
+	const screenObj = new ScreenObject(el, parent)
 	screenObj.z = this.zIndex++
 	this.map.set(el, screenObj)
 	this.tree.insert(screenObj)

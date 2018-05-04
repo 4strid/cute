@@ -40,14 +40,21 @@ const primitives = {
 	 * draws the primitive to the screen
 	 */
 	_lookup (name) {
-		return (props) => (ctx) => {
-			if (!(name in this)) {
-				throw new TypeError('Unrecognized primitive type: ' + name)
-			}
-			ctx.save()
-			this[name](ctx, props)
-			ctx.restore()
+		if (!(name in this)) {
+			throw new TypeError('Unrecognized primitive type: ' + name)
 		}
+		const render = props => {
+			// attach children to render function so they can be added to the screen
+			if (props.children) {
+				render.children = props.children
+			}
+			return ctx => {
+				ctx.save()
+				this[name](ctx, props)
+				ctx.restore()
+			}
+		}
+		return render
 	},
 	/*
 	 * utility function for rendering children

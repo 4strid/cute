@@ -18,8 +18,7 @@
   },
   "homepage": "https://github.com/cutejs/cute#readme",
   "dependencies": {
-    "rbush": "^2.0.2",
-    "sorted-array": "^2.0.2"
+    "rbush": "^2.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
