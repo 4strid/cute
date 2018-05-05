@@ -2,7 +2,7 @@ function Constructor (plan) {
 	const prototype = Object.create(Constructor.prototype)
 	// attach methods from plan
 	prototype.render = plan.render
-	// attach State functions from plan
+	// attach State transitions from plan
 	function Component (props) {
 		// put object in Screen
 		// run Ready state
@@ -24,15 +24,6 @@ function Constructor (plan) {
 }
 
 Constructor.prototype = {
-	_render (ctx) {
-		ctx.save()
-		//ctx.rotate
-		//ctx.scale
-		ctx.translate(this.x, this.y)
-		this.render.call(this)(ctx)
-		// or this.draw.call(this, ctx)
-		ctx.restore()
-	},
 	on (evtype, handler) {
 		this.handlers[evtype] = handler
 	},

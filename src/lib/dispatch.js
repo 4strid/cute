@@ -1,8 +1,8 @@
 function Dispatch (canvas, screen) {
 	function DispatchEventListener (evtype) {
 		return function (evt) {
-			dispatch(evtype, evt);
-		};
+			dispatch(evtype, evt)
+		}
 	}
 
 	const allEventTypes = [
@@ -43,7 +43,7 @@ function Dispatch (canvas, screen) {
 	function dispatch (evtype, evt) {
 		// get canvas coordinates of evt
 		addCanvasCoords(evt)
-		const multi = screen.queryPointMulti(evt.canvasX, evt.canvasY)
+		const multi = screen.queryPointAll(evt.canvasX, evt.canvasY)
 		for (const elem of multi) {
 			// handleEvent (evtype, evt, multi=true)
 			elem.handleEvent(evtype, evt, true)
@@ -83,7 +83,7 @@ function DispatchOLD (canvas, screen) {
 	function DispatchEventListener (evtype) {
 		return function (evt) {
 			dispatch(evtype, evt);
-		};
+		}
 	}
 
 	function DomEventListener (el, evtype) {

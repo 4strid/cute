@@ -9,7 +9,7 @@ const Cute = {}
 Cute.canvas = document.createElement('canvas')
 Cute.ctx = Cute.canvas.getContext('2d')
 
-Cute.screen = new Screen()
+Cute.screen = new Screen(Cute.ctx)
 Cute.dispatch = new Dispatch(Cute.canvas, Cute.screen)
 
 Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight) {
@@ -18,7 +18,7 @@ Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight)
 	parentElement.appendChild(this.canvas)
 	this.canvas.setAttribute('tabindex', '0')
 	this.canvas.focus()
-	renderElement(this.ctx, RootComponent)
+	this.screen.setRootElement(RootComponent)
 }
 
 Cute.createElement = function (Type, props, ...children) {
@@ -30,9 +30,9 @@ Cute.createElement = function (Type, props, ...children) {
 	// could shove this into the Screen, but better not: separation of
 	// concerns
 	
-	//console.log(Type)
-	//console.log(props)
-	//console.log(children)
+	console.log(Type)
+	console.log(props)
+	console.log(children)
 
 	//if (props === null) {
 		//props = {}
@@ -50,9 +50,9 @@ Cute.createElement = function (Type, props, ...children) {
 	//return primitives._lookup(Type)(props)
 	
 	if (typeof Type === 'string') {
-		return Screen.Node(primitives._lookup(Type), props, children)
+		return new Screen.Node(primitives._lookup(Type), props, children)
 	}
-	return Screen.Node(Type, props, children)
+	return new Screen.Node(Type, props, children)
 }
 
 Cute.Constructor = Constructor

@@ -1,7 +1,9 @@
 import rbush from 'rbush'
 import Constructor from './constructor'
 
-function Screen () {
+function Screen (ctx) {
+	// the drawing context of the canvas
+	this.ctx = ctx
 	// map from component to screen element
 	this.map = new Map()
 	// r-tree for calculating intersections
@@ -13,51 +15,74 @@ function Screen () {
 }
 
 Screen.Node = function (Component, props, children) {
+	props = props || {}
 	this.x = props.x || 0
 	this.y = props.y || 0
-	props = props || {}
 	if (children.length) {
 		props.children = children
 	}
 	if (Constructor.prototype.isPrototypeOf(Component.prototype)) {
-		this.component = Component(props, this)
+		this.component = new Component(props, this)
 	} else {
 		this.render = Component
 		this.props = props
 	}
 }
 
+Screen.Node.prototype.draw = function (ctx) {
+	if (this.rendered instanceof Screen.Node) {
+		ctx.save()
+		// ctx.scale
+		// ctx.rotate
+		ctx.translate(this.x, this.y)
+		this.rendered.draw(ctx)
+		ctx.restore()
+	} else {
+		// call primitive draw function
+		this.rendered(ctx)
+	}
+}
+
+Screen.Node.prototype.update = function () {
+	// remove all children from collision tree
+	// remove self from collision tree
+	// remove self from parent
+	// rerender self, adding to parent
+}
+
 Screen.prototype.setRootElement = function (node) {
 	this.root = this.addNode(node, this)
+	this.root.draw(this.ctx)
 }
 
 // node is the node to add, parent is its parent node
 Screen.prototype.addNode = function (node, parent) {
-	let rendered
+	node.parent = parent
+	if (!(node instanceof Screen.Node)) {
+		// we have hit the bottom of the tree
+		return node
+	}
 	// node is a Constructor component
 	if (node.component) {
-		rendered = node.component.render()
-		// stateful components are added to the r-tree
+		node.rendered = this.addNode(node.component.render(), node)
+		// interactive components are added to the r-tree
 		this.addToRTree(node.component, parent)
 	} else {
 		// node is a primitive or functional component
-		rendered = node.render(node.props)
+		node.rendered = this.addNode(node.render(node.props), node)
 	}
-	if (rendered instanceof Screen.Node) {
-		// node is a component, primitives do not return a Node
-		node.children = rendered.children.map(child => this.addNode(child, node))
-	}
-	if (node.render.children) {
+	if (node.rendered instanceof Function && node.props.children) {
 		// node is a primitive with children
-		node.children = node.render.children.map(child => this.addNode(child, node))
+		node.children = new Map(
+			node.props.children.map(child => [this.addNode(child, node), child])
+		)
 	}
 	return node
 }
 
-Screen.prototype.add = function (el, parent) {
+Screen.prototype.addToRTree = function (el, parent) {
 	const screenObj = new ScreenObject(el, parent)
-	screenObj.z = this.zIndex++
-	this.map.set(el, screenObj)
+	//this.map.set(el, screenObj)
 	this.tree.insert(screenObj)
 }
 
@@ -109,7 +134,7 @@ Screen.prototype.queryPoint = function (x, y) {
 	return top.elem
 }
 
-Screen.prototype.queryPointMulti = function (x, y) {
+Screen.prototype.queryPointAll = function (x, y) {
 	return this.tree.search({
 		minX: x,
 		maxX: x,
@@ -128,27 +153,21 @@ Screen.prototype.query = function (q) {
 	}).map(screenObj => screenObj.elem)
 }
 
-function ScreenObject (elem) {
+function ScreenObject (elem, parent) {
+	let x = elem.x
+	let y = elem.y
+	while (parent) {
+		x += parent.x
+		y += parent.y
+		// the screen has no parent so this loop ends when we hit the screen
+		parent = parent.parent
+	}
 	this.elem = elem
 	// assign minX, minY, maxX, maxY
-	this.update()
-}
-
-// this may become moot if the screen is just rebuilt upon rerendering
-ScreenObject.prototype.update = function () {
-	// how do we determine where an element is on the screen?
-	// I think it might be time for that virtual dom already
-	//this.minX = this.elem.screen.x
-	//this.maxX = this.elem.screen.x + this.elem.w
-	//this.minY = this.elem.screen.y
-	//this.maxY = this.elem.screen.y + this.elem.h
-	
-
-	// this will work just to test the dispatch!
-	this.minX = this.elem.x
-	this.maxX = this.elem.x + this.elem.w
-	this.minY = this.elem.y
-	this.maxY = this.elem.y + this.elem.h
+	this.minX = x
+	this.maxX = x + this.elem.w
+	this.minY = y
+	this.maxY = y + this.elem.h
 }
 
 export default Screen
