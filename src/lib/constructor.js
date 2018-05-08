@@ -3,10 +3,10 @@ function Constructor (plan) {
 	// attach methods from plan
 	prototype.render = plan.render
 	// attach State transitions from plan
-	function Component (props) {
-		// put object in Screen
+	function Component (props, node) {
 		// run Ready state
 		this.props = props
+		this.node = node
 		this.x = props.x
 		this.y = props.y
 		this.w = props.w
