@@ -8,11 +8,21 @@ const Square = Cute.Constructor({
 			</rect>
 		)
 	},
+	data () {
+		return {
+			color: this.props.color,
+		}
+	},
+	methods: {
+		randomColor () {
+			return '#' + Math.floor(Math.random() * 16777215).toString(16)
+		},
+	},
 	states: {
 		Ready () {
-			this.on('click', () => {
-				console.log('I got clicked on!')
-				console.log('my color is ' + this.props.color)
+			this.on('click', function (evt) {
+				console.log('6')
+				console.log('I got clicked! my color is ' + this.props.color)
 			})
 		},
 	},

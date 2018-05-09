@@ -25,15 +25,7 @@ function Constructor (plan) {
 
 Constructor.prototype = {
 	on (evtype, handler) {
-		this.handlers[evtype] = handler
-	},
-	handleEvent (evtype, evt, global) {
-		if (global === true) {
-			evtype += 'G'
-		}
-		if (evtype in this.handlers) {
-			this.handlers[evtype].call(this, evt)
-		}
+		this.node.addEventListener(this, evtype, handler)
 	},
 }
 

@@ -21,258 +21,176 @@ function Dispatch (canvas, screen) {
 		'mouseover',
 		'mouseup',
 		'scroll',
-		'wheel'
-	];
+		'wheel',
+	]
 
+	// local mouse events, only fired when the mouse is over a component with highest z index
+	const localListeners = new Map()
+	// local mouse events, only fired when the mouse is over any components
+	const multiListeners = new Map()
+	// global events, always fired for all components with handlers
+	const globalListeners = {}
+	allEventTypes.forEach(evtype => {
+		globalListeners[evtype] = new Map()
+	})
+
+	// add actual event listeners to canvas
 	allEventTypes.forEach(function (evtype) {
-		canvas.addEventListener(evtype, DispatchEventListener(evtype));
-	});
+		canvas.addEventListener(evtype, DispatchEventListener(evtype))
+	})
 
+	// keyboard events do not have clientX and clientY coordinates, so we'll keep track
+	// of where the mouse is ourselves to dispatch local keyboard events
+	let canvasX = null
+	let canvasY = null
+	canvas.addEventListener('mousemove', evt => {
+		addCanvasCoords(evt)
+		canvasX = evt.canvasX
+		canvasY = evt.canvasY
+	})
 
 	function addCanvasCoords (evt) {
-		const rect = canvas.getBoundingClientRect();
-		evt.canvasX = evt.clientX - rect.left;
-		evt.canvasY = evt.clientY - rect.top;
+		if (!evt.clientX) {
+			// non-mouse events will not have coordinates
+			evt.canvasX = canvasX
+			evt.canvasY = canvasY
+			return
+		}
+		const rect = canvas.getBoundingClientRect()
+		evt.canvasX = evt.clientX - rect.left
+		evt.canvasY = evt.clientY - rect.top
 	}
 
-	function addLocalCoords (evt, el) {
-		evt.localX = evt.canvasX - el.screen.x;
-		evt.localY = evt.canvasY - el.screen.y;
+	function addLocalCoords (component, evt) {
+		evt.localX = evt.canvasX - component.node.screenX
+		evt.localY = evt.canvasY - component.node.screenY
 	}
 
-	function dispatch (evtype, evt) {
-		// get canvas coordinates of evt
-		addCanvasCoords(evt)
-		const multi = screen.queryPointAll(evt.canvasX, evt.canvasY)
-		for (const elem of multi) {
-			// handleEvent (evtype, evt, multi=true)
-			elem.handleEvent(evtype, evt, true)
+	function dispatchToMap (map, component, evtype, evt) {
+		console.log('5')
+		addLocalCoords(component, evt)
+		const handlers = map.get(component)
+		console.log(handlers)
+		if (handlers && handlers[evtype]) {
+			handlers[evtype].call(component, evt)
 		}
-		const top = screen.queryPoint(evt.canvasX, evt.canvasY)
-		if (top !== null) {
-			// handleEvent (evtype, evt, multi=false)
-			top.handleEvent(evtype, evt, false)
+	}
+
+	function dispatchMulti (components, evtype, evt) {
+		components.forEach(component => {
+			dispatchToMap(multiListeners, component, evtype, evt)
+		})
+	}
+
+	function dispatchLocal (component, evtype, evt) {
+		console.log('4')
+		if (component === null) {
+			return
 		}
+		dispatchToMap(localListeners, component, evtype, evt)
 	}
 
 	let mousePrior = null
+	let mousePriorAll = []
 
 	function dispatchMouseoverMouseout (evtype, evt) {
 		const mouseOn = screen.queryPoint(evt.canvasX, evt.canvasY)
+		const mouseOver = screen.queryPointAll(evt.canvasX, evt.canvasY)
 		if (evtype === 'mousemove') {
 			if (mouseOn !== mousePrior) {
 				if (mouseOn !== null) {
-					mouseOn.handleEvent('mouseover', evt, false)
+					dispatchLocal(mouseOn, 'mouseover', evt)
 				}
 				if (mousePrior !== null) {
-					mousePrior.handleEvent('mouseout', evt, false)
+					dispatchLocal(mousePrior, 'mouseout', evt)
 				}
 			}
+			mouseOver.forEach(component => {
+				if (!mousePriorAll.includes(component)) {
+					dispatchLocal(component, 'mouseenter', evt)
+				}
+			})
+			mousePriorAll.forEach(component => {
+				if (!mouseOver.includes(component)) {
+					dispatchLocal(component, 'mouseleave', evt)
+				}
+			})
 		}
 		if (evtype === 'mouseout') {
 			if (mousePrior !== null) {
-				mousePrior.handleEvent('mouseout', evt, false)
-			}
-		}
-		mousePrior = mouseOn
-	}
-}
-
-
-function DispatchOLD (canvas, screen) {
-	function DispatchEventListener (evtype) {
-		return function (evt) {
-			dispatch(evtype, evt);
-		}
-	}
-
-	function DomEventListener (el, evtype) {
-		return function (evt) {
-			const listener = domListeners.get(el)[evtype]
-			if (listener) {
-				listener.call(el, evt);
-			}
-		};
-	}
-
-	const allEventTypes = [
-		'blur',
-		'click',
-		'dblclick',
-		'focus',
-		'keydown',
-		'keypress',
-		'keyup',
-		'mousedown',
-		'mouseenter',
-		'mouseleave',
-		'mousemove',
-		'mouseout',
-		'mouseover',
-		'mouseup',
-		'scroll',
-		'wheel'
-	];
-	allEventTypes.forEach(function (evtype) {
-		canvas.addEventListener(evtype, DispatchEventListener(evtype));
-	});
-
-	// check if mouse left the window
-	document.addEventListener('mouseout', function (evt) {
-		if (evt.relatedTarget === null) {
-			dispatchMouseoverMouseout('mouseout', evt);
-		}
-	});
-
-	const localListeners = new Map();
-	const globalListeners = {};
-	allEventTypes.forEach(function (evtype) {
-		globalListeners[evtype] = new Map();
-	});
-	const userListeners = new Map();
-	const persistentListeners = new Map();
-	const domListeners = new Map();
-
-	let mousePrior = null;
-
-	function dispatch (evtype, evt) {
-		addCanvasCoords(evt);
-
-		dispatchGlobal(evtype, evt);
-		const el = screen.queryPoint(evt.canvasX, evt.canvasY);
-		dispatchLocal(el, evtype, evt);
-		if (allEventTypes.indexOf(evtype) === -1) {
-			dispatchChild(el, evtype, evt);
-		}
-		dispatchMouseoverMouseout(evtype, evt);
-	}
-
-	function dispatchMouseoverMouseout (evtype, evt) {
-		const mouseOn = screen.queryPoint(evt.canvasX, evt.canvasY);
-		if (evtype === 'mousemove') {
-			if (mouseOn !== mousePrior) {
-				dispatchLocal(mouseOn, 'mouseover', evt)
 				dispatchLocal(mousePrior, 'mouseout', evt)
 			}
+			mousePriorAll.forEach(prior => {
+				dispatchLocal(prior, 'mouseleave', evt)
+			})
 		}
-		if (evtype === 'mouseout') {
-			dispatchLocal(mousePrior, 'mouseout', evt);
-		}
-		mousePrior = mouseOn;
+		mousePrior = mouseOn
+		mousePriorAll = mouseOver
 	}
 
-	function getGlobalEvtype (evtype) {
+	function dispatch (evtype, evt) {
+		console.log('3')
+		// get canvas coordinates of evt
+		addCanvasCoords(evt)
+		// dispatch event to global handlers
+		globalListeners[evtype].forEach((handler, component) => {
+			addLocalCoords(component, evt)
+			handler.call(component, evt)
+		})
+		console.log(evt.canvasX)
+		console.log(evt.canvasY)
+		// dispatch event to multi handlers
+		const allComponents = screen.queryPointAll(evt.canvasX, evt.canvasY)
+		console.log(allComponents)
+		dispatchMulti(allComponents, evtype, evt)
+		// dispatch event to local handlers
+		const component = screen.queryPoint(evt.canvasX, evt.canvasY)
+		console.log(component)
+		dispatchLocal(component, evtype, evt)
+		// dispatch mouseover, mouseout, mouseenter, and mouseleave events
+		dispatchMouseoverMouseout(evtype, evt)
+	}
+
+	function extractGlobalEvtype (evtype) {
 		if (evtype[evtype.length - 1] === 'G') {
-			return evtype.substring(0, evtype.length - 1);
+			return evtype.substring(0, evtype.length - 1)
 		}
 	}
 
-	function dispatchEvent (map, el, evtype, evt, src) {
-		src = src || el;
-		const listeners = map.get(el);
-		if (listeners && listeners[evtype]) {
-			listeners[evtype].call(el, evt, src);
+	function extractMultiEvtype (evtype) {
+		if (evtype[evtype.length - 1] === 'M') {
+			return evtype.substring(0, evtype.length - 1)
 		}
 	}
 
-	function dispatchGlobal (evtype, evt) {
-		const listeners = globalListeners[evtype];
-		listeners.forEach(function (listener, el) {
-			addLocalCoords(evt, el);
-			listener.call(el, evt, el);
-		});
-	}
-
-	function dispatchLocal (el, evtype, evt) {
-		if (!el) {
-			return;
-		}
-		addLocalCoords(evt, el);
-		dispatchEvent(localListeners, el, evtype, evt);
-	}
-
-	function dispatchChild (el, evtype, evt) {
-		if (!el.parent) {
-			return;
-		}
-		dispatchEvent(userListeners, el.parent, evtype, evt, el);
-		dispatchEvent(persistentListeners, el.parent, evtype, evt, el);
-	}
-
-	function addCanvasCoords (evt) {
-		const rect = canvas.getBoundingClientRect();
-		evt.canvasX = evt.clientX - rect.left;
-		evt.canvasY = evt.clientY - rect.top;
-	}
-
-	function addLocalCoords (evt, el) {
-		evt.localX = evt.canvasX - el.screen.x;
-		evt.localY = evt.canvasY - el.screen.y;
-	}
-
-	function addListener(map, el, evtype, listener) {
-		if (map.has(el)) {
-			map.get(el)[evtype] = listener;
+	function addListener (map, component, evtype, handler) {
+		console.log(component)
+		if (map.has(component)) {
+			console.log('2.4')
+			map.get(component)[evtype] = handler
 		} else {
-			const listeners = {};
-			listeners[evtype] = listener;
-			map.set(el, listeners);
+			console.log('2.5')
+			const handlers = {}
+			handlers[evtype] = handler
+			map.set(component, handlers)
 		}
 	}
 
-	Object.assign(this, {
-		addEventListener: function (el, evtype, listener) {
-			const globalEvtype = getGlobalEvtype(evtype);
-			if (globalEvtype) {
-				if (allEventTypes.indexOf(globalEvtype) > -1) {
-					globalListeners[globalEvtype].set(el, listener);
-				} else {
-					console.warn('invalid global event type');
-				}
-			} else {
-				if (allEventTypes.indexOf(evtype) > -1) { // local
-					addListener(localListeners, el, evtype, listener);
-				} else { // user defined
-					addListener(userListeners, el, evtype, listener);
-				}
-			}
-		},
-		removeEventListener: function (el, evtype) {
-			const globalEvtype = getGlobalEvtype(evtype);
-			if (globalEvtype) {
-				globalListeners[globalEvtype].delete(el);
-			} else {
-				delete localListeners.get(el)[evtype];
-			}
-		},
-		removeEventListeners: function (el) {
-			localListeners.set(el, {});
-			userListeners.set(el, {});
-			for (const evtype in globalListeners) {
-				globalListeners[evtype].delete(el);
-			}
-			const listeners = domListeners.get(el) || {};
-			for (const l in listeners) {
-				el.node.removeEventListener(l, listeners[l]);
-			}
-			domListeners.set(el, {});
-		},
-		addDomEventListener: function (el, evtype, listener) {
-			el.node.addEventListener(evtype, DomEventListener(el, evtype));
-			addListener(domListeners, el, evtype, listener);
-		},
-		addPersistentListener: function (el, evtype, listener) {
-			addListener(persistentListeners, el, evtype, listener);
-		},
-		removePersistentListener: function (el, evtype) {
-			if (persistentListeners.has(el)) {
-				delete persistentListeners.get(el)[evtype];
-			}
-		},
-		emitEvent: function (el, evtype, args) {
-			dispatchChild(el, evtype, args);
+	this.addEventListener = function (component, evtype, handler) {
+		console.log('2')
+		const globalEvtype = extractGlobalEvtype(evtype)
+		if (globalEvtype !== undefined) {
+			console.log('2.1')
+			return globalListeners[globalEvtype].set(component, handler)
 		}
-	});
+		const multiEvtype = extractMultiEvtype(evtype)
+		if (multiEvtype !== undefined) {
+			console.log('2.2')
+			return addListener(multiListeners, component, evtype, handler)
+		}
+		console.log('2.3')
+		addListener(localListeners, component, evtype, handler)
+	}
 }
 
 export default Dispatch
