@@ -1,13 +1,23 @@
-function Scheduler (ctx, screen) {
-	// i don't like leaking the ctx into this file
-	// but not sure where else to put it
-	this.ctx = ctx
-	this.screen = screen
-}
+function Scheduler (screen) {
+	const renderSchedule = new Map()
 
-Scheduler.prototype.render = function () {
-	const elements = screen.zList()
-	for (const element of elements) {
-		element._render(this.ctx)
+	let tickPending = false
+
+	function tick (time) {
+		// call update functions
+		// rerender components
+		// clear screen
+		// draw
+		tickPending = false
+	}
+
+	this.scheduleRender = function (node) {
+		renderSchedule.set(node, node)
+		if (!tickPending) {
+			window.requestAnimationFrame(tick)
+			tickPending = true
+		}
 	}
 }
+
+export default Scheduler

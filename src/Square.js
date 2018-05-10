@@ -21,7 +21,6 @@ const Square = Cute.Constructor({
 	states: {
 		Ready () {
 			this.on('click', function (evt) {
-				console.log('6')
 				console.log('I got clicked! my color is ' + this.props.color)
 			})
 		},

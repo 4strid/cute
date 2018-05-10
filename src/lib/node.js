@@ -19,6 +19,10 @@ function NodeContext (screen, scheduler, dispatch) {
 		}
 	}
 
+	Node.prototype.rerender = function (props, children) {
+
+	}
+
 	Node.prototype.draw = function (ctx) {
 		if (this.rendered instanceof Node) {
 			ctx.save()
@@ -34,16 +38,12 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	// this can only ever be called from interactive component nodes
-	Node.prototype.update = function () {
+	Node.prototype.scheduleRender = function () {
 		// schedule a rerender
 		scheduler.scheduleRender(this)
-		// schedule a draw
-		scheduler.scheduleDraw()
 	}
 
 	Node.prototype.addEventListener = function (component, evtype, handler) {
-		console.log('1')
-		console.log(this)
 		dispatch.addEventListener(component, evtype, handler)
 	}
 

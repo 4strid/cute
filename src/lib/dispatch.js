@@ -67,10 +67,8 @@ function Dispatch (canvas, screen) {
 	}
 
 	function dispatchToMap (map, component, evtype, evt) {
-		console.log('5')
 		addLocalCoords(component, evt)
 		const handlers = map.get(component)
-		console.log(handlers)
 		if (handlers && handlers[evtype]) {
 			handlers[evtype].call(component, evt)
 		}
@@ -83,7 +81,6 @@ function Dispatch (canvas, screen) {
 	}
 
 	function dispatchLocal (component, evtype, evt) {
-		console.log('4')
 		if (component === null) {
 			return
 		}
@@ -129,7 +126,6 @@ function Dispatch (canvas, screen) {
 	}
 
 	function dispatch (evtype, evt) {
-		console.log('3')
 		// get canvas coordinates of evt
 		addCanvasCoords(evt)
 		// dispatch event to global handlers
@@ -137,15 +133,11 @@ function Dispatch (canvas, screen) {
 			addLocalCoords(component, evt)
 			handler.call(component, evt)
 		})
-		console.log(evt.canvasX)
-		console.log(evt.canvasY)
 		// dispatch event to multi handlers
 		const allComponents = screen.queryPointAll(evt.canvasX, evt.canvasY)
-		console.log(allComponents)
 		dispatchMulti(allComponents, evtype, evt)
 		// dispatch event to local handlers
 		const component = screen.queryPoint(evt.canvasX, evt.canvasY)
-		console.log(component)
 		dispatchLocal(component, evtype, evt)
 		// dispatch mouseover, mouseout, mouseenter, and mouseleave events
 		dispatchMouseoverMouseout(evtype, evt)
@@ -164,12 +156,9 @@ function Dispatch (canvas, screen) {
 	}
 
 	function addListener (map, component, evtype, handler) {
-		console.log(component)
 		if (map.has(component)) {
-			console.log('2.4')
 			map.get(component)[evtype] = handler
 		} else {
-			console.log('2.5')
 			const handlers = {}
 			handlers[evtype] = handler
 			map.set(component, handlers)
@@ -177,18 +166,14 @@ function Dispatch (canvas, screen) {
 	}
 
 	this.addEventListener = function (component, evtype, handler) {
-		console.log('2')
 		const globalEvtype = extractGlobalEvtype(evtype)
 		if (globalEvtype !== undefined) {
-			console.log('2.1')
 			return globalListeners[globalEvtype].set(component, handler)
 		}
 		const multiEvtype = extractMultiEvtype(evtype)
 		if (multiEvtype !== undefined) {
-			console.log('2.2')
 			return addListener(multiListeners, component, evtype, handler)
 		}
-		console.log('2.3')
 		addListener(localListeners, component, evtype, handler)
 	}
 }
