@@ -4,7 +4,9 @@ import Screen from './screen'
 import Dispatch from './dispatch'
 import NodeContext from './node'
 
-const Cute = {}
+const Cute = plan => {
+	return Constructor(plan)
+}
 
 Cute.canvas = document.createElement('canvas')
 Cute.ctx = Cute.canvas.getContext('2d')
@@ -25,6 +27,7 @@ Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight)
 }
 
 Cute.createElement = function (Type, props, ...children) {
+	console.log(Type)
 	if (typeof Type === 'string') {
 		return new Node(primitives._lookup(Type), props, children)
 	}

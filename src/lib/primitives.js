@@ -63,19 +63,6 @@ const primitives = {
 		}
 		return this[name]
 	},
-	_draw (ctx, fn) {
-		ctx.save()
-		fn(ctx)
-		ctx.restore()
-	}
-	/*
-	 * utility function for rendering children
-	 */
-	_drawChildren (ctx, props) {
-		for (const child of props.children) {
-			child.draw(ctx)
-		}
-	},
 }
 
 export default primitives

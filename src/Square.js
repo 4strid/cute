@@ -1,16 +1,16 @@
 import Cute from './lib/cute'
 
-const Square = Cute.Constructor({
+const Square = Cute({
 	render () {
 		return (
 			<rect w={this.w} h={this.h} x={0} y={0}>
-				<fill color={this.props.color} />
+				<fill color={this.data.color} />
 			</rect>
 		)
 	},
 	data () {
 		return {
-			color: this.props.color,
+			color: this.randomColor(),
 		}
 	},
 	methods: {
@@ -19,10 +19,16 @@ const Square = Cute.Constructor({
 		},
 	},
 	states: {
-		Ready () {
-			this.on('click', function (evt) {
-				console.log('I got clicked! my color is ' + this.props.color)
+		ChangeColors () {
+			this.on('click', () => {
+				this.data.color = this.randomColor()
 			})
+		},
+		CreateSquares () {
+			// nothing to do
+		},
+		DestroySquares () {
+			this.on('click', this.props.handleDestroy)
 		},
 	},
 })
