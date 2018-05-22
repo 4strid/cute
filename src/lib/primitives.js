@@ -1,3 +1,9 @@
+function drawChildren (props, ctx) {
+	for (const childNode of props.children) {
+		childNode.draw(ctx)
+	}
+}
+
 const primitives = {
 	/*
 	 * renders its children and does nothing else
@@ -5,9 +11,7 @@ const primitives = {
 	layer (props) {
 		return ctx => {
 			ctx.save()
-			for (const childNode of props.children) {
-				childNode.draw(ctx)
-			}
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -20,9 +24,7 @@ const primitives = {
 			ctx.save()
 			ctx.beginPath()
 			ctx.rect(props.x, props.y, props.w, props.h)
-			for (const childNode of props.children) {
-				childNode.draw(ctx)
-			}
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -37,6 +39,7 @@ const primitives = {
 				ctx.fillStyle = props.color
 			}
 			ctx.fill()
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -48,6 +51,7 @@ const primitives = {
 				ctx.fillStyle = props.color
 			}
 			ctx.fillRect(props.x, props.y, props.w, props.h)
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},

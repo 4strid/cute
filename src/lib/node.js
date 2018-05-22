@@ -5,36 +5,73 @@ import Constructor from './constructor'
 // components of Cute to each node
 function NodeContext (screen, scheduler, dispatch) {
 	function Node (Component, props, children) {
-		props = props || {}
 		this.x = props.x || 0
 		this.y = props.y || 0
+		this.props = props || {}
 		if (children.length) {
-			props.children = children
+			this.props.children = children
 		}
 		if (Constructor.prototype.isPrototypeOf(Component.prototype)) {
-			this.component = new Component(props, this)
+			this.render = props => {
+				this.component = new Component(props)
+				return component.render()
+			}
 		} else {
 			this.render = Component
-			this.props = props
 		}
 	}
 
-	Node.prototype.rerender = function (props, children) {
+	Node.prototype.addToTree = function (parent) {
+		this.parent = parent
+		this.screenX = this.x + parent.screenX
+		this.screenY = this.y + parent.screenY
 
+		this.rendered = this.render(this.props)
+		if (this.rendered instanceof Node) {
+			this.rendered.addToTree(this)
+		}
+		if (this.rendered instanceof Function && this.props.children) {
+			// node is a primitive with children
+			this.children = new Map(
+				this.props.children.map(child => {
+					if (child instanceof Node) {
+						return [child.addToTree(this), child]
+					}
+					return [child, child]
+				})
+			)
+		}
+		return this
 	}
 
+	//Node.prototype.receiveProps = function (props) {
+		//if (deepEqual(props, this.props)) {
+			//return
+		//}
+		//this.props = props
+		//this.scheduleRender()
+	//}
+
+	//Node.prototype.rerender = function () {
+		//this.rendered = this.render(props)
+		//if (this.rendered instanceof Node) {
+			//this.rendered.rerender()
+		//}
+		//if (this.rendered instanceof Function && props.children)
+	//}
+
 	Node.prototype.draw = function (ctx) {
+		ctx.save()
+		// ctx.scale
+		// ctx.rotate
+		ctx.translate(this.x, this.y)
 		if (this.rendered instanceof Node) {
-			ctx.save()
-			// ctx.scale
-			// ctx.rotate
-			ctx.translate(this.x, this.y)
 			this.rendered.draw(ctx)
-			ctx.restore()
 		} else {
 			// call primitive draw function
 			this.rendered(ctx)
 		}
+		ctx.restore()
 	}
 
 	// this can only ever be called from interactive component nodes
@@ -58,9 +95,6 @@ function NodeContext (screen, scheduler, dispatch) {
 	Node.prototype.removePersistentListener = function (component, evtype) {
 		dispatch.removePersistentListener(component, evtype)
 	}
-
-	// haaaacky, but it will have to do for now
-	screen.Node = Node
 
 	return Node
 }

@@ -11,13 +11,10 @@ function Screen (ctx) {
 	// screen is the parent of the root node so it must have coordinates
 	this.screenX = 0
 	this.screenY = 0
-
-	// maybe try to find a more elegant solution than adding this at runtime
-	this.Node = null
 }
 
 Screen.prototype.setRootElement = function (node) {
-	this.root = this.addNode(node, this)
+	this.root = node.addToTree(this)
 	this.draw()
 }
 
@@ -36,33 +33,6 @@ Screen.prototype.rebuildRTree = function () {
 	this.map = this.newMap
 }
 
-// node is the node to add, parent is its parent node
-// it's kind of weird that this is in Screen.prototype, but it's actually
-// quite a bit less convoluted to do it externally than as a Node method
-Screen.prototype.addNode = function (node, parent) {
-	if (!(node instanceof this.Node)) {
-		// we have hit the bottom of the tree
-		return node
-	}
-	node.parent = parent
-	node.screenX = node.x + parent.screenX
-	node.screenY = node.y + parent.screenY
-	// node is a Constructor component
-	if (node.component) {
-		node.rendered = this.addNode(node.component.render(), node)
-	} else {
-		// node is a primitive or functional component
-		node.rendered = this.addNode(node.render(node.props), node)
-	}
-	if (node.rendered instanceof Function && node.props.children) {
-		// node is a primitive with children
-		node.children = new Map(
-			node.props.children.map(child => [this.addNode(child, node), child])
-		)
-	}
-	return node
-}
-
 Screen.prototype.addToRTree = function (node) {
 	if (node.component) {
 		let screenObj = this.map.get(node.component)
@@ -77,7 +47,9 @@ Screen.prototype.addToRTree = function (node) {
 		this.tree.insert(screenObj)
 	}
 	// recursively add all descendents of the node
-	if (node.rendered instanceof this.Node) {
+	// a node's rendered result is either a Node or a Function. If it's not a function,
+	// it's a Node
+	if (!(node.rendered instanceof Function)) {
 		this.addToRTree(node.rendered)
 	}
 	if (node.children) {
@@ -87,6 +59,10 @@ Screen.prototype.addToRTree = function (node) {
 
 Screen.prototype.draw = function () {
 	this.rebuildRTree()
+	// TODO
+	// obviously this clear screen should be more sophisticated
+	this.ctx.fillStyle = '#ffffff'
+	this.ctx.fillRect(0, 0, 1000, 1000)
 	this.root.draw(this.ctx)
 }
 

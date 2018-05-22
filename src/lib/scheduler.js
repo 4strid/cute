@@ -2,12 +2,17 @@ function Scheduler (screen) {
 	const renderSchedule = new Map()
 
 	let tickPending = false
+	let drawPending = false
 
 	function tick (time) {
 		// call update functions
 		// rerender components
-		// clear screen
+		
+		
 		// draw
+
+		// reset
+		renderSchedule.clear()
 		tickPending = false
 	}
 
@@ -17,6 +22,7 @@ function Scheduler (screen) {
 			window.requestAnimationFrame(tick)
 			tickPending = true
 		}
+		drawPending = true
 	}
 }
 

@@ -5,7 +5,7 @@ import Cursor from './Cursor'
 
 
 				//<ComponentMap target={this} ref='squares'>
-					//<Square handleDestroy={this.handleDestroy} state={this.state}/>
+					//<Square handleDestroy={this.handleDestroy.bind(this)} state={this.state}/>
 				//</ComponentMap>
 
 const App = Cute({
