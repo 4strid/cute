@@ -2,6 +2,7 @@ import primitives from './primitives'
 import Constructor from './constructor'
 import Screen from './screen'
 import Dispatch from './dispatch'
+import Scheduler from './scheduler'
 import NodeContext from './node'
 
 const Cute = plan => {
@@ -13,7 +14,7 @@ Cute.ctx = Cute.canvas.getContext('2d')
 
 Cute.screen = new Screen(Cute.ctx)
 Cute.dispatch = new Dispatch(Cute.canvas, Cute.screen)
-Cute.scheduler = null
+Cute.scheduler = new Scheduler(Cute.screen)
 
 const Node = NodeContext(Cute.screen, Cute.scheduler, Cute.dispatch)
 

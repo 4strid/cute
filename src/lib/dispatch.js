@@ -116,7 +116,7 @@ function Dispatch (canvas, screen) {
 
 	// dispatches events to either ephemeral or persistent global listeners
 	function dispatchGlobal (listeners, evtype, evt) {
-		listeners.gloabl[evtype].forEach((handler, component) => {
+		listeners.global[evtype].forEach((handler, component) => {
 			addLocalCoords(component, evt)
 			handler.call(component, evt)
 		})

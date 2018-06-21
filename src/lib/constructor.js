@@ -22,7 +22,13 @@ function Constructor (plan) {
 		this.node = node
 
 		// set up data handlers
-		const data = this.plan.data()
+		let data
+		const Data = plan.data
+		if (Data) {
+			data = plan.data()
+		} else {
+			data = {}
+		}
 		// set initial positional values
 		Object.assign(data, {
 			x: props.x || plan.x || 0,
@@ -34,14 +40,13 @@ function Constructor (plan) {
 		for (const k in data) {
 			Object.defineProperty(this.data, k, {
 				enumerable: true,
-				writable: true,
 				get () {
 					return data[k]
 				},
 				set (val) {
 					if (val !== data[k]) {
 						data[k] = val
-						this.node.scheduleRender()
+						node.scheduleRender()
 					}
 				},
 			})
@@ -103,7 +108,6 @@ Constructor.prototype = {
 for (const k of ['x', 'y', 'w', 'h']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
-		writable: true,
 		get () {
 			return this.data[k]
 		},
@@ -116,12 +120,10 @@ for (const k of ['x', 'y', 'w', 'h']) {
 
 
 function State (name, component) {
-	return {
-		[name]: true,
-		name,
-		component,
-		stack: [],
-	}
+	this[name] = true
+	this.name = name
+	this.component = component
+	this.stack = []
 }
 
 State.prototype.set = function (name) {

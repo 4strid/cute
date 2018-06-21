@@ -1,6 +1,8 @@
 function drawChildren (props, ctx) {
-	for (const childNode of props.children) {
-		childNode.draw(ctx)
+	if (props.children !== undefined) {
+		for (const childNode of props.children) {
+			childNode.draw(ctx)
+		}
 	}
 }
 

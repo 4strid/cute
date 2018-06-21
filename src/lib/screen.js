@@ -14,9 +14,13 @@ function Screen (ctx) {
 }
 
 Screen.prototype.setRootElement = function (node) {
-	this.root = node.addToTree(this)
+	this.root = node
+	this.root.setParent(this)
+	this.root.recursiveRender()
 	this.draw()
 }
+
+	// sets own props to new props. returns whether or not an update was performed
 
 Screen.prototype.rebuildRTree = function () {
 	// begin construction of a new component -> screen object map
