@@ -18,17 +18,13 @@ function Constructor (plan) {
 	}
 
 	function Component (props, node) {
+		console.log('initializing component')
 		this.props = props
 		this.node = node
 
 		// set up data handlers
-		let data
-		const Data = plan.data
-		if (Data) {
-			data = plan.data()
-		} else {
-			data = {}
-		}
+		const data = plan.data ? plan.data() : {}
+
 		// set initial positional values
 		Object.assign(data, {
 			x: props.x || plan.x || 0,

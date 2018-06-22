@@ -28,7 +28,9 @@ Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight)
 }
 
 Cute.createElement = function (Type, props, ...children) {
-	console.log(Type)
+	//console.log(Type)
+	//console.log(props)
+	//console.log(children)
 	if (typeof Type === 'string') {
 		return new Node(primitives._lookup(Type), props, children)
 	}

@@ -9,15 +9,13 @@ const Cursor = Cute({
 		//if (this.state.DestroySquares) {
 			//fillColor = '#ff4444'
 		//}
-		console.log(this.w)
-		console.log(this.h)
 
 		return (
 			<layer>
-				<rect w={2} h={this.h} x={this.x + this.w / 2 - 1} y={this.y}>
+				<rect w={2} h={this.h} x={this.w / 4 - 1/2} y={0}>
 					<fill color={fillColor} />
 				</rect>
-				<rect w={this.w} h={2} x={this.x} y={this.y + this.h / 2 - 1}>
+				<rect w={this.w} h={2} x={0} y={this.h / 4 - 1/2}>
 					<fill color={fillColor} />
 				</rect>
 			</layer>

@@ -16,6 +16,10 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.type = type
 	}
 
+	function isInteractiveComponent (node) {
+		return Constructor.prototype.isPrototypeOf(node.type.prototype)
+	}
+
 	// returns a rendered Node (or function if this node is a primitive)
 	Node.prototype.render = function (props) {
 		// this is a node that is an interactive Component that is being rerendered
@@ -24,7 +28,7 @@ function NodeContext (screen, scheduler, dispatch) {
 			return this.component.render()
 		}
 		// if this is an interactive Component
-		if (Constructor.prototype.isPrototypeOf(this.type.prototype)) {
+		if (isInteractiveComponent(this)) {
 			this.component = new this.type(props, this)
 			return this.component.render()
 		}
@@ -33,6 +37,12 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	Node.prototype.setParent = function (parent) {
 		this.parent = parent
+
+		if (isInteractiveComponent(this) && this.component) {
+			this.x = this.component.x
+			this.y = this.component.y
+		}
+
 		this.screenX = this.x + this.parent.screenX
 		this.screenY = this.y + this.parent.screenY
 	}
@@ -121,11 +131,12 @@ function NodeContext (screen, scheduler, dispatch) {
 			if (this.rendered instanceof Node) {
 				this.rendered.setParent(this)
 				this.rendered.recursiveRerender()
-				return
 			}
 		}
 
 		const rerendered = this.render(this.props)
+
+		this.isUpdated = false
 
 		if (!(rerendered instanceof Node)) {
 			this.rendered = rerendered
@@ -158,6 +169,7 @@ function NodeContext (screen, scheduler, dispatch) {
 	Node.prototype.recursiveRerender = function () {
 		if (this.isUpdated) {
 			this.rerender(true)
+			this.isUpdated = false
 			return
 		}
 		if (this.rendered instanceof Node) {
@@ -183,6 +195,11 @@ function NodeContext (screen, scheduler, dispatch) {
 			this.rendered(ctx)
 		}
 		ctx.restore()
+	}
+
+	Node.prototype.update = function () {
+		this.isUpdated = true
+		this.scheduleRender()
 	}
 
 	// this can only ever be called from interactive component nodes

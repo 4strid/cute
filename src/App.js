@@ -12,7 +12,7 @@ const App = Cute({
 	render () {
 		return (
 			<layer>
-				<Cursor state={this.state} w={6} h={6}/>
+				<Cursor state={this.state} w={8} h={8}/>
 			</layer>
 		)
 	},
