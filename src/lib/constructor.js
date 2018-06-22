@@ -10,7 +10,8 @@ function Constructor (plan) {
 	// attach State transitions from plan
 	for (const state in plan.states) {
 		prototype[state] = function () {
-			this.node.removeEventListeners()
+			console.log('prototype state ' + state)
+			this.node.removeEventListeners(this)
 			this.state.set(state)
 			plan.states[state].call(this)
 			this.node.scheduleRender()
@@ -23,7 +24,7 @@ function Constructor (plan) {
 		this.node = node
 
 		// set up data handlers
-		const data = plan.data ? plan.data() : {}
+		const data = plan.data ? plan.data.call(this) : {}
 
 		// set initial positional values
 		Object.assign(data, {
@@ -48,17 +49,47 @@ function Constructor (plan) {
 			})
 		}
 
+		// allow for moving the component without rerendering it
+		for (const k of ['x', 'y']) {
+			Object.defineProperty(this, k, {
+				enumerable: true,
+				get () {
+					return data[k]
+				},
+				set (val) {
+					if (val !== data[k]) {
+						data[k] = val
+						node.scheduleMove()
+					}
+				},
+			})
+		}
+
+
 		// TODO: handle async loading, then call start state when ready
 
+		// this leads to inconsistent state between parent and child if the
+		// parent immediately transitions to a new state. seek a better solution
+		//
+		// oh cool, actually the order of events is:
+		//  - parent component changes state
+		//   > schedules rerender
+		//  - child component does not have NewState, so it calls Ready instead
+		//  - rerender occurs, child receives NewState
+		//
+		//  so problem... averted for now
 		let startState = 'Ready'
-		if (props.state) {
+		if (props.state && this[props.state.name]) {
 			startState = props.state.name
 		}
 
 		this.state = new State(startState, this)
 
+		// attempt to call the startState function
 		if (this[startState] !== undefined) {
 			this[startState]()
+		} else if (this.Ready) {
+			this.Ready()
 		}
 
 	}
@@ -68,40 +99,49 @@ function Constructor (plan) {
 }
 
 Constructor.prototype = {
+	// listen for a certain evtype. handler is removed upon state change
 	on (evtype, handler) {
 		this.node.addEventListener(this, evtype, handler)
 	},
+	// listen for a certain evtype. handler persists through state changes
 	listen (evtype, handler) {
 		this.node.addPersistentListener(this, evtype, handler)
 	},
+	// removes a persistent listener
 	unlisten (evtype) {
 		this.node.removePersistentListener(this, evtype)
 	},
-	_receiveProps (props) {
-		for (const k in props) {
-			// if props have changed, schedule a render
-			if (this.props[k] !== props[k]) {
-				this.props[k] = props[k]
-				this.node.scheduleRender()
-			}
+	// sets own state to the given name and attempts to call that state function
+	setState (name) {
+		this.state.set(name)
+		if (this[name]) {
+			this[name]()
 		}
+	},
+	_receiveProps (props) {
+		this.props = props
+
 		for (const k of ['x', 'y', 'w', 'h']) {
 			if (props[k] !== undefined && props[k] !== this[k]) {
-				// implicitly calls data.k = props[k], which will cause a rerender if it is different
+				// call getters / setters to act appropriately
+				// this schedules a rerender, which is ignored because we are already in a rerender
 				this[k] = props[k]
 			}
 		}
 		// if state has changed, call the state transition function
-		// this implicitly schedules a render
-		if (props.state && this.state.name !== props.state.name) {
-			this[props.state.name]()
+		if (props.state && props.state.isUpdated) {
+			console.log('props state')
+			console.log(props.state)
+			this.setState(props.state.name)
 		}
 	},
 }
 
-// attach x, y, w, h convenience getters and setters
+// attach w, h convenience getters and setters
+// w and h should trigger a rerender
 // these are common among all components so we attach them to Constructor.prototype
-for (const k of ['x', 'y', 'w', 'h']) {
+//
+for (const k of ['w', 'h']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
 		get () {
@@ -123,9 +163,10 @@ function State (name, component) {
 }
 
 State.prototype.set = function (name) {
-	this[this.name] = false
+	this[this.name] = undefined
 	this[name] = true
 	this.name = name
+	this.isUpdated = true
 }
 
 State.prototype.save = function () {

@@ -104,6 +104,7 @@ function Dispatch (canvas, screen) {
 		if (component === null) {
 			return
 		}
+		evt.component = component
 		dispatchToMap('local', component, evtype, evt)
 	}
 
@@ -261,8 +262,8 @@ function Dispatch (canvas, screen) {
 
 	// helper functino that removes all listeners from either ephemeral or persistent listeners
 	function removeListeners (listeners, component) {
-		listeners.local.set(component, {})
-		listeners.multi.set(component, {})
+		listeners.local.delete(component)
+		listeners.multi.delete(component)
 		for (const evtype in listeners.global) {
 			listeners.global[evtype].delete(component)
 		}
@@ -276,6 +277,11 @@ function Dispatch (canvas, screen) {
 	// public method for removing all persistent listeners
 	this.removePersistentListeners = function (component) {
 		removeListeners(persistentListeners, component)
+	}
+
+	this.removeComponent = function (component) {
+		this.removeEventListeners(component)
+		this.removePersistentListeners(component)
 	}
 }
 

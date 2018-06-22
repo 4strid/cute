@@ -1,4 +1,5 @@
 import deepEqual from 'deep-equal'
+import flatten from 'array-flatten'
 
 import Constructor from './constructor'
 
@@ -11,7 +12,14 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
 		if (children.length) {
-			this.props.children = children
+			this.props.children = flatten(children)
+			console.log('000000000')
+			console.log(this.props.children)
+		}
+		if (this.props.ref) {
+			this.ref = this.props.ref
+			// TODO refactor out delete if it turns out to be a performance concern
+			delete this.props.ref
 		}
 		this.type = type
 	}
@@ -24,12 +32,15 @@ function NodeContext (screen, scheduler, dispatch) {
 	Node.prototype.render = function (props) {
 		// this is a node that is an interactive Component that is being rerendered
 		if (this.component) {
-			this.component.props = props
+			this.component._receiveProps(props)
 			return this.component.render()
 		}
 		// if this is an interactive Component
 		if (isInteractiveComponent(this)) {
 			this.component = new this.type(props, this)
+			if (this.ref) {
+				this.ref.reference(this.component)
+			}
 			return this.component.render()
 		}
 		return this.type(props)
@@ -48,6 +59,8 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.recursiveRender = function () {
+		console.log('rr')
+		console.log(this)
 		this.rendered = this.render(this.props)
 		// this is some kind of component
 		if (this.rendered instanceof Node) {
@@ -57,6 +70,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		} else if (this.props.children) {
 			this.children = this.props.children
 			this.props.children.forEach(child => {
+				console.log(child)
 				child.setParent(this)
 				child.recursiveRender()
 			})
@@ -65,47 +79,64 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	function compareProps (a, b) {
 		for (const k in a) {
-			// comparison of children is done in a later step
+			// children are reconciled, if they are simple-equivalent they're the same
+			// children's props were compared at a previous step
 			if (k === 'children') {
 				if (!('children' in b)) {
-					return false
+					return true
 				}
 				if (a.children.length !== b.children.length) {
-					return false
+					return true
 				}
 				for (let i = 0; i < a.children.length; i++) {
 					if (a[i] !== b[i]) {
-						return false
+						return true
 					}
 				}
+				continue
+			}
+			if (k === 'state') {
+				// if state is updated, must rerender
+				if (a.state.isUpdated) {
+					return true
+				}
+				continue
 			}
 			if (!deepEqual(a[k], b[k])) {
-				return false
+				return true
 			}
 		}
 		// plausible that we don't need this check
 		for (const k in b) {
 			if (!(k in a)) {
-				return false
+				return true
 			}
 		}
-		return true
+		return false
 	}
 
 	// sets own props to new props. returns whether or not an update was performed
 	Node.prototype.receiveProps = function (props) {
+		console.log('receive props')
+		console.log(this)
+		console.log(props)
 		this.x = props.x || 0
 		this.y = props.y || 0
 		const childMap = new MultiMap(this.props.children)
 
+		let childrenUpdated = false
+
 		if (props.children !== undefined) {
+			console.log('has children')
 			props.children = props.children.map(newChild => {
 				const oldChild = childMap.match(newChild)
 				//return oldChild || newChild
 				if (oldChild === undefined) {
 					return newChild
 				}
-				oldChild.receiveProps(newChild.props)
+				console.log('new child props')
+				console.log(newChild.props)
+				childrenUpdated = childrenUpdated || oldChild.receiveProps(newChild.props)
 				return oldChild
 			})
 		}
@@ -122,6 +153,8 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.rerender = function (isUpdated) {
+		console.log('rerender')
+		console.log(this)
 		if (!isUpdated) {
 			if (this.children) {
 				this.children.forEach(child => {
@@ -145,7 +178,7 @@ function NodeContext (screen, scheduler, dispatch) {
 				this.children.forEach(child => {
 					child.setParent(this)
 					if (child.rendered) {
-						child.rerender()
+						child.rerender(true)
 					} else {
 						child.recursiveRender()
 					}
@@ -156,7 +189,7 @@ function NodeContext (screen, scheduler, dispatch) {
 
 		if (this.rendered.type === rerendered.type) {
 			this.rendered.setParent(this)
-			const isUpdated = this.rendered.receiveProps(this.props)
+			const isUpdated = this.rendered.receiveProps(rerendered.props)
 			this.rendered.rerender(isUpdated)
 			return
 		}
@@ -167,20 +200,42 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.recursiveRerender = function () {
+		console.log('recursive rerender')
+		console.log(this)
 		if (this.isUpdated) {
 			this.rerender(true)
-			this.isUpdated = false
 			return
 		}
 		if (this.rendered instanceof Node) {
 			this.rendered.recursiveRerender()
-			return
 		}
 		if (this.children) {
 			this.children.forEach(child => {
 				child.recursiveRerender()
 			})
 		}
+	}
+
+	Node.prototype.recursiveMove = function () {
+		if (this.isMoved) {
+			this.x = this.component.x
+			this.y = this.component.y
+		}
+		if (this.rendered instanceof Node) {
+			if (this.isMoved) {
+				this.rendered.setParent(this)
+			}
+			this.rendered.recursiveMove()
+		}
+		if (this.children) {
+			this.children.forEach(child => {
+				if (this.isMoved) {
+					child.setParent(this)
+				}
+				child.recursiveMove()
+			})
+		}
+		this.isMoved = false
 	}
 
 	Node.prototype.draw = function (ctx) {
@@ -197,15 +252,16 @@ function NodeContext (screen, scheduler, dispatch) {
 		ctx.restore()
 	}
 
-	Node.prototype.update = function () {
-		this.isUpdated = true
-		this.scheduleRender()
-	}
-
 	// this can only ever be called from interactive component nodes
 	Node.prototype.scheduleRender = function () {
 		// schedule a rerender
+		this.isUpdated = true
 		scheduler.scheduleRender(this)
+	}
+
+	Node.prototype.scheduleMove = function () {
+		this.isMoved = true
+		scheduler.scheduleMove(this)
 	}
 
 	Node.prototype.addEventListener = function (component, evtype, handler) {
@@ -222,6 +278,13 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	Node.prototype.removePersistentListener = function (component, evtype) {
 		dispatch.removePersistentListener(component, evtype)
+	}
+
+	Node.prototype.destroy = function () {
+		if (this.component) {
+			dispatch.removeComponent(this.component)
+		}
+		scheduler.scheduleDraw(this)
 	}
 
 	return Node

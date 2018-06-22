@@ -27,15 +27,41 @@ Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight)
 	this.screen.setRootElement(RootComponent)
 }
 
-Cute.createElement = function (Type, props, ...children) {
+Cute.createElement = function (type, props, ...children) {
 	//console.log(Type)
 	//console.log(props)
 	//console.log(children)
-	if (typeof Type === 'string') {
-		return new Node(primitives._lookup(Type), props, children)
+	if (typeof type === 'string') {
+		return new Node(primitives._lookup(type), props, children)
 	}
-	return new Node(Type, props, children)
+	return new Node(type, props, children)
 }
+
+// Allows you to directly reference a child component from a parent
+// component. Black magic sort of stuff. Generally you should avoid
+// making refs if you can, but alas, sometimes you cannot
+Cute.createRef = function () {
+	return new Ref()
+}
+
+function Ref () {}
+
+// this seems like a horrible idea lol
+Ref.prototype.reference = function (component) {
+	for (const k in component) {
+		console.log(k)
+		if (component[k] instanceof Function) {
+			this[k] = (...args) => component[k].call(component, ...args)
+		} else {
+			this[k] = component[k]
+		}
+	}
+}
+
+// cleaner, but more typing for the user
+//Ref.prototype.reference = function (component) {
+	//this.component = component
+//}
 
 Cute.Constructor = Constructor
 

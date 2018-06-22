@@ -1,0 +1,10 @@
+- Passing state to children (treat like a prop, but also 
+- Named references to components (refs)
+ > treat ref differently from a prop
+- Allow for keys (also distinct from props)
+- ComponentMap and ComponentList (requires refs and keys)
+
+...
+
+string values for x, y, w, h
+- 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'

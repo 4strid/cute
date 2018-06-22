@@ -20,7 +20,9 @@ module.exports = {
 			  'transform-react-jsx', {
 				'pragma': 'Cute.createElement'
 			  }
-			]]
+			],
+			  'transform-object-rest-spread'
+			]
           }
         }
       }

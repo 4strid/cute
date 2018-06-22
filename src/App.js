@@ -1,29 +1,36 @@
-import Cute, { ComponentMap } from './lib/cute'
+import Cute from './lib/cute'
+import { ComponentMap } from './lib/components'
 import Square from './Square'
 import Cursor from './Cursor'
 
 
 
-				//<ComponentMap target={this} ref='squares'>
-					//<Square handleDestroy={this.handleDestroy.bind(this)} state={this.state}/>
-				//</ComponentMap>
 
 const App = Cute({
 	render () {
 		return (
 			<layer>
+				<ComponentMap ref={this.data.squares}>
+					<Square handleDestroy={this.handleDestroy.bind(this)} state={this.state}/>
+				</ComponentMap>
 				<Cursor state={this.state} w={8} h={8}/>
 			</layer>
 		)
 	},
+	data () {
+		return {
+			squares: Cute.createRef(),
+		}
+	},
 	methods: {
 		randomDimensions () {
 			const MIN_SQUARE_SIZE = 25
-			const MAX_SQUARE_SIZE = 150
+			const MAX_SQUARE_SIZE = 75
 			return Math.random() * (MAX_SQUARE_SIZE - MIN_SQUARE_SIZE) + MIN_SQUARE_SIZE
 		},
 		handleDestroy (evt) {
-			this.data.squares.destroy(evt.target)
+			console.log(evt.component)
+			this.data.squares.destroy(evt.component)
 		},
 	},
 	states: {
@@ -31,10 +38,10 @@ const App = Cute({
 			//this.data.squares.create({x: 50, y: 50, w: 100, h: 100})
 			//this.data.squares.create({x: 100, y: 100, w: 75, h: 75})
 			//this.data.squares.create({x: 300, y: 100, w: 90, h: 90})
-			//this.ChangeColors()
+			this.ChangeColors()
 		},
 		ChangeColors () {
-			this.on('keydown', evt => {
+			this.on('keydownG', evt => {
 				if (evt.key === 'c') {
 					return this.CreateSquares()
 				}
@@ -44,8 +51,8 @@ const App = Cute({
 			})
 		},
 		CreateSquares () {
-			this.on('keydown', evt => {
-				if (evt.key === 'escape') {
+			this.on('keydownG', evt => {
+				if (evt.key === 'Escape') {
 					return this.ChangeColors()
 				}
 				if (evt.key === 'd') {
@@ -64,8 +71,8 @@ const App = Cute({
 			})
 		},
 		DestroySquares () {
-			this.on('keydown', evt => {
-				if (evt.key === 'escape') {
+			this.on('keydownG', evt => {
+				if (evt.key === 'Escape') {
 					return this.ChangeColors()
 				}
 				if (evt.key === 'c') {
