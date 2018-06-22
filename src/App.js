@@ -29,6 +29,7 @@ const App = Cute({
 			return Math.random() * (MAX_SQUARE_SIZE - MIN_SQUARE_SIZE) + MIN_SQUARE_SIZE
 		},
 		handleDestroy (evt) {
+			console.log('55555555555')
 			console.log(evt.component)
 			this.data.squares.destroy(evt.component)
 		},

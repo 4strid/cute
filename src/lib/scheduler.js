@@ -9,26 +9,30 @@ function Scheduler (screen) {
 	function tick (time) {
 		const elapsed = lastTime === null ? time : time - lastTime
 		if (elapsed > 17) {
-			console.log('Slowed down!')
-			console.log(elapsed)
+			//console.log('Slowed down!')
+			//console.log(elapsed)
 		}
 		lastTime = time
 		// call update functions
 
+		console.time('tick')
+
 		// move components
 		if (shouldMove) {
-			console.log('gogo move')
+			//console.log('gogo move')
 			screen.root.recursiveMove()
 		}
 
 		// rerender components
 		if (shouldRerender) {
-			console.log('gogo rerender')
+			//console.log('gogo rerender')
 			screen.root.recursiveRerender()
 		}
 		
 		// draw
 		screen.draw()
+
+		console.timeEnd('tick')
 
 		shouldMove = false
 		shouldRerender = false
@@ -44,14 +48,15 @@ function Scheduler (screen) {
 	}
 
 	this.scheduleRender = function (node) {
-		console.log('already rendering')
-		console.log(node)
+		//console.log(node)
 		if (!tickPending) {
 			console.log('GO rerender')
 			console.log(node)
 			shouldRerender = true
 			window.requestAnimationFrame(tick)
 			tickPending = true
+		} else {
+			console.log('already rendering')
 		}
 	}
 

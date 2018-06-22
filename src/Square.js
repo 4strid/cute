@@ -28,6 +28,8 @@ const Square = Cute({
 			// nothing to do
 		},
 		DestroySquares () {
+			console.log('destroy squares')
+			console.log(this)
 			this.on('click', this.props.handleDestroy)
 		},
 	},

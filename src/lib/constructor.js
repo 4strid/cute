@@ -10,7 +10,7 @@ function Constructor (plan) {
 	// attach State transitions from plan
 	for (const state in plan.states) {
 		prototype[state] = function () {
-			console.log('prototype state ' + state)
+			//console.log('prototype state ' + state)
 			this.node.removeEventListeners(this)
 			this.state.set(state)
 			plan.states[state].call(this)
@@ -19,7 +19,7 @@ function Constructor (plan) {
 	}
 
 	function Component (props, node) {
-		console.log('initializing component')
+		//console.log('initializing component')
 		this.props = props
 		this.node = node
 
@@ -130,8 +130,8 @@ Constructor.prototype = {
 		}
 		// if state has changed, call the state transition function
 		if (props.state && props.state.isUpdated) {
-			console.log('props state')
-			console.log(props.state)
+			//console.log('props state')
+			//console.log(props.state)
 			this.setState(props.state.name)
 		}
 	},

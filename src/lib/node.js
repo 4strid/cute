@@ -13,8 +13,8 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.y = this.props.y || 0
 		if (children.length) {
 			this.props.children = flatten(children)
-			console.log('000000000')
-			console.log(this.props.children)
+			//console.log('000000000')
+			//console.log(this.props.children)
 		}
 		if (this.props.ref) {
 			this.ref = this.props.ref
@@ -59,8 +59,8 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.recursiveRender = function () {
-		console.log('rr')
-		console.log(this)
+		//console.log('rr')
+		//console.log(this)
 		this.rendered = this.render(this.props)
 		// this is some kind of component
 		if (this.rendered instanceof Node) {
@@ -70,7 +70,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		} else if (this.props.children) {
 			this.children = this.props.children
 			this.props.children.forEach(child => {
-				console.log(child)
+				//console.log(child)
 				child.setParent(this)
 				child.recursiveRender()
 			})
@@ -117,9 +117,9 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	// sets own props to new props. returns whether or not an update was performed
 	Node.prototype.receiveProps = function (props) {
-		console.log('receive props')
-		console.log(this)
-		console.log(props)
+		//console.log('receive props')
+		//console.log(this)
+		//console.log(props)
 		this.x = props.x || 0
 		this.y = props.y || 0
 		const childMap = new MultiMap(this.props.children)
@@ -127,7 +127,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		let childrenUpdated = false
 
 		if (props.children !== undefined) {
-			console.log('has children')
+			//console.log('has children')
 			props.children = props.children.map(newChild => {
 				const oldChild = childMap.match(newChild)
 				//return oldChild || newChild
@@ -136,12 +136,12 @@ function NodeContext (screen, scheduler, dispatch) {
 				}
 				console.log('new child props')
 				console.log(newChild.props)
-				childrenUpdated = childrenUpdated || oldChild.receiveProps(newChild.props)
+				childrenUpdated = oldChild.receiveProps(newChild.props) || childrenUpdated
 				return oldChild
 			})
 		}
 
-		const isUpdated = this.isUpdated || compareProps(this.props, props)
+		const isUpdated = this.isUpdated || childrenUpdated || compareProps(this.props, props)
 
 		if (!isUpdated) {
 			return false
@@ -153,8 +153,8 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.rerender = function (isUpdated) {
-		console.log('rerender')
-		console.log(this)
+		//console.log('rerender')
+		//console.log(this)
 		if (!isUpdated) {
 			if (this.children) {
 				this.children.forEach(child => {
@@ -165,43 +165,42 @@ function NodeContext (screen, scheduler, dispatch) {
 				this.rendered.setParent(this)
 				this.rendered.recursiveRerender()
 			}
-		}
+		} else {
+			const rerendered = this.render(this.props)
 
-		const rerendered = this.render(this.props)
+			if (!(rerendered instanceof Node)) {
+				this.rendered = rerendered
+				if (this.props.children) {
+					this.children = this.props.children
+					this.children.forEach(child => {
+						child.setParent(this)
+						if (child.rendered) {
+							child.rerender(true)
+						} else {
+							child.recursiveRender()
+						}
+					})
+				}
+			} else if (this.rendered.type === rerendered.type) {
+				this.rendered.setParent(this)
+				const isUpdated = this.rendered.receiveProps(rerendered.props)
+				this.rendered.rerender(isUpdated)
+			} else {
+				this.rendered = rerendered
+				this.rendered.setParent(this)
+				this.rendered.recursiveRender()
+			}
+		}
 
 		this.isUpdated = false
-
-		if (!(rerendered instanceof Node)) {
-			this.rendered = rerendered
-			if (this.props.children) {
-				this.children = this.props.children
-				this.children.forEach(child => {
-					child.setParent(this)
-					if (child.rendered) {
-						child.rerender(true)
-					} else {
-						child.recursiveRender()
-					}
-				})
-			}
-			return
+		if (this.component) {
+			this.component.state.isUpdated = false
 		}
-
-		if (this.rendered.type === rerendered.type) {
-			this.rendered.setParent(this)
-			const isUpdated = this.rendered.receiveProps(rerendered.props)
-			this.rendered.rerender(isUpdated)
-			return
-		}
-
-		this.rendered = rerendered
-		this.rendered.setParent(this)
-		this.rendered.recursiveRender()
 	}
 
 	Node.prototype.recursiveRerender = function () {
-		console.log('recursive rerender')
-		console.log(this)
+		//console.log('recursive rerender')
+		//console.log(this)
 		if (this.isUpdated) {
 			this.rerender(true)
 			return
@@ -284,7 +283,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		if (this.component) {
 			dispatch.removeComponent(this.component)
 		}
-		scheduler.scheduleDraw(this)
+		scheduler.scheduleRender(this)
 	}
 
 	return Node

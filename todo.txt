@@ -1,6 +1,3 @@
-- Passing state to children (treat like a prop, but also 
-- Named references to components (refs)
- > treat ref differently from a prop
 - Allow for keys (also distinct from props)
 - ComponentMap and ComponentList (requires refs and keys)
 

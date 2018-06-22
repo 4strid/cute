@@ -49,7 +49,6 @@ function Ref () {}
 // this seems like a horrible idea lol
 Ref.prototype.reference = function (component) {
 	for (const k in component) {
-		console.log(k)
 		if (component[k] instanceof Function) {
 			this[k] = (...args) => component[k].call(component, ...args)
 		} else {

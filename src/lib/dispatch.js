@@ -3,6 +3,7 @@ function Dispatch (canvas, screen) {
 	// to the correct components
 	function DispatchEventListener (evtype) {
 		return function (evt) {
+			console.log(evtype)
 			dispatch(evtype, evt)
 		}
 	}
@@ -63,6 +64,7 @@ function Dispatch (canvas, screen) {
 	let canvasX = null
 	let canvasY = null
 	canvas.addEventListener('mousemove', evt => {
+		canvas.focus()
 		addCanvasCoords(evt)
 		canvasX = evt.canvasX
 		canvasY = evt.canvasY
@@ -111,6 +113,7 @@ function Dispatch (canvas, screen) {
 	// dispatches events to ephemeral and persistent multi listeners
 	function dispatchMulti (components, evtype, evt) {
 		components.forEach(component => {
+			evt.component = component
 			dispatchToMap('multi', component, evtype, evt)
 		})
 	}
