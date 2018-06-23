@@ -18,8 +18,11 @@ function NodeContext (screen, scheduler, dispatch) {
 		}
 		if (this.props.ref) {
 			this.ref = this.props.ref
-			// TODO refactor out delete if it turns out to be a performance concern
-			delete this.props.ref
+			// TODO refactor out deletes if it turns out to be a performance concern
+		}
+		if (this.props.key) {
+			this.key = this.props.key
+			delete this.props.key
 		}
 		this.type = type
 	}
@@ -291,7 +294,7 @@ function NodeContext (screen, scheduler, dispatch) {
 
 // returns the component's key if it exists, otherwise the type
 function getKey (node) {
-	return node.component && node.component.key || node.type
+	return node.key || node.type
 }
 
 // A Map that allows multiple insertions to the same key. Powers the children diffing algorithm.

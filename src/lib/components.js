@@ -1,5 +1,7 @@
 import Cute from './cute'
 
+import uniqid from 'uniqid'
+
 export const ComponentMap = Cute({
 	// returns an array of Nodes stored in the map
 	render () {
@@ -28,7 +30,7 @@ export const ComponentMap = Cute({
 		},
 		create (props) {
 			const prototype = this._getPrototypeNode()
-			const combinedProps = {...prototype.props, ...props}
+			const combinedProps = {...prototype.props, ...props, key: uniqid()}
 			console.log('bbbbbbbbb')
 			console.log(combinedProps)
 			const newNode = <prototype.type {...combinedProps} />
