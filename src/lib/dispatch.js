@@ -3,7 +3,6 @@ function Dispatch (canvas, screen) {
 	// to the correct components
 	function DispatchEventListener (evtype) {
 		return function (evt) {
-			console.log(evtype)
 			dispatch(evtype, evt)
 		}
 	}
@@ -103,7 +102,7 @@ function Dispatch (canvas, screen) {
 
 	// dispatches local events to ephemeral and persistent local listeners
 	function dispatchLocal (component, evtype, evt) {
-		if (component === null) {
+		if (!component) {
 			return
 		}
 		evt.component = component
@@ -113,6 +112,7 @@ function Dispatch (canvas, screen) {
 	// dispatches events to ephemeral and persistent multi listeners
 	function dispatchMulti (components, evtype, evt) {
 		components.forEach(component => {
+			// this will fail for any asynchronous multi event handler, but events are massive and I don't want to copy the whole thing
 			evt.component = component
 			dispatchToMap('multi', component, evtype, evt)
 		})
@@ -166,6 +166,17 @@ function Dispatch (canvas, screen) {
 		mousePriorAll = mouseOver
 	}
 
+	// returns whether a compnent has a listener for a given evtype
+	function hasLocalListener (component, evtype) {
+		for (const listeners of [persistentListeners, ephemeralListeners]) {
+			const handlers = listeners.local.get(component)
+			if (handlers && handlers[evtype]) {
+				return true
+			}
+		}
+		return false
+	}
+
 	// the function called when any event is sent to the canvas. determines
 	// canvas coordinates, then calls all appropriate handlers
 	function dispatch (evtype, evt) {
@@ -177,8 +188,9 @@ function Dispatch (canvas, screen) {
 		// dispatch event to multi handlers
 		const allComponents = screen.queryPointAll(evt.canvasX, evt.canvasY)
 		dispatchMulti(allComponents, evtype, evt)
+		// get topmost component with a handler for the given evtype
+		const component = allComponents.find(comp => hasLocalListener(comp, evtype))
 		// dispatch event to local handlers
-		const component = screen.queryPoint(evt.canvasX, evt.canvasY)
 		dispatchLocal(component, evtype, evt)
 		// dispatch mouseover, mouseout, mouseenter, and mouseleave events
 		dispatchMouseoverMouseout(evtype, evt)
