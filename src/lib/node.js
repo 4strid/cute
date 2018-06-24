@@ -1,5 +1,6 @@
 import deepEqual from 'deep-equal'
 import flatten from 'array-flatten'
+import uniqid from 'uniqid'
 
 import Constructor from './constructor'
 
@@ -92,7 +93,7 @@ function NodeContext (screen, scheduler, dispatch) {
 					return true
 				}
 				for (let i = 0; i < a.children.length; i++) {
-					if (a[i] !== b[i]) {
+					if (a.children[i] !== b.children[i]) {
 						return true
 					}
 				}
@@ -118,15 +119,15 @@ function NodeContext (screen, scheduler, dispatch) {
 		return false
 	}
 
-	// sets own props to new props. returns whether or not an update was performed
+	// sets own props to new props. sets own isUpdated property if props or children are updated
 	Node.prototype.receiveProps = function (props) {
 		//console.log('receive props')
 		//console.log(this)
 		//console.log(props)
-		this.x = props.x || 0
-		this.y = props.y || 0
+		this.x = props.x || this.x
+		this.y = props.y || this.y
 		const childMap = new MultiMap(this.props.children)
-
+		
 		let childrenUpdated = false
 
 		if (props.children !== undefined) {
@@ -137,38 +138,43 @@ function NodeContext (screen, scheduler, dispatch) {
 				if (oldChild === undefined) {
 					return newChild
 				}
-				console.log('new child props')
-				console.log(newChild.props)
-				childrenUpdated = oldChild.receiveProps(newChild.props) || childrenUpdated
+				//console.log('new child props')
+				//console.log(newChild.props)
+				oldChild.receiveProps(newChild.props)
+				childrenUpdated = childrenUpdated || oldChild.isUpdated
 				return oldChild
 			})
 		}
 
-		const isUpdated = this.isUpdated || childrenUpdated || compareProps(this.props, props)
-
-		if (!isUpdated) {
-			return false
-		}
-
+		this.isUpdated = this.isUpdated || childrenUpdated || compareProps(this.props, props)
 		this.props = props
-
-		return true
 	}
 
-	Node.prototype.rerender = function (isUpdated) {
+	Node.prototype.rerender = function () {
 		//console.log('rerender')
 		//console.log(this)
-		if (!isUpdated) {
-			if (this.children) {
-				this.children.forEach(child => {
-					child.recursiveRerender()
-				})
-			}
+		//if (screen.renderMap.has(this)) {
+			//console.log('rerendered more than once')
+			//console.log(this)
+		//} else {
+			//screen.renderMap.set(this, this)
+		//}
+
+		if (!this.isUpdated) {
+			//console.log('xxxxxxx')
+			//console.log(this)
 			if (this.rendered instanceof Node) {
 				this.rendered.setParent(this)
-				this.rendered.recursiveRerender()
+				this.rendered.rerender()
+			}
+			if (this.children) {
+				this.children.forEach(child => {
+					child.rerender()
+				})
 			}
 		} else {
+			//console.log('yyyyyyy')
+			//console.log(this)
 			const rerendered = this.render(this.props)
 
 			if (!(rerendered instanceof Node)) {
@@ -178,7 +184,7 @@ function NodeContext (screen, scheduler, dispatch) {
 					this.children.forEach(child => {
 						child.setParent(this)
 						if (child.rendered) {
-							child.rerender(true)
+							child.rerender()
 						} else {
 							child.recursiveRender()
 						}
@@ -186,8 +192,8 @@ function NodeContext (screen, scheduler, dispatch) {
 				}
 			} else if (this.rendered.type === rerendered.type) {
 				this.rendered.setParent(this)
-				const isUpdated = this.rendered.receiveProps(rerendered.props)
-				this.rendered.rerender(isUpdated)
+				this.rendered.receiveProps(rerendered.props)
+				this.rendered.rerender()
 			} else {
 				this.rendered = rerendered
 				this.rendered.setParent(this)
@@ -195,26 +201,11 @@ function NodeContext (screen, scheduler, dispatch) {
 			}
 		}
 
+		// reset flags
 		this.isUpdated = false
+		this.isMoved = false
 		if (this.component) {
 			this.component.state.isUpdated = false
-		}
-	}
-
-	Node.prototype.recursiveRerender = function () {
-		//console.log('recursive rerender')
-		//console.log(this)
-		if (this.isUpdated) {
-			this.rerender(true)
-			return
-		}
-		if (this.rendered instanceof Node) {
-			this.rendered.recursiveRerender()
-		}
-		if (this.children) {
-			this.children.forEach(child => {
-				child.recursiveRerender()
-			})
 		}
 	}
 

@@ -25,11 +25,11 @@ const Square = Cute({
 			})
 		},
 		CreateSquares () {
-			// nothing to do
+			this.on('click', () => {
+				console.log('stuck in create squares mode')
+			})
 		},
 		DestroySquares () {
-			console.log('destroy squares')
-			console.log(this)
 			this.on('click', this.props.handleDestroy)
 		},
 	},

@@ -1,5 +1,6 @@
 function Scheduler (screen) {
 	let tickPending = false
+	let nextTick = null
 
 	let shouldRerender = false
 	let shouldMove = false
@@ -7,7 +8,7 @@ function Scheduler (screen) {
 	let lastTime = null
 
 	function tick (time) {
-		const elapsed = lastTime === null ? time : time - lastTime
+		const elapsed = lastTime === null ? 0 : time - lastTime
 		if (elapsed > 17) {
 			//console.log('Slowed down!')
 			//console.log(elapsed)
@@ -17,26 +18,38 @@ function Scheduler (screen) {
 
 		console.time('tick')
 
-		// move components
-		if (shouldMove) {
-			//console.log('gogo move')
-			screen.root.recursiveMove()
-		}
+
+		screen.renderMap = new Map()
 
 		// rerender components
 		if (shouldRerender) {
 			//console.log('gogo rerender')
-			screen.root.recursiveRerender()
+			console.time('rerender')
+			screen.root.rerender()
+			console.timeEnd('rerender')
+		} else if (shouldMove) {
+			// move components
+			screen.root.recursiveMove()
 		}
 		
 		// draw
+		console.time('draw')
 		screen.draw()
+		console.timeEnd('draw')
 
 		console.timeEnd('tick')
 
 		shouldMove = false
 		shouldRerender = false
 		tickPending = false
+
+		if (nextTick !== null) {
+			shouldMove = !!nextTick.move
+			shouldRerender = !!nextTick.rerender
+			window.requestAnimationFrame(tick)
+			tickPending = true
+			nextTick = null
+		}
 	}
 
 	this.scheduleMove = function (node) {
@@ -50,13 +63,18 @@ function Scheduler (screen) {
 	this.scheduleRender = function (node) {
 		//console.log(node)
 		if (!tickPending) {
-			console.log('GO rerender')
-			console.log(node)
 			shouldRerender = true
 			window.requestAnimationFrame(tick)
 			tickPending = true
-		} else {
-			console.log('already rendering')
+		} else if (!shouldRerender) {
+			// we are in a nonrendering tick, schedule another tick to rerender
+			if (nextTick !== null) {
+				nextTick.rerender = true
+			} else {
+				nextTick = {
+					rerender: true,
+				}
+			}
 		}
 	}
 

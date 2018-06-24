@@ -99,12 +99,15 @@ Screen.prototype.queryPoint = function (x, y) {
 	return top.component
 }
 
+// returns all elements at a given query point in descending Z order
 Screen.prototype.queryPointAll = function (x, y) {
 	return this.tree.search({
 		minX: x,
 		maxX: x,
 		minY: y,
 		maxY: y,
+	}).sort((a, b) => {
+		return b.z - a.z
 	}).map(screenObj => screenObj.component)
 }
 

@@ -25,7 +25,7 @@ const primitives = {
 		return ctx => {
 			ctx.save()
 			ctx.beginPath()
-			ctx.rect(props.x, props.y, props.w, props.h)
+			ctx.rect(0, 0, props.w, props.h)
 			drawChildren(props, ctx)
 			ctx.restore()
 		}
@@ -52,7 +52,7 @@ const primitives = {
 			if (props.color) {
 				ctx.fillStyle = props.color
 			}
-			ctx.fillRect(props.x, props.y, props.w, props.h)
+			ctx.fillRect(0, 0, props.w, props.h)
 			drawChildren(props, ctx)
 			ctx.restore()
 		}

@@ -6,8 +6,6 @@ export const ComponentMap = Cute({
 	// returns an array of Nodes stored in the map
 	render () {
 		this._copyProps()
-		console.log('aaaaaaaaaaa')
-		console.log([...this.data.map.values()])
 		return <layer>{[...this.data.map.values()]}</layer>
 	},
 	data () {
@@ -31,15 +29,9 @@ export const ComponentMap = Cute({
 		create (props) {
 			const prototype = this._getPrototypeNode()
 			const combinedProps = {...prototype.props, ...props, key: uniqid()}
-			console.log('bbbbbbbbb')
-			console.log(combinedProps)
 			const newNode = <prototype.type {...combinedProps} />
 			newNode.render(newNode.props)
-			console.log('zzzzzzzzzz')
-			console.log(newNode)
 			const newComponent = newNode.component
-			console.log('cccccccccccc')
-			console.log(newComponent)
 			this.data.map.set(newComponent, newNode)
 			this.node.scheduleRender()
 		},
