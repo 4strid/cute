@@ -1,5 +1,10 @@
 import rbush from 'rbush'
 
+// Holds the tree that contains all components
+//
+// used for drawing and collision detection
+//
+// screen.root is the root element of the application
 function Screen (ctx) {
 	// the drawing context of the canvas
 	this.ctx = ctx
@@ -19,8 +24,6 @@ Screen.prototype.setRootElement = function (node) {
 	this.root.recursiveRender()
 	this.draw()
 }
-
-	// sets own props to new props. returns whether or not an update was performed
 
 Screen.prototype.rebuildRTree = function () {
 	// begin construction of a new component -> screen object map
@@ -53,6 +56,8 @@ Screen.prototype.addToRTree = function (node) {
 	// recursively add all descendents of the node
 	// a node's rendered result is either a Node or a Function. If it's not a function,
 	// it's a Node
+	//
+	// ... kind of hacky, but it lets us avoid the circular import of Node -> Screen -> Node
 	if (!(node.rendered instanceof Function)) {
 		this.addToRTree(node.rendered)
 	}

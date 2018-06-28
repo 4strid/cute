@@ -2,8 +2,17 @@ import Cute from './cute'
 
 import uniqid from 'uniqid'
 
+// a ComponentMap is a convenient way to create / destroy components on the fly, as well
+// as setting the props of all the components contained in the map at once.
+//
+// pass a prototype component in as the single child of a ComponentMap, and pass to that 
+// prototype any props that should be shared by all components in the map
+//
+// call map.create(...) with any remaining props that the component needs
+//
+// call map.destroy(component) to remove a component from the map
 export const ComponentMap = Cute({
-	// returns an array of Nodes stored in the map
+	// renders all the nodes contained in the ComponentMap
 	render () {
 		this._copyProps()
 		return <layer>{[...this.data.map.values()]}</layer>

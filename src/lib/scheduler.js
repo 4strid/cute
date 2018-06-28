@@ -1,3 +1,7 @@
+// schedules renders, moves, and draws
+//
+// will also power the system clock that makes things move around (it's what I'm working
+// on right now)
 function Scheduler (screen) {
 	let tickPending = false
 	let nextTick = null
@@ -16,28 +20,27 @@ function Scheduler (screen) {
 		lastTime = time
 		// call update functions
 
-		console.time('tick')
+		//console.time('tick')
 
-
-		screen.renderMap = new Map()
+		//screen.renderMap = new Map()
 
 		// rerender components
 		if (shouldRerender) {
 			//console.log('gogo rerender')
-			console.time('rerender')
+			//console.time('rerender')
 			screen.root.rerender()
-			console.timeEnd('rerender')
+			//console.timeEnd('rerender')
 		} else if (shouldMove) {
 			// move components
 			screen.root.recursiveMove()
 		}
 		
 		// draw
-		console.time('draw')
+		//console.time('draw')
 		screen.draw()
-		console.timeEnd('draw')
+		//console.timeEnd('draw')
 
-		console.timeEnd('tick')
+		//console.timeEnd('tick')
 
 		shouldMove = false
 		shouldRerender = false

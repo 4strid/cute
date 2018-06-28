@@ -25,11 +25,10 @@ const Square = Cute({
 			})
 		},
 		CreateSquares () {
-			this.on('click', () => {
-				console.log('stuck in create squares mode')
-			})
+			// nothing to do
 		},
 		DestroySquares () {
+			// this is the same pattern as in React: pass a handler down as a prop
 			this.on('click', this.props.handleDestroy)
 		},
 	},
