@@ -25,6 +25,11 @@ Screen.prototype.setRootElement = function (node) {
 	this.draw()
 }
 
+Screen.prototype.setDimensions = function (width, height) {
+	this.w = width
+	this.h = height
+}
+
 Screen.prototype.rebuildRTree = function () {
 	// begin construction of a new component -> screen object map
 	this.newMap = new Map()
@@ -62,7 +67,10 @@ Screen.prototype.addToRTree = function (node) {
 		this.addToRTree(node.rendered)
 	}
 	if (node.children) {
-		node.children.forEach(this.addToRTree, this)
+		//node.children.forEach(this.addToRTree, this)
+		node.children.forEach(child => {
+			this.addToRTree(child)
+		})
 	}
 }
 
@@ -78,7 +86,19 @@ Screen.prototype.draw = function () {
 // this may be part of scheduler updates
 Screen.prototype.getIntersections = function (el) {
 	const screenObj = this.map.get(el)
-	return this.tree.search(screenObj)
+	return this.tree.search(screenObj).map(screenObj => ({
+		x: screenObj.minX,
+		y: screenObj.minY,
+		w: screenObj.maxX - screenObj.minX,
+		h: screenObj.maxY - screenObj.minY,
+		top: screenObj.minY,
+		right: screenObj.maxX,
+		bottom: screenObj.maxY,
+		left: screenObj.minX,
+		dx: screenObj.dx,
+		dy: screenObj.dy,
+		component: screenObj.component,
+	}))
 }
 
 // returns only the top most intersecting component
@@ -134,6 +154,8 @@ function ScreenObject (component, x, y, z) {
 }
 
 ScreenObject.prototype.update = function (x, y, z) {
+	this.dx = x - this.minX
+	this.dy = y - this.minY
 	this.minX = x
 	this.maxX = x + this.component.w
 	this.minY = y

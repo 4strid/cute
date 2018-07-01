@@ -12,13 +12,25 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.props = props || {}
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
+		this.w = this.props.w
+		this.h = this.props.h
+		if (type.displayName) {
+			this.displayName = type.displayName
+		}
 		if (children.length) {
-			this.props.children = flatten(children)
+			children = flatten(children)
+			children = children.filter(child => {
+				return child instanceof Node
+			})
+			if (children.length) {
+				this.props.children = children
+			}
 			//console.log('000000000')
 			//console.log(this.props.children)
 		}
 		if (this.props.ref) {
 			this.ref = this.props.ref
+			delete this.props.ref
 			// TODO refactor out deletes if it turns out to be a performance concern
 		}
 		if (this.props.key) {
@@ -34,9 +46,14 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	// returns a rendered Node (or function if this node is a primitive)
 	Node.prototype.render = function (props) {
+		if (!('w' in props)) {
+			props.w = this.w
+		}
+		if (!('h' in props)) {
+			props.h = this.h
+		}
 		// this is a node that is an interactive Component that is being rerendered
 		if (this.component) {
-			this.component._receiveProps(props)
 			return this.component.render()
 		}
 		// if this is an interactive Component
@@ -48,18 +65,6 @@ function NodeContext (screen, scheduler, dispatch) {
 			return this.component.render()
 		}
 		return this.type(props)
-	}
-
-	Node.prototype.setParent = function (parent) {
-		this.parent = parent
-
-		if (isInteractiveComponent(this) && this.component) {
-			this.x = this.component.x
-			this.y = this.component.y
-		}
-
-		this.screenX = this.x + this.parent.screenX
-		this.screenY = this.y + this.parent.screenY
 	}
 
 	Node.prototype.recursiveRender = function () {
@@ -81,9 +86,28 @@ function NodeContext (screen, scheduler, dispatch) {
 		}
 	}
 
+	Node.prototype.setParent = function (parent) {
+		this.parent = parent
+
+		if (isInteractiveComponent(this) && this.component) {
+			this.x = this.component.x
+			this.y = this.component.y
+		}
+
+		if (this.w === undefined) {
+			this.w = this.parent.w
+		}
+		if (this.h === undefined) {
+			this.h = this.parent.h
+		}
+
+		this.screenX = this.x + this.parent.screenX
+		this.screenY = this.y + this.parent.screenY
+	}
+
 	function compareProps (a, b) {
 		for (const k in a) {
-			// children are reconciled, if they are simple-equivalent they're the same
+			// children have been reconciled, if they are simple-equivalent they're the same
 			// children's props were compared at a previous step
 			if (k === 'children') {
 				if (!('children' in b)) {
@@ -124,8 +148,8 @@ function NodeContext (screen, scheduler, dispatch) {
 		//console.log('receive props')
 		//console.log(this)
 		//console.log(props)
-		this.x = props.x || this.x
-		this.y = props.y || this.y
+		//this.x = props.x || this.x
+		//this.y = props.y || this.y
 		const childMap = new MultiMap(this.props.children)
 		
 		let childrenUpdated = false
@@ -146,8 +170,11 @@ function NodeContext (screen, scheduler, dispatch) {
 			})
 		}
 
-		this.isUpdated = this.isUpdated || childrenUpdated || compareProps(this.props, props)
+		this.propsUpdated = childrenUpdated || compareProps(this.props, props)
 		this.props = props
+		if (this.propsUpdated && this.component) {
+			this.component._receiveProps(this.props)
+		}
 	}
 
 	Node.prototype.rerender = function () {
@@ -160,7 +187,7 @@ function NodeContext (screen, scheduler, dispatch) {
 			//screen.renderMap.set(this, this)
 		//}
 
-		if (!this.isUpdated) {
+		if (!this.isUpdated && !this.propsUpdated) {
 			//console.log('xxxxxxx')
 			//console.log(this)
 			if (this.rendered instanceof Node) {
@@ -169,6 +196,7 @@ function NodeContext (screen, scheduler, dispatch) {
 			}
 			if (this.children) {
 				this.children.forEach(child => {
+					child.setParent(this)
 					child.rerender()
 				})
 			}
@@ -203,11 +231,28 @@ function NodeContext (screen, scheduler, dispatch) {
 
 		// reset flags
 		this.isUpdated = false
-		this.isMoved = false
 		if (this.component) {
 			this.component.state.isUpdated = false
 		}
 	}
+
+	Node.prototype.recursiveUpdate = function (time) {
+		if (this.rendered instanceof Node) {
+			//console.log('updatinggggg')
+			//console.log(this.component)
+			//console.log(this.component.update)
+			if (this.component && this.component.update) {
+				this.component.update(time)
+			}
+			this.rendered.recursiveUpdate(time)
+		}
+		if (this.children) {
+			this.children.forEach(child => {
+				child.recursiveUpdate(time)
+			})
+		}
+	}
+
 
 	Node.prototype.recursiveMove = function () {
 		if (this.isMoved) {
@@ -215,16 +260,12 @@ function NodeContext (screen, scheduler, dispatch) {
 			this.y = this.component.y
 		}
 		if (this.rendered instanceof Node) {
-			if (this.isMoved) {
-				this.rendered.setParent(this)
-			}
+			this.rendered.setParent(this)
 			this.rendered.recursiveMove()
 		}
 		if (this.children) {
 			this.children.forEach(child => {
-				if (this.isMoved) {
-					child.setParent(this)
-				}
+				child.setParent(this)
 				child.recursiveMove()
 			})
 		}
@@ -243,6 +284,10 @@ function NodeContext (screen, scheduler, dispatch) {
 			this.rendered(ctx)
 		}
 		ctx.restore()
+	}
+
+	Node.prototype.scheduleUpdate = function () {
+		scheduler.scheduleUpdate(this)
 	}
 
 	// this can only ever be called from interactive component nodes
@@ -272,6 +317,10 @@ function NodeContext (screen, scheduler, dispatch) {
 	Node.prototype.removePersistentListener = function (component, evtype) {
 		dispatch.removePersistentListener(component, evtype)
 	}
+
+	Node.prototype.getCollisions = function (component) {
+		return screen.getIntersections(component).filter(c => c.component !== component)
+	},
 
 	Node.prototype.destroy = function () {
 		if (this.component) {

@@ -13,8 +13,11 @@ const Square = Cute({
 	},
 	data () {
 		// we want it to move in a straight diagonal so |vx| must equal |vy|
+		const velocity = randomVelocity()
 		return {
 			color: randomColor(),
+			vx: velocity * randomDirection(),
+			vy: velocity * randomDirection(),
 		}
 	},
 	methods: {
@@ -23,20 +26,21 @@ const Square = Cute({
 		},
 		bounce (axis) {
 			if (axis === 'x') {
-				this.vx = this.vx * -1
+				this.data.vx = this.data.vx * -1
+				// nudge it a bit to make sure it's not still touching it next frame
+				this.x += this.data.vx / 10
 			}
 			if (axis === 'y') {
-				this.vy = this.vy * -1
+				this.data.vy = this.data.vy * -1
+				this.y += this.data.vy / 10
 			}
 			this.switchColors()
 		},
 	},
 	states: {
 		Ready () {
-			const velocity = randomVelocity()
-			this.vx = velocity * randomDirection()
-			this.vy = velocity * randomDirection()
 			this.on('click', evt => {
+				console.log('sup son')
 				this.props.handleDestroy(evt)
 			})
 		},
@@ -44,58 +48,41 @@ const Square = Cute({
 	update (time) {
 		const collisions = this.getCollisions()
 		for (const collidee of collisions) {
-			if (collidee.component.constructor === Square) {
-				if (right(this) >= left(collidee) && right(this) - this.dx < left(collidee) - collidee.dx) {
-					// collidee was to the right this frame but not last frame
-					// prevent self from actually moving into the space occupied by the square
-					this.x = left(collidee) - this.w
-					// change 
+			if (collidee.constructor === Square) {
+				if (right(this) >= left(collidee)) {
+					// collidee was to the right
 					this.bounce('x')
-				}
-				if (left(this) <= right(collidee) && left(this) - this.dx > right(collidee) - collidee.dx) {
+				} else if (left(this) <= right(collidee)) {
 					// left
-					this.x = right(collidee)
 					this.bounce('x')
-				}
-				if (top(this) <= bottom(collidee) && top(this) - this.dy > bottom(collidee) - collidee.dy) {
+				} else if (top(this) <= bottom(collidee)) {
 					// above
-					this.y = bottom(collidee)
 					this.bounce('y')
-				}
-				if (bottom(this) >= top(collidee) && bottom(this) - this.dy < top(collidee) - collidee.dy) {
+				} else if (bottom(this) >= top(collidee)) {
 					// below
-					this.y = top(collidee) - this.h
 					this.bounce('y')
 				}
 			}
 		}
 		// "collide" with edges of screen
 		if (left(this) <= 0) {
-			this.x = 0
 			this.bounce('x')
 		}
 		if (right(this) >= CANVAS_WIDTH) {
-			this.x = CANVAS_WIDTH - this.w
 			this.bounce('x')
 		}
-		if (top(this) < 0) {
-			this.y = 0
+		if (top(this) <= 0) {
 			this.bounce('y')
 		}
 		if (bottom(this) >= CANVAS_HEIGHT) {
-			this.y = CANVAS_HEIGHT - this.h
 			this.bounce('y')
 		}
 		// the above could have been written more concisely, with a bunch of &&s but I think
 		// this is easier to understand, so that's why it's so verbose
 
 		// time is in ms and velocity is in pixels/s so divide by 1000
-		// need to hold on to this for collision direction
-		this.dx = this.vx * time / 1000
-		this.dy = this.vy * time / 1000
-		// move
-		this.x += this.dx
-		this.y += this.dy
+		this.x += this.data.vx * time / 1000
+		this.y += this.data.vy * time / 1000
 
 		// you may be thinking to yourself, "if we move the first square, isn't the second square
 		// no longer colliding with the first one?" however, the collision tree is not updated

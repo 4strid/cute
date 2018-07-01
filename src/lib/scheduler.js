@@ -1,94 +1,79 @@
-// schedules renders, moves, and draws
-//
-// will also power the system clock that makes things move around (it's what I'm working
-// on right now)
+// schedules updates, moves, renders, and draws
 function Scheduler (screen) {
-	let tickPending = false
-	let nextTick = null
+	const IDLE = 0
+	const UPDATING = 1
+	const MOVING = 2
+	const RERENDERING = 3
+	const DRAWING = 4
 
-	let shouldRerender = false
-	let shouldMove = false
+	let state = IDLE
+	let currentTickShould = []
+	let nextTickShould = []
+
+	const actions = []
+	actions[UPDATING] = time => {
+		screen.root.recursiveUpdate(time)
+	}
+	actions[MOVING] = () => {
+		screen.root.recursiveMove()
+	}
+	actions[RERENDERING] = () => {
+		screen.root.rerender()
+	}
+	actions[DRAWING] = () => {
+		screen.draw()
+	}
 
 	let lastTime = null
 
 	function tick (time) {
 		const elapsed = lastTime === null ? 0 : time - lastTime
 		if (elapsed > 17) {
-			//console.log('Slowed down!')
-			//console.log(elapsed)
+			console.log('Slowed down!')
+			console.log(elapsed)
 		}
 		lastTime = time
-		// call update functions
 
-		//console.time('tick')
-
-		//screen.renderMap = new Map()
-
-		// rerender components
-		if (shouldRerender) {
-			//console.log('gogo rerender')
-			//console.time('rerender')
-			screen.root.rerender()
-			//console.timeEnd('rerender')
-		} else if (shouldMove) {
-			// move components
-			screen.root.recursiveMove()
+		for (state = UPDATING; state < DRAWING; state++) {
+			if (currentTickShould[state]) {
+				actions[state](elapsed)
+			}
 		}
-		
-		// draw
-		//console.time('draw')
+
+		// always draw
+		state = DRAWING
 		screen.draw()
-		//console.timeEnd('draw')
 
-		//console.timeEnd('tick')
-
-		shouldMove = false
-		shouldRerender = false
-		tickPending = false
-
-		if (nextTick !== null) {
-			shouldMove = !!nextTick.move
-			shouldRerender = !!nextTick.rerender
+		if (nextTickShould.length > 0) {
+			currentTickShould = nextTickShould
+			nextTickShould = []
 			window.requestAnimationFrame(tick)
-			tickPending = true
-			nextTick = null
+		} else {
+			currentTickShould = []
+			state = IDLE
 		}
 	}
 
-	this.scheduleMove = function (node) {
-		if (!tickPending) {
-			shouldMove = true
-			window.requestAnimationFrame(tick)
-			tickPending = true
-		}
-	}
-
-	this.scheduleRender = function (node) {
-		//console.log(node)
-		if (!tickPending) {
-			shouldRerender = true
-			window.requestAnimationFrame(tick)
-			tickPending = true
-		} else if (!shouldRerender) {
-			// we are in a nonrendering tick, schedule another tick to rerender
-			if (nextTick !== null) {
-				nextTick.rerender = true
+	function ScheduleAction (STATE) {
+		return node => {
+			if (state === IDLE) {
+				currentTickShould[STATE] = true
+				window.requestAnimationFrame(tick)
+			} else if (state < STATE) {
+				currentTickShould[STATE] = true
 			} else {
-				nextTick = {
-					rerender: true,
-				}
+				nextTickShould[STATE] = true
 			}
 		}
 	}
 
-	this.scheduleDraw = function (node) {
-		if (!tickPending) {
-			console.log('GO redraw')
-			console.log(node)
-			window.requestAnimationFrame(tick)
-			tickPending = true
-		}
-	}
+	this.scheduleUpdate = ScheduleAction(UPDATING)
+
+	this.scheduleMove = ScheduleAction(MOVING)
+
+	this.scheduleRender = ScheduleAction(RERENDERING)
+
+	this.scheduleDraw = ScheduleAction(DRAWING)
 }
 
 export default Scheduler

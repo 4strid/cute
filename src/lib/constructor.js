@@ -10,13 +10,26 @@ function Constructor (plan) {
 	// attach State transitions from plan
 	for (const state in plan.states) {
 		prototype[state] = function () {
-			//console.log('prototype state ' + state)
 			this.node.removeEventListeners(this)
 			this.state.set(state)
 			plan.states[state].call(this)
 			this.node.scheduleRender()
 		}
 	}
+	if (plan.update) {
+		//console.log('assigned update')
+		prototype.update = plan.update
+	}
+
+	// even this doesn't appear to work in Chrome, the functions are still called ''
+	//function nameFunction (name) {
+	//	return {[name]: function (props, node) {return construct.call(this, props, node)}}[name]
+	//}
+
+	//const Component = nameFunction(plan.displayName || 'Component')
+
+	//console.log(Component.name)
+	//console.log(Component)
 
 	function Component (props, node) {
 		//console.log('initializing component')
@@ -42,6 +55,13 @@ function Constructor (plan) {
 				},
 				set (val) {
 					if (val !== data[k]) {
+						data[k] = val
+						node.scheduleRender()
+					} else {
+						//console.log('blehhhh')
+						//console.log(k)
+						//console.log(data[k])
+						//console.log(val)
 						data[k] = val
 						node.scheduleRender()
 					}
@@ -91,9 +111,14 @@ function Constructor (plan) {
 		} else if (this.Ready) {
 			this.Ready()
 		}
-
 	}
+
 	Component.prototype = prototype
+	Component.prototype.constructor = Component
+
+	if (plan.displayName) {
+		Component.displayName = plan.displayName
+	}
 
 	return Component
 }
@@ -111,6 +136,9 @@ Constructor.prototype = {
 	unlisten (evtype) {
 		this.node.removePersistentListener(this, evtype)
 	},
+	getCollisions () {
+		return this.node.getCollisions(this)
+	},
 	// sets own state to the given name and attempts to call that state function
 	setState (name) {
 		this.state.set(name)
@@ -119,21 +147,24 @@ Constructor.prototype = {
 		}
 	},
 	_receiveProps (props) {
-		this.props = props
 
 		for (const k of ['x', 'y', 'w', 'h']) {
-			if (props[k] !== undefined && props[k] !== this[k]) {
+			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
-				// this schedules a rerender, which is ignored because we are already in a rerender
 				this[k] = props[k]
 			}
 		}
+
+		for (const p in props) {
+			this.props[p] = props[p]
+		}
+		//this.props = props
+
 		// if state has changed, call the state transition function
 		if (props.state && props.state.isUpdated) {
-			//console.log('props state')
-			//console.log(props.state)
 			this.setState(props.state.name)
 		}
+
 	},
 }
 

@@ -45,6 +45,18 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
+	stroke (props) {
+		return ctx => {
+			ctx.save()
+			if (props.color) {
+				ctx.strokeStyle = props.color
+			}
+			ctx.stroke()
+			drawChildren(props, ctx)
+			ctx.restore()
+		}
+	},
 	
 	'fill-rect' (props) {
 		return ctx => {
@@ -56,6 +68,10 @@ const primitives = {
 			drawChildren(props, ctx)
 			ctx.restore()
 		}
+	},
+
+	nothing () {
+		return () => {}
 	},
 
 	/*
