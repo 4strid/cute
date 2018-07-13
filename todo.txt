@@ -1,7 +1,10 @@
-- Allow for keys (also distinct from props)
-- ComponentMap and ComponentList (requires refs and keys)
+- MultiMap will be a Map of Maps for O(1) deletes
+- Constructor.prototype.proxy
+- Context: Provider / Consumer
+- write "most basic possible physics engine"
 
 ...
-
-string values for x, y, w, h
-- 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'
+- determine cause of memory leak(s)
+- consider using constructor from plan as actual constructor (finally resolves the naming problem)(but is kind of janky in its own ways)
+- string values for x, y, w, h
+ > 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'

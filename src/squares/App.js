@@ -1,5 +1,5 @@
-import Cute from './lib/cute'
-import { ComponentMap } from './lib/components'
+import Cute from '../lib/cute'
+import { ComponentMap } from '../lib/components'
 import Square from './Square'
 import Cursor from './Cursor'
 

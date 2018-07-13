@@ -2,6 +2,27 @@ import Cute from './cute'
 
 import uniqid from 'uniqid'
 
+export const Clock = Cute({
+	render () {
+		if (!this.props.paused) {
+			this.node.scheduleUpdate()
+		}
+		return <nothing/>
+	},
+	data () {
+		return {
+			time: null,
+		}
+	},
+	update (time) {
+		if (!this.props.paused) {
+			this.node.scheduleUpdate()
+		}
+		// ensures the clock is rendered every frame
+		// this.data.time = time
+	},
+})
+
 // a ComponentMap is a convenient way to create / destroy components on the fly, as well
 // as setting the props of all the components contained in the map at once.
 //

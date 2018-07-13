@@ -1,9 +1,9 @@
 import Cute from '../lib/cute'
 import { ComponentMap, Clock } from '../lib/components'
-import Square from './Square'
-import PauseIcon from './PauseIcon'
-import Cursor from './Cursor'
-
+import Square from './components/Square'
+import PauseIcon from './components/PauseIcon'
+import Cursor from './components/Cursor'
+import Physics, { Collider } from './lib/physics'
 
 
 // TODO make components 100% of the width of their container by default. A node finds out who its parent is
@@ -14,9 +14,12 @@ const App = Cute({
 	render () {
 		return (
 			<layer>
-				<ComponentMap ref={this.data.squares}>
-					<Square handleDestroy={this.handleDestroy.bind(this)}/>
-				</ComponentMap>
+				<Physics>
+					<Collider collider={Square} collidee={Square} bounce={1} reaction={this.squareXsquareCollision}/>
+					<ComponentMap ref={squares => this.squares = squares}>
+						<Square handleDestroy={this.handleDestroy.bind(this)}/>
+					</ComponentMap>
+				</Physics>
 				{this.data.paused && <PauseIcon/>}
 				<Cursor w={8} h={8}/>
 				<Clock paused={this.data.paused}/>
@@ -25,7 +28,6 @@ const App = Cute({
 	},
 	data () {
 		return {
-			squares: Cute.createRef(),
 			paused: false,
 		}
 	},
@@ -37,6 +39,12 @@ const App = Cute({
 		},
 		handleDestroy (evt) {
 			this.data.squares.destroy(evt.component)
+		},
+		squareXsquareCollision (collider, collidee, collision) {
+			// we actually only need collider, but I figured I'd show you what the rest of the arguments are
+			collider.switchColors()
+			collidee
+			collision
 		},
 	},
 	states: {

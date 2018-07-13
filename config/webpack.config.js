@@ -15,7 +15,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['babel-preset-env'],
+            //presets: ['babel-preset-env'],
 			plugins: [[
 			  'transform-react-jsx', {
 				'pragma': 'Cute.createElement'
@@ -27,5 +27,6 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  devtool: 'cheap-module-eval-source-map',
 };

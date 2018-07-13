@@ -24,11 +24,12 @@ Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight)
 	parentElement.appendChild(this.canvas)
 	this.canvas.setAttribute('tabindex', '0')
 	this.canvas.focus()
+	this.screen.setDimensions(canvasWidth, canvasHeight)
 	this.screen.setRootElement(RootComponent)
 }
 
 Cute.createElement = function (type, props, ...children) {
-	//console.log(Type)
+	//console.log(type)
 	//console.log(props)
 	//console.log(children)
 	if (typeof type === 'string') {
