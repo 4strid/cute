@@ -48,23 +48,23 @@ const Square = Cute({
 				if (right(this) >= left(collidee) && right(this) - this.dx < left(collidee) - collidee.dx) {
 					// collidee was to the right this frame but not last frame
 					// prevent self from actually moving into the space occupied by the square
-					this.x = left(collidee) - this.w
+					//this.x = left(collidee) - this.w
 					// change 
 					this.bounce('x')
 				}
 				if (left(this) <= right(collidee) && left(this) - this.dx > right(collidee) - collidee.dx) {
 					// left
-					this.x = right(collidee)
+					//this.x = right(collidee)
 					this.bounce('x')
 				}
 				if (top(this) <= bottom(collidee) && top(this) - this.dy > bottom(collidee) - collidee.dy) {
 					// above
-					this.y = bottom(collidee)
+					//this.y = bottom(collidee)
 					this.bounce('y')
 				}
 				if (bottom(this) >= top(collidee) && bottom(this) - this.dy < top(collidee) - collidee.dy) {
 					// below
-					this.y = top(collidee) - this.h
+					//this.y = top(collidee) - this.h
 					this.bounce('y')
 				}
 			}
@@ -107,13 +107,18 @@ const Square = Cute({
 
 // returns a random color
 function randomColor () {
-	return '#' + Math.floor(Math.random() * 16777215).toString(16)
+	const hex = Math.floor(Math.random() * 16777215).toString(16)
+	let color = hex
+	while (color.length < 6) {
+		color = '0' + color
+	}
+	return '#' + color
 }
 
 // returns a random speed in pixels per second
 function randomVelocity () {
-	const MIN_V = 20
-	const MAX_V = 40
+	const MIN_V = 25
+	const MAX_V = 45
 	return Math.random() * (MAX_V - MIN_V) + MIN_V
 }
 
