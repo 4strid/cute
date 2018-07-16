@@ -8,7 +8,9 @@ import Collider from './Collider'
 
 const PhysicsContext = Cute.createContext()
 
-PhysicsContext.addProvider(Physics, instance => ({ physics: instance }))
+PhysicsContext.addProvider(Physics, physics => ({ physics }))
 PhysicsContext.addConsumer(Body)
 PhysicsContext.addConsumer(Static)
 PhysicsContext.addConsumer(Collider)
+
+export Physics, Body, Static, WorldBounds, Collider
