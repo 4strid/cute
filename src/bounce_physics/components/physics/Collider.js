@@ -33,34 +33,33 @@ const Collider = Cute({
 	},
 	update () {
 		const bodies = this.props.physics.getBodies()
-		const colliderConstructor = this.props.collider.constructor
-		const collideeConstructor = this.props.collidee.constructor 
-		const colliders = bodies.getAll(colliderConstructor)
-		colliders.forEach((_, collider) => {
-			const colliderComponent = collider.proxyOf
+		const colliders = bodies.getAll(this.props.collider)
+		colliders.forEach((colliderBody, colliderComponent) => {
 			const collisions = colliderComponent.getCollisions()
 			for (const collision of collisions) {
-				if (collision.component.constructor === collideeConstructor) {
+				if (collision.component.constructor === this.props.collidee) {
 					const collideeComponent = collision.component
-					const collidee = bodies.get(colliderComponent)
-					const collision = this.collide(collider, collidee)
+					const collideeBody = bodies.get(collideeComponent)
+					const collision = this.collide(colliderBody, collideeBody)
 					if (this.action) {
 						this.action(colliderComponent, collideeComponent, collision)
 					} else {
-						collider.x += collision.penx
-						collider.y += collision.peny
+						colliderBody.x += collision.penx
+						colliderBody.y += collision.peny
 
 						// this is a little silly, could have been vx = reflectx ? vx * -1 : vx but I wanted to do all the math without any conditionals
-						collider.vx -= 2 * collider.vx * collision.reflectx
-						collider.vx *= this.bounce
-						collider.vy -= 2 * collider.vy * collision.reflecty
-						collider.vy *= this.bounce
+						colliderBody.vx -= 2 * colliderBody.vx * collision.reflectx
+						colliderBody.vx *= this.bounce
+						colliderBody.vy -= 2 * colliderBody.vy * collision.reflecty
+						colliderBody.vy *= this.bounce
 					}
-					if (collider.reaction) {
-						collider.reaction(colliderComponent, collideeComponent, collision)
+					if (this.reaction) {
+						this.reaction(colliderComponent, collideeComponent, collision)
 					}
 				}
 			}
 		})
 	},
 })
+
+export default Collider

@@ -14,8 +14,8 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.y = this.props.y || 0
 		this.w = this.props.w
 		this.h = this.props.h
-		if (type.displayName) {
-			this.displayName = type.displayName
+		if (type.name) {
+			this.displayName = type.name
 		}
 		if (children.length) {
 			children = flatten(children)
@@ -59,6 +59,8 @@ function NodeContext (screen, scheduler, dispatch) {
 		// if this is an interactive Component
 		if (isInteractiveComponent(this)) {
 			this.component = new this.type(props, this)
+			this.component.node = this
+			this.component.setState(this.component.state.name)
 			if (this.ref) {
 				this.ref.reference(this.component)
 			}

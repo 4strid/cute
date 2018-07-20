@@ -3,7 +3,9 @@ import Cute from '../../../lib/cute'
 const Body = Cute({
 	render () {
 		return (
-			<layer>{this.props.children}</layer>
+			<layer>
+				{this.props.children}
+			</layer>
 		)
 	},
 	constructor: function Body (props) {
@@ -12,6 +14,10 @@ const Body = Cute({
 			throw new TypeError('<Body> must proxy another component')
 		}
 		this.props.physics.addBody(this, this.proxyOf)
+		this.vx = this.vx || 0
+		this.vy = this.vy || 0
+		this.dx = this.dx || 0
+		this.dy = this.dy || 0
 	},
 	update (time) {
 		this.dx = this.vx * time / 1000
@@ -20,6 +26,19 @@ const Body = Cute({
 		this.x += this.dx
 		this.y += this.dy
 	},
+	destroy () {
+		this.props.physics.removeBody(this.proxyOf)
+	},
 })
 
+function withBody (render, wrapped) {
+	return (
+		<Body proxy={ proxy => proxy(wrapped, 'x', 'y', 'vx', 'vy', 'dx', 'dy') }>
+			{ render() }
+		</Body>
+	)
+}
+
 export default Body
+
+export { withBody }

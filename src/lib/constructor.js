@@ -1,7 +1,16 @@
-function Constructor (plan) {
+function Constructor (plan, ...wrappers) {
 	const prototype = Object.create(Constructor.prototype)
 
 	// attach render function
+	if (wrappers.length) {
+		prototype.render = function () {
+			let render = this.render.bind(this)
+			for (let i = wrappers.length - 1; i >= 0; i--) {
+				render = () => wrappers[i](render, this, this.props)
+			}
+			return render()
+		}
+	}
 	prototype.render = plan.render
 	// attach methods from plan
 	for (const method in plan.methods) {
@@ -16,26 +25,19 @@ function Constructor (plan) {
 			this.node.scheduleRender()
 		}
 	}
+
 	if (plan.update) {
-		//console.log('assigned update')
 		prototype.update = plan.update
 	}
 
-	// even this doesn't appear to work in Chrome, the functions are still called ''
-	//function nameFunction (name) {
-	//	return {[name]: function (props, node) {return construct.call(this, props, node)}}[name]
-	//}
+	prototype.destroy = function () {
+		if (plan.destroy) {
+			plan.destroy.call(this)
+		}
+	}
 
-	//const Component = nameFunction(plan.displayName || 'Component')
-
-	//console.log(Component.name)
-	//console.log(Component)
-
-	function Component (props, node) {
-		//console.log('initializing component')
+	prototype.construct = function (props) {
 		this.props = props
-		this.node = node
-
 		// set up data handlers
 		const data = plan.data ? plan.data.call(this) : {}
 
@@ -53,17 +55,17 @@ function Constructor (plan) {
 				get () {
 					return data[k]
 				},
-				set (val) {
+				set: (val) => {
 					if (val !== data[k]) {
 						data[k] = val
-						node.scheduleRender()
+						this.node.scheduleRender()
 					} else {
 						//console.log('blehhhh')
 						//console.log(k)
 						//console.log(data[k])
 						//console.log(val)
 						data[k] = val
-						node.scheduleRender()
+						this.node.scheduleRender()
 					}
 				},
 			})
@@ -76,21 +78,15 @@ function Constructor (plan) {
 				get () {
 					return data[k]
 				},
-				set (val) {
+				set: (val) => {
 					if (val !== data[k]) {
 						data[k] = val
-						node.scheduleMove()
+						this.node.scheduleMove()
 					}
 				},
 			})
 		}
 
-
-		// TODO: handle async loading, then call start state when ready
-
-		// this leads to inconsistent state between parent and child if the
-		// parent immediately transitions to a new state. seek a better solution
-		//
 		// oh cool, actually the order of events is:
 		//  - parent component changes state
 		//   > schedules rerender
@@ -104,23 +100,16 @@ function Constructor (plan) {
 		}
 
 		this.state = new State(startState, this)
-
-		// attempt to call the startState function
-		if (this[startState] !== undefined) {
-			this[startState]()
-		} else if (this.Ready) {
-			this.Ready()
-		}
 	}
 
-	Component.prototype = prototype
-	Component.prototype.constructor = Component
-
-	if (plan.displayName) {
-		Component.displayName = plan.displayName
+	const constructor = plan.hasOwnProperty('constructor') ? plan.constructor : function Component (props) {
+		this.construct(props)
 	}
 
-	return Component
+	constructor.prototype = prototype
+	constructor.prototype.constructor = constructor
+
+	return constructor
 }
 
 Constructor.prototype = {

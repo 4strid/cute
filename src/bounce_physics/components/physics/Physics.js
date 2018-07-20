@@ -2,10 +2,21 @@ import Cute from '../../../lib/cute'
 
 const { MultiMap } = Cute.structures
 
+import Body, { withBody } from './Body'
+import Static, { withStatic } from './Static'
+import Collider from './Collider'
+import WorldBounds from './WorldBounds'
+
 const Physics = Cute({
 	render () {
 		return (
-			<layer>{this.props.children}</layer>
+			<PhysicsContext.Provider physics={this}>
+				{this.props.children}
+				<WorldBounds x={-1000} y={0} w={1000} h={this.h}/>
+				<WorldBounds x={0} y={-1000} h={1000} w={this.w}/>
+				<WorldBounds x={this.w} y={0} w={1000} h={this.h}/>
+				<WorldBounds x={0} y={this.h} h={1000} w={this.w}/>
+			</PhysicsContext.Provider>
 		)
 	},
 	constructor: function Physics (props) {
@@ -15,12 +26,21 @@ const Physics = Cute({
 	},
 	methods: {
 		addBody (body, component) {
-			this.bodies.add(component, body)
+			this.bodies.set(component, body)
+		},
+		removeBody (body, component) {
+			this.bodies.delete(component)
 		},
 		getBodies () {
 			return this.bodies
 		},
 	},
+	container: {
+		children: [Body, Static, Collider],
+		provide: physics => ({ physics }),
+	},
 })
 
 export default Physics
+
+export { Body, Static, Collider, WorldBounds, withBody, withStatic }
