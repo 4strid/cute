@@ -1,10 +1,145 @@
-- Change the way the clock works: shouldn't rerender every frame just to make the clock run
-- Write Context / Provider / Consumer
-- Write physics.Body
-- Finish physics.Physics
-- rest of physics components
+- Cute.createStore('storeName', [storeValue]) storeValue is optional, otherwise it just makes it an empty object. But you could use a Map or even a Component, if you like
+- proxy prop
+- transform: false
+//Write Container API - we can just use createStore instead of a container to hold physics globally. Let's just use React's Context/Provider/Consumer API, but only once we decide we really need it.
+- Watch API (for camera)
+
+...
+
+Canvas API
+
+Properties
+
+fillStyle -- color prop for <fill> also color prop for <fill-style>
+font -- prop for <text> also prop for <text-style>
+globalAlpha -- alpha props for <fill> and <stroke> also a prop for <global-alpha>
+globalCompositeOperation -- I can't fully wrap my head around what this does, so do more research into that
+imageSmoothingEnabled -- some wrapper component <pixel-art> or something to that effect
+lineCap -- prop for <stroke> and also for <stroke-style>
+lineDashOffset -- prop for <stroke> and also for <stroke-style>
+lineJoin -- prop for <stroke> and also for <stroke-style>
+lineWidth -- prop for <stroke> and also for <stroke-style>
+miterLimit -- prop for <stroke> and also for <stroke-style>
+shadowBlur -- prop for <shadow>
+shadowColor -- prop for <shadow>
+shadowOffsetX -- prop for <shadow>
+shadowOffsetY -- prop for <shadow>
+strokeStyle -- color prop for <stroke> and also for <stroke-style>
+textAlign -- prop for <text>
+textBaseline -- prop for <text>
+
+Methods
+
+arc() -- <arc>
+arcTo() -- <arc-to>
+beginPath() -- <path>
+bezierCurveTo() -- <bezier-curve>
+clearRect() -- <clear-rect>
+clip() -- <clip>
+closePath() -- <close-path>
+
+createImageData()
+createLinearGradient()
+createPattern()
+createRadialGradient()
+
+These... I'm not 100% sure what to do with. My initial thought is to stick them onto stacks or into maps and accessing them by name in color props
+
+<linear-gradient x0={0} y0={50} x1={200} y1={50} name='linny'>
+  <color-stop offset={0} color='red'/>
+  <color-stop offset={1} color='blue'/>
+</linear-gradient>
+
+<fill-rect w={50} h={50} color='gradients.linny'>
+
+OR
+
+<linear-gradient x0={0} y0={50} x1={200} y1={50}>
+  <color-stop offset={0} color='red'/>
+  <color-stop offset={1} color='blue'/>
+  <fill-rect color='linearGradient'>
+</linear-gradient>
+
+OH DUH
+
+<fill-rect gradient='linny'/>
+OR
+<fill-rect gradient='linear'/>
+
+Either way, some hacking onto the context will be required, which while "evil" should be ok
+
+drawFocusIfNeeded() -- ???
+drawImage() -- <image>
+ellipse() -- should we support this?
+fill() -- <fill>
+fillRect() -- <fill-rect>
+fillText() -- <text>
+getImageData() -- maybe add a method to Cute to do this as it's more of a global thing
+getLineDash() -- probably don't need to support
+isPointInPath() -- uhhh
+isPointInStroke() -- not sure
+lineTo() -- <line>
+measureText() -- will need this for <text> tag
+moveTo() -- <move>
+putImageData() -- <image-data>
+quadraticCurveTo() -- <quad-curve>
+rect() -- <rect> and possibly <rect-path>
+restore() -- handled automatically
+rotate() -- handled as a special prop
+save() -- handled automatically
+scale() -- handled as a special prop
+setLineDash() -- prop for <stroke> and <stroke-style>
+setTransform() -- handled automatically
+stroke() -- <stroke>
+strokeRect() -- <stroke-rect>
+strokeText() -- <stroke-text>
+transform() -- handled automatically. *could* expose this for advanced components to use, but there would be no way to reconcile it with the Screen, so ultimately you couldn't do much with it
+translate() -- handled automatically as {x, y} special props
+
+...
+
+Images and asset loading:
+
+Asset loading will not be provided by the Cute framework. Instead... you guessed it! It will be a component
+
+{
+  this.isLoaded ?
+  <Game/> :
+  <AssetLoader store={Cute.createStore('images')} onLoad={this.assetsLoaded.bind(this)}>
+    <LoadImage src='images/bunny.png' [name='bununu']>
+    <LoadSprite src='images/player.png' [name='player'] ...sprite...stuff...>
+  </AssetLoader>
+}
+
+This way, you can handle asset loading however you want. One big load at the beginning of the game? OK
+A loading screen for every level? Easily done! Dynamically loading them on the fly? Abso-flippin-lutely.
+
+const Bunny = Cute({
+	render () {
+		return <Image src='images/bunny.png'|name='bununu'>
+	}
+})
+
+Image looks something like
+
+const Image = Cute({
+	constructor: function Image (props) {
+		this.construct(props)
+		const name = this.props.name || this.props.src
+		this.image = Cute.store.images[name]
+	},
+	render () {
+		<image image={this.image}>
+	}
+})
+
+...
+
+PROTOTYPE 0.1.0 COMPLETE
 
 ...
 
 string values for x, y, w, h
 - 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'
+
+allow returning fragments from render functions

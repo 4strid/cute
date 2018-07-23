@@ -13,7 +13,7 @@ const Body = Cute({
 		if (typeof this.proxyOf === 'undefined') {
 			throw new TypeError('<Body> must proxy another component')
 		}
-		this.props.physics.addBody(this, this.proxyOf)
+		Cute.store.physics.addBody(this, this.proxyOf)
 		this.vx = this.vx || 0
 		this.vy = this.vy || 0
 		this.dx = this.dx || 0
@@ -27,13 +27,13 @@ const Body = Cute({
 		this.y += this.dy
 	},
 	destroy () {
-		this.props.physics.removeBody(this.proxyOf)
+		Cute.store.physics.removeBody(this.proxyOf)
 	},
 })
 
 function withBody (render, wrapped) {
 	return (
-		<Body proxy={ proxy => proxy(wrapped, 'x', 'y', 'vx', 'vy', 'dx', 'dy') }>
+		<Body proxy={proxy => proxy(wrapped, 'x', 'y', 'vx', 'vy', 'dx', 'dy')}>
 			{ render() }
 		</Body>
 	)

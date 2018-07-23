@@ -32,12 +32,12 @@ const Collider = Cute({
 		},
 	},
 	update () {
-		const bodies = this.props.physics.getBodies()
+		const bodies = Cute.store.physics.getBodies()
 		const colliders = bodies.getAll(this.props.collider)
 		colliders.forEach((colliderBody, colliderComponent) => {
 			const collisions = colliderComponent.getCollisions()
 			for (const collision of collisions) {
-				if (collision.component.constructor === this.props.collidee) {
+				if (collision.component instanceof this.props.collidee) {
 					const collideeComponent = collision.component
 					const collideeBody = bodies.get(collideeComponent)
 					const collision = this.collide(colliderBody, collideeBody)

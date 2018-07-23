@@ -12,7 +12,7 @@ const Square = Cute({
 	},
 	render () {
 		return (
-			<Body proxy={body => {body.proxy(this, 'x', 'y', 'vx', 'vy')}}>
+			<Body proxy={proxy => proxy(this, 'x', 'y', 'vx', 'vy')}>
 				<rect w={this.w} h={this.h} x={0} y={0}>
 					<fill color={this.data.color} />
 				</rect>

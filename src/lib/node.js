@@ -28,7 +28,7 @@ function NodeContext (screen, scheduler, dispatch) {
 			//console.log('000000000')
 			//console.log(this.props.children)
 		}
-		if (this.props.ref) {
+		if (this.props.ref && typeof this.props.ref === 'object') {
 			this.ref = this.props.ref
 			delete this.props.ref
 			// TODO refactor out deletes if it turns out to be a performance concern
@@ -58,7 +58,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		}
 		// if this is an interactive Component
 		if (isInteractiveComponent(this)) {
-			this.component = new this.type(props, this)
+			this.component = new this.type(props)
 			this.component.node = this
 			this.component.setState(this.component.state.name)
 			if (this.ref) {

@@ -11,7 +11,7 @@ const App = Cute({
 			<layer>
 				<Physics>
 					<Collider collider={Square} collidee={Square} bounce={1} reaction={square => square.switchColors()}/>
-					<Collider collider={Square} collidee={Square} bounce={1} reaction={square => square.switchColors()}/>
+					<Collider collider={Square} collidee={WorldBounds} bounce={1} reaction={square => square.switchColors()}/>
 					<ComponentMap ref={squares => this.squares = squares}>
 						<Square handleDestroy={this.handleDestroy.bind(this)}/>
 					</ComponentMap>

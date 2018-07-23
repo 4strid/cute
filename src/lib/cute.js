@@ -47,21 +47,9 @@ Cute.createRef = function () {
 
 function Ref () {}
 
-// this seems like a horrible idea lol
 Ref.prototype.reference = function (component) {
-	for (const k in component) {
-		if (component[k] instanceof Function) {
-			this[k] = (...args) => component[k].call(component, ...args)
-		} else {
-			this[k] = component[k]
-		}
-	}
+	this.component = component
 }
-
-// cleaner, but more typing for the user
-//Ref.prototype.reference = function (component) {
-	//this.component = component
-//}
 
 Cute.Constructor = Constructor
 

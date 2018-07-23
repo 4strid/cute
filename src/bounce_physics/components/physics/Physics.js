@@ -10,19 +10,20 @@ import WorldBounds from './WorldBounds'
 const Physics = Cute({
 	render () {
 		return (
-			<PhysicsContext.Provider physics={this}>
+			<layer>
 				{this.props.children}
 				<WorldBounds x={-1000} y={0} w={1000} h={this.h}/>
 				<WorldBounds x={0} y={-1000} h={1000} w={this.w}/>
 				<WorldBounds x={this.w} y={0} w={1000} h={this.h}/>
 				<WorldBounds x={0} y={this.h} h={1000} w={this.w}/>
-			</PhysicsContext.Provider>
+			</layer>
 		)
 	},
 	constructor: function Physics (props) {
 		this.construct(props)
 		// Constructor => component => body
 		this.bodies = new MultiMap()
+		Cute.createStore('physics', this)
 	},
 	methods: {
 		addBody (body, component) {
@@ -34,10 +35,6 @@ const Physics = Cute({
 		getBodies () {
 			return this.bodies
 		},
-	},
-	container: {
-		children: [Body, Static, Collider],
-		provide: physics => ({ physics }),
 	},
 })
 
