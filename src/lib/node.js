@@ -1,6 +1,5 @@
 import deepEqual from 'deep-equal'
 import flatten from 'array-flatten'
-import uniqid from 'uniqid'
 
 import Constructor from './constructor'
 
@@ -14,6 +13,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.y = this.props.y || 0
 		this.w = this.props.w
 		this.h = this.props.h
+		this.transform = true
 		if (type.name) {
 			this.displayName = type.name
 		}
@@ -28,14 +28,11 @@ function NodeContext (screen, scheduler, dispatch) {
 			//console.log('000000000')
 			//console.log(this.props.children)
 		}
-		if (this.props.ref && typeof this.props.ref === 'object') {
+		if (this.props.ref) {
 			this.ref = this.props.ref
-			delete this.props.ref
-			// TODO refactor out deletes if it turns out to be a performance concern
 		}
 		if (this.props.key) {
 			this.key = this.props.key
-			delete this.props.key
 		}
 		this.type = type
 	}
@@ -46,6 +43,7 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	// returns a rendered Node (or function if this node is a primitive)
 	Node.prototype.render = function (props) {
+		// pass own dimensions as defaults
 		if (!('w' in props)) {
 			props.w = this.w
 		}
@@ -61,8 +59,13 @@ function NodeContext (screen, scheduler, dispatch) {
 			this.component = new this.type(props)
 			this.component.node = this
 			this.component.setState(this.component.state.name)
+			this.transform = props.transform
 			if (this.ref) {
-				this.ref.reference(this.component)
+				if (this.ref instanceof Function) {
+					this.ref(this.component)
+				} else {
+					this.ref.reference(this.component)
+				}
 			}
 			return this.component.render()
 		}
@@ -94,6 +97,11 @@ function NodeContext (screen, scheduler, dispatch) {
 		if (isInteractiveComponent(this) && this.component) {
 			this.x = this.component.x
 			this.y = this.component.y
+		}
+
+		if (this.transform === false) {
+			this.x = 0
+			this.y = 0
 		}
 
 		if (this.w === undefined) {
@@ -275,17 +283,21 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.draw = function (ctx) {
-		ctx.save()
-		// ctx.scale
-		// ctx.rotate
-		ctx.translate(this.x, this.y)
+		if (this.transform) {
+			ctx.save()
+			// ctx.scale
+			// ctx.rotate
+			ctx.translate(this.x, this.y)
+		}
 		if (this.rendered instanceof Node) {
 			this.rendered.draw(ctx)
 		} else {
 			// call primitive draw function
 			this.rendered(ctx)
 		}
-		ctx.restore()
+		if (this.transform) {
+			ctx.restore()
+		}
 	}
 
 	Node.prototype.scheduleUpdate = function () {
@@ -321,7 +333,7 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.getCollisions = function (component) {
-		return screen.getIntersections(component).filter(c => c.component !== component)
+		return screen.getIntersections(component)
 	},
 
 	Node.prototype.destroy = function () {

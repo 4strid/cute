@@ -29,6 +29,7 @@ const Body = Cute({
 	destroy () {
 		Cute.store.physics.removeBody(this.proxyOf)
 	},
+	transform: false,
 })
 
 function withBody (render, wrapped) {

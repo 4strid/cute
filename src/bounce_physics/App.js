@@ -3,7 +3,7 @@ import { ComponentMap, Clock } from '../lib/components'
 import Square from './components/Square'
 import PauseIcon from './components/PauseIcon'
 import Cursor from './components/Cursor'
-import Physics, { Collider, WorldBounds } from './lib/physics'
+import { Physics, Collider, WorldBounds } from './components/physics'
 
 const App = Cute({
 	render () {

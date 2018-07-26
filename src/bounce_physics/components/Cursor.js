@@ -1,4 +1,4 @@
-import Cute from '../lib/cute'
+import Cute from '../../lib/cute'
 
 const Cursor = Cute({
 	displayName: 'Cursor',

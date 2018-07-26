@@ -1,4 +1,5 @@
 import Cute from '../../../lib/cute'
+import Static from './Static'
 
 const WorldBounds = Cute({
 	render () {

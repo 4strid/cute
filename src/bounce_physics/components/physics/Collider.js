@@ -11,14 +11,19 @@ const Collider = Cute({
 			// direction of collision (collidee.center - body.center)
 			const cx =  (collidee.x + collidee.w / 2) - (collider.x + collider.w / 2)
 			const cy =  (collidee.y + collidee.h / 2) - (collider.y + collider.h / 2)
+			console.log('c', cx, cy)
 			// sum of width and height
 			const sw = collider.w + collidee.w
 			const sh = collider.h + collidee.h
+			console.log('sum', sw, sh)
 			// scaled collision direction
 			// ... idk about these deltas but we'll see if it works
-			const scx = cx / sw * (collider.dx - collidee.dx)
-			const scy = cy / sh * (collider.dy - collidee.dy)
+			const scx = cx / sw * collider.dx
+			const scy = cy / sh * collider.dy
+			console.log('d', collider.dx, collider.dy)
+			console.log('dd', collider.dx - collidee.dx, collider.dy - collidee.dy)
 			// should we reflect off this axis? (cast boolean to number)
+			console.log('sc', scx, scy)
 			const reflectx = (scx >= scy) * 1
 			const reflecty = (scy >= scx) * 1
 			// this is which side was hit
@@ -34,27 +39,30 @@ const Collider = Cute({
 	update () {
 		const bodies = Cute.store.physics.getBodies()
 		const colliders = bodies.getAll(this.props.collider)
+		if (!colliders) {
+			return
+		}
 		colliders.forEach((colliderBody, colliderComponent) => {
 			const collisions = colliderComponent.getCollisions()
 			for (const collision of collisions) {
 				if (collision.component instanceof this.props.collidee) {
 					const collideeComponent = collision.component
 					const collideeBody = bodies.get(collideeComponent)
-					const collision = this.collide(colliderBody, collideeBody)
-					if (this.action) {
-						this.action(colliderComponent, collideeComponent, collision)
+					const bodyCollision = this.collide(colliderBody, collideeBody)
+					if (this.props.action) {
+						this.props.action(colliderComponent, collideeComponent, bodyCollision)
 					} else {
-						colliderBody.x += collision.penx
-						colliderBody.y += collision.peny
+						colliderBody.x += bodyCollision.penx
+						colliderBody.y += bodyCollision.peny
 
 						// this is a little silly, could have been vx = reflectx ? vx * -1 : vx but I wanted to do all the math without any conditionals
-						colliderBody.vx -= 2 * colliderBody.vx * collision.reflectx
+						colliderBody.vx -= 2 * colliderBody.vx * bodyCollision.reflectx
 						colliderBody.vx *= this.bounce
-						colliderBody.vy -= 2 * colliderBody.vy * collision.reflecty
+						colliderBody.vy -= 2 * colliderBody.vy * bodyCollision.reflecty
 						colliderBody.vy *= this.bounce
 					}
-					if (this.reaction) {
-						this.reaction(colliderComponent, collideeComponent, collision)
+					if (this.props.reaction) {
+						this.props.reaction(colliderComponent, collideeComponent, collision)
 					}
 				}
 			}

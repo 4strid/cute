@@ -3,6 +3,7 @@
 - transform: false
 //Write Container API - we can just use createStore instead of a container to hold physics globally. Let's just use React's Context/Provider/Consumer API, but only once we decide we really need it.
 - Watch API (for camera)
+- destroy handlers
 
 ...
 
@@ -139,7 +140,15 @@ PROTOTYPE 0.1.0 COMPLETE
 
 ...
 
+allow returning fragments from render functions
+
+refactor to limit number of ctx save / restores (keep a stack of matrix transformations and call ctx.setTransform instead)
+- continue to use ctx save / restore for styling changes made by primitives
+
+refactor scheduler to decouple updates / renders / draws. updates rely pretty heavily on renders, which is not ideal
+since rendering is expensive. can't realistically decouple rendering from setting position (setParent) either. best
+we can do is ditch draws, which right now do not comprise the bulk of a tick's timestep.
+
 string values for x, y, w, h
 - 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'
 
-allow returning fragments from render functions

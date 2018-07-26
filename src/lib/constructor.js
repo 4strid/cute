@@ -37,21 +37,31 @@ function Constructor (plan, ...wrappers) {
 	}
 
 	prototype.construct = function (props) {
-		this.props = props
-		// set up data handlers
+		this.props = {}
+		for (const k in props) {
+			if (k === 'key' || k === 'ref' || k === 'proxy') {
+				continue
+			}
+			this.props[k] = props[k]
+		}
+		// pass the transform value up to the node
+		props.transform = plan.transform !== false
+		// the canonical data object that actually holds the data
 		const data = plan.data ? plan.data.call(this) : {}
 
 		// set initial positional values
 		Object.assign(data, {
 			x: props.x || plan.x || 0,
 			y: props.y || plan.y || 0,
-			w: props.w || plan.w || 0,
-			h: props.h || plan.h || 0,
+			w: props.w || plan.w,
+			h: props.h || plan.h,
 		})
+		// proxy data object whose getters and setters allow for automatic rerendering
 		this.data = {}
 		for (const k in data) {
 			Object.defineProperty(this.data, k, {
 				enumerable: true,
+				configurable: true,
 				get () {
 					return data[k]
 				},
@@ -75,6 +85,7 @@ function Constructor (plan, ...wrappers) {
 		for (const k of ['x', 'y']) {
 			Object.defineProperty(this, k, {
 				enumerable: true,
+				configurable: true,
 				get () {
 					return data[k]
 				},
@@ -84,6 +95,24 @@ function Constructor (plan, ...wrappers) {
 						this.node.scheduleMove()
 					}
 				},
+			})
+		}
+
+		if (props.proxy) {
+			props.proxy((proxied, ...bindings) => {
+				this.proxyOf = proxied
+				for (const binding of bindings) {
+					Object.defineProperty(this, binding, {
+						enumerable: true,
+						configurable: true,
+						get () {
+							return proxied[binding]
+						},
+						set (value) {
+							return proxied[binding] = value
+						},
+					})
+				}
 			})
 		}
 
@@ -164,6 +193,7 @@ Constructor.prototype = {
 for (const k of ['w', 'h']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
+		configurable: true,
 		get () {
 			return this.data[k]
 		},

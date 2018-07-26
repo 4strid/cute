@@ -45,8 +45,8 @@ function randomColor () {
 
 // returns a random speed in pixels per second
 function randomVelocity () {
-	const MIN_V = 20
-	const MAX_V = 40
+	const MIN_V = 25
+	const MAX_V = 45
 	return Math.random() * (MAX_V - MIN_V) + MIN_V
 }
 
