@@ -1,4 +1,4 @@
-function drawChildren (props, ctx) {
+function drawChildren(props, ctx) {
 	if (props.children !== undefined) {
 		for (const childNode of props.children) {
 			childNode.draw(ctx)
@@ -10,7 +10,7 @@ const primitives = {
 	/*
 	 * renders its children and does nothing else
 	 */
-	layer (props) {
+	layer(props) {
 		return ctx => {
 			ctx.save()
 			drawChildren(props, ctx)
@@ -21,7 +21,7 @@ const primitives = {
 	 * creates a rectangular path for stroking/filling
 	 * calls ctx.rect() then renders any children
 	 */
-	rect (props) {
+	rect(props) {
 		return ctx => {
 			ctx.save()
 			ctx.beginPath()
@@ -31,10 +31,23 @@ const primitives = {
 		}
 	},
 	/*
+	 * creates an arc path for stroking/filling
+	 * calls ctx.arc() then renders any children
+	 */
+	arc(props) {
+		return ctx => {
+			ctx.save()
+			ctx.beginPath()
+			ctx.arc(0, 0, props.r, props.sa, props.ea, props.ccw)
+			drawChildren(props, ctx)
+			ctx.restore()
+		}
+	},
+	/*
 	 * fills its enclosing path
 	 * calls ctx.fill()
 	 */
-	fill (props) {
+	fill(props) {
 		return ctx => {
 			ctx.save()
 			if (props.color) {
@@ -46,7 +59,7 @@ const primitives = {
 		}
 	},
 
-	stroke (props) {
+	stroke(props) {
 		return ctx => {
 			ctx.save()
 			if (props.color) {
@@ -57,8 +70,8 @@ const primitives = {
 			ctx.restore()
 		}
 	},
-	
-	'fill-rect' (props) {
+
+	'fill-rect'(props) {
 		return ctx => {
 			ctx.save()
 			if (props.color) {
@@ -70,8 +83,8 @@ const primitives = {
 		}
 	},
 
-	nothing () {
-		return () => {}
+	nothing() {
+		return () => { }
 	},
 
 	/*
@@ -79,7 +92,7 @@ const primitives = {
 	 * this in turn returns a function that takes the canvas context and
 	 * draws the primitive to the screen
 	 */
-	_lookup (name) {
+	_lookup(name) {
 		if (!(name in this)) {
 			throw new TypeError('Unrecognized primitive type: ' + name)
 		}

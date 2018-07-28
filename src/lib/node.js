@@ -47,7 +47,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		this.type = type
 	}
 
-	function isInteractiveComponent (node) {
+	function isInteractiveComponent(node) {
 		return Constructor.prototype.isPrototypeOf(node.type.prototype)
 	}
 
@@ -59,6 +59,19 @@ function NodeContext (screen, dispatch, scheduler) {
 		}
 		if (!('h' in props)) {
 			props.h = this.h
+		}
+		//ML ADDED THIS
+		if (!('r' in props)) {
+			props.r = this.r
+		}
+		if (!('sa' in props)) {
+			props.sa = this.sa
+		}
+		if (!('ea' in props)) {
+			props.ea = this.ea
+		}
+		if (!('ccw' in props)) {
+			props.ccw = this.ccw
 		}
 		// this is a node that is an interactive Component that is being rerendered
 		if (this.component) {
@@ -91,7 +104,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		if (this.rendered instanceof Node) {
 			this.rendered.setParent(this)
 			this.rendered.recursiveRender()
-		// this is a primitive
+			// this is a primitive
 		} else if (this.props.children) {
 			this.children = this.props.children
 			this.children.forEach(child => {
@@ -125,7 +138,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		this.screenY = this.y + this.parent.screenY
 	}
 
-	function compareProps (a, b) {
+	function compareProps(a, b) {
 		for (const k in a) {
 			// children have been reconciled, if they are simple-equivalent they're the same
 			// children's props were compared as part of reconciliation
@@ -177,7 +190,6 @@ function NodeContext (screen, dispatch, scheduler) {
 		//console.log('receive props')
 		//console.log(this.component || this.displayName)
 		//console.log(props)
-		
 		const childMap = new MultiMap(this.children)
 
 		if (this.children !== undefined && props.children !== undefined) {
@@ -386,12 +398,12 @@ function TextNode (text) {
 }
 
 // returns the component's key if it exists, otherwise the type
-function getKey (node) {
+function getKey(node) {
 	return node.key || node.type
 }
 
 // A Map that allows multiple insertions to the same key. Powers the children diffing algorithm.
-function MultiMap (children) {
+function MultiMap(children) {
 	this.map = new Map()
 	this.indexMap = new Map()
 
@@ -428,6 +440,5 @@ MultiMap.prototype.forEach = function (fn) {
 		}
 	})
 }
-
 
 export default NodeContext

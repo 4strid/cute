@@ -49,7 +49,6 @@ function Constructor (plan, ...wrappers) {
 		}
 		// pass the transform value up to the node
 		props.transform = plan.transform !== false
-
 		// the canonical data object that actually holds the data
 		const data = {}
 
@@ -163,31 +162,31 @@ function Constructor (plan, ...wrappers) {
 
 Constructor.prototype = {
 	// listen for a certain evtype. handler is removed upon state change
-	on (evtype, handler) {
+	on(evtype, handler) {
 		this.node.addEventListener(this, evtype, handler)
 	},
 	// listen for a certain evtype. handler persists through state changes
-	listen (evtype, handler) {
+	listen(evtype, handler) {
 		this.node.addPersistentListener(this, evtype, handler)
 	},
 	// removes a persistent listener
-	unlisten (evtype) {
+	unlisten(evtype) {
 		this.node.removePersistentListener(this, evtype)
 	},
-	getCollisions () {
+	getCollisions() {
 		return this.node.getCollisions(this)
 	},
 	// sets own state to the given name and attempts to call that state function
-	setState (name) {
+	setState(name) {
 		this.state.set(name)
 		if (this[name]) {
 			this[name]()
 		}
 		this.node.scheduleRender()
 	},
-	_receiveProps (props) {
+	_receiveProps(props) {
 
-		for (const k of ['x', 'y', 'w', 'h']) {
+		for (const k of ['x', 'y', 'w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
 				this[k] = props[k]
@@ -211,14 +210,14 @@ Constructor.prototype = {
 // w and h should trigger a rerender
 // these are common among all components so we attach them to Constructor.prototype
 //
-for (const k of ['w', 'h']) {
+for (const k of ['w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
 		configurable: true,
 		get () {
 			return this.data[k]
 		},
-		set (val) {
+		set(val) {
 			this.data[k] = val
 			return val
 		},
@@ -226,7 +225,7 @@ for (const k of ['w', 'h']) {
 }
 
 
-function State (name, component) {
+function State(name, component) {
 	this[name] = true
 	this.name = name
 	this.component = component
