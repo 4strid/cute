@@ -1,4 +1,4 @@
-function Constructor (plan) {
+function Constructor(plan) {
 	const prototype = Object.create(Constructor.prototype)
 
 	// attach render function
@@ -31,7 +31,7 @@ function Constructor (plan) {
 	//console.log(Component.name)
 	//console.log(Component)
 
-	function Component (props, node) {
+	function Component(props, node) {
 		//console.log('initializing component')
 		this.props = props
 		this.node = node
@@ -45,15 +45,21 @@ function Constructor (plan) {
 			y: props.y || plan.y || 0,
 			w: props.w || plan.w || 0,
 			h: props.h || plan.h || 0,
+			//ML ADDED THIS
+
+			r: props.r || plan.r || 0,
+			sa: props.sa || plan.sa || 0,
+			ea: props.ea || plan.ea || 0,
+			ccw: props.ccw || plan.ccw || 0
 		})
 		this.data = {}
 		for (const k in data) {
 			Object.defineProperty(this.data, k, {
 				enumerable: true,
-				get () {
+				get() {
 					return data[k]
 				},
-				set (val) {
+				set(val) {
 					if (val !== data[k]) {
 						data[k] = val
 						node.scheduleRender()
@@ -73,10 +79,10 @@ function Constructor (plan) {
 		for (const k of ['x', 'y']) {
 			Object.defineProperty(this, k, {
 				enumerable: true,
-				get () {
+				get() {
 					return data[k]
 				},
-				set (val) {
+				set(val) {
 					if (val !== data[k]) {
 						data[k] = val
 						node.scheduleMove()
@@ -125,30 +131,30 @@ function Constructor (plan) {
 
 Constructor.prototype = {
 	// listen for a certain evtype. handler is removed upon state change
-	on (evtype, handler) {
+	on(evtype, handler) {
 		this.node.addEventListener(this, evtype, handler)
 	},
 	// listen for a certain evtype. handler persists through state changes
-	listen (evtype, handler) {
+	listen(evtype, handler) {
 		this.node.addPersistentListener(this, evtype, handler)
 	},
 	// removes a persistent listener
-	unlisten (evtype) {
+	unlisten(evtype) {
 		this.node.removePersistentListener(this, evtype)
 	},
-	getCollisions () {
+	getCollisions() {
 		return this.node.getCollisions(this)
 	},
 	// sets own state to the given name and attempts to call that state function
-	setState (name) {
+	setState(name) {
 		this.state.set(name)
 		if (this[name]) {
 			this[name]()
 		}
 	},
-	_receiveProps (props) {
+	_receiveProps(props) {
 
-		for (const k of ['x', 'y', 'w', 'h']) {
+		for (const k of ['x', 'y', 'w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
 				this[k] = props[k]
@@ -172,13 +178,13 @@ Constructor.prototype = {
 // w and h should trigger a rerender
 // these are common among all components so we attach them to Constructor.prototype
 //
-for (const k of ['w', 'h']) {
+for (const k of ['w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
-		get () {
+		get() {
 			return this.data[k]
 		},
-		set (val) {
+		set(val) {
 			this.data[k] = val
 			return val
 		},
@@ -186,7 +192,7 @@ for (const k of ['w', 'h']) {
 }
 
 
-function State (name, component) {
+function State(name, component) {
 	this[name] = true
 	this.name = name
 	this.component = component

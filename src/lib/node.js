@@ -7,13 +7,18 @@ import Constructor from './constructor'
 // Nodes are the glue between components and Cute.
 // By wrapping the Node constructor in a closure, we supply all the necessary
 // components of Cute to each node
-function NodeContext (screen, scheduler, dispatch) {
-	function Node (type, props, children) {
+function NodeContext(screen, scheduler, dispatch) {
+	function Node(type, props, children) {
 		this.props = props || {}
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
 		this.w = this.props.w
 		this.h = this.props.h
+		//ML ADDED THIS
+		this.r = this.props.r
+		this.sa = this.props.sa
+		this.ea = this.props.ea
+		this.ccw = this.props.ccw
 		if (type.displayName) {
 			this.displayName = type.displayName
 		}
@@ -40,7 +45,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.type = type
 	}
 
-	function isInteractiveComponent (node) {
+	function isInteractiveComponent(node) {
 		return Constructor.prototype.isPrototypeOf(node.type.prototype)
 	}
 
@@ -51,6 +56,19 @@ function NodeContext (screen, scheduler, dispatch) {
 		}
 		if (!('h' in props)) {
 			props.h = this.h
+		}
+		//ML ADDED THIS
+		if (!('r' in props)) {
+			props.r = this.r
+		}
+		if (!('sa' in props)) {
+			props.sa = this.sa
+		}
+		if (!('ea' in props)) {
+			props.ea = this.ea
+		}
+		if (!('ccw' in props)) {
+			props.ccw = this.ccw
 		}
 		// this is a node that is an interactive Component that is being rerendered
 		if (this.component) {
@@ -75,7 +93,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		if (this.rendered instanceof Node) {
 			this.rendered.setParent(this)
 			this.rendered.recursiveRender()
-		// this is a primitive
+			// this is a primitive
 		} else if (this.props.children) {
 			this.children = this.props.children
 			this.props.children.forEach(child => {
@@ -105,7 +123,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.screenY = this.y + this.parent.screenY
 	}
 
-	function compareProps (a, b) {
+	function compareProps(a, b) {
 		for (const k in a) {
 			// children have been reconciled, if they are simple-equivalent they're the same
 			// children's props were compared at a previous step
@@ -151,7 +169,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		//this.x = props.x || this.x
 		//this.y = props.y || this.y
 		const childMap = new MultiMap(this.props.children)
-		
+
 		let childrenUpdated = false
 
 		if (props.children !== undefined) {
@@ -181,10 +199,10 @@ function NodeContext (screen, scheduler, dispatch) {
 		//console.log('rerender')
 		//console.log(this)
 		//if (screen.renderMap.has(this)) {
-			//console.log('rerendered more than once')
-			//console.log(this)
+		//console.log('rerendered more than once')
+		//console.log(this)
 		//} else {
-			//screen.renderMap.set(this, this)
+		//screen.renderMap.set(this, this)
 		//}
 
 		if (!this.isUpdated && !this.propsUpdated) {
@@ -322,23 +340,23 @@ function NodeContext (screen, scheduler, dispatch) {
 		return screen.getIntersections(component).filter(c => c.component !== component)
 	},
 
-	Node.prototype.destroy = function () {
-		if (this.component) {
-			dispatch.removeComponent(this.component)
+		Node.prototype.destroy = function () {
+			if (this.component) {
+				dispatch.removeComponent(this.component)
+			}
+			scheduler.scheduleRender(this)
 		}
-		scheduler.scheduleRender(this)
-	}
 
 	return Node
 }
 
 // returns the component's key if it exists, otherwise the type
-function getKey (node) {
+function getKey(node) {
 	return node.key || node.type
 }
 
 // A Map that allows multiple insertions to the same key. Powers the children diffing algorithm.
-function MultiMap (children) {
+function MultiMap(children) {
 	this.map = new Map()
 	this.indexMap = new Map()
 
