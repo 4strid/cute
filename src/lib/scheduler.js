@@ -1,5 +1,5 @@
 // schedules updates, moves, renders, and draws
-function Scheduler (screen) {
+function Scheduler(screen) {
 	const IDLE = 0
 	const PENDING = 1
 	const UPDATING = 2
@@ -29,7 +29,7 @@ function Scheduler (screen) {
 
 	let lastTime = null
 
-	function tick (time) {
+	function tick(time) {
 		const elapsed = lastTime === null ? 0 : time - lastTime
 		if (elapsed > 17) {
 			console.log('Slowed down!')
@@ -57,7 +57,7 @@ function Scheduler (screen) {
 		}
 	}
 
-	function ScheduleAction (STATE) {
+	function ScheduleAction(STATE) {
 		return node => {
 			if (state === IDLE) {
 				currentTickShould[STATE] = true

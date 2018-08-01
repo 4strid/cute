@@ -45,7 +45,7 @@ Cute.createRef = function () {
 	return new Ref()
 }
 
-function Ref () {}
+function Ref() { }
 
 // this seems like a horrible idea lol
 Ref.prototype.reference = function (component) {
@@ -60,7 +60,7 @@ Ref.prototype.reference = function (component) {
 
 // cleaner, but more typing for the user
 //Ref.prototype.reference = function (component) {
-	//this.component = component
+//this.component = component
 //}
 
 Cute.Constructor = Constructor

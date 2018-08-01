@@ -61,6 +61,8 @@ function Constructor(plan) {
 				},
 				set(val) {
 					if (val !== data[k]) {
+						console.log('blehhhh')
+						console.log(k)
 						data[k] = val
 						node.scheduleRender()
 					} else {

@@ -7,13 +7,13 @@ const App = Cute({
 	// renders some JSX into canvas draw calls. Just like its React counterpart.
 	//
 	// see lib/components.js for more information about <ComponentMap>
-	render () {
+	render() {
 		return (
 			<layer>
 				<ComponentMap ref={this.data.squares}>
-					<Square handleDestroy={this.handleDestroy.bind(this)} state={this.state}/>
+					<Square handleDestroy={this.handleDestroy.bind(this)} state={this.state} />
 				</ComponentMap>
-				<Cursor state={this.state} w={8} h={8}/>
+				<Cursor state={this.state} w={8} h={8} />
 			</layer>
 		)
 	},
@@ -23,7 +23,7 @@ const App = Cute({
 	// accessed with this.data
 	//
 	// there's no such thing as setState: you just set the properties on the data object to trigger a rerender
-	data () {
+	data() {
 		return {
 			// this is like React.createRef() The interface for this will change shortly, but this is how it be for now
 			squares: Cute.createRef(),
@@ -31,12 +31,13 @@ const App = Cute({
 	},
 	// the methods that each component will have access to. `this` refers to the current component
 	methods: {
-		randomDimensions () {
+		randomDimensions() {
 			const MIN_SQUARE_SIZE = 25
 			const MAX_SQUARE_SIZE = 75
 			return Math.random() * (MAX_SQUARE_SIZE - MIN_SQUARE_SIZE) + MIN_SQUARE_SIZE
 		},
-		handleDestroy (evt) {
+		handleDestroy(evt) {
+			console.log("I am destroying", evt.component)
 			// a useful property added to the JS event is evt.component, the component that the
 			// event was dispatched to. passed here to ComponentMap.destroy to remove that element from the map
 			this.data.squares.destroy(evt.component)
@@ -55,7 +56,7 @@ const App = Cute({
 	//
 	// Note: it is not necessary to do if (this.state.name === 'StateName'), just poll it directly as shown above
 	states: {
-		Ready () {
+		Ready() {
 			//this.data.squares.create({x: 50, y: 50, w: 100, h: 100})
 			//this.data.squares.create({x: 100, y: 100, w: 75, h: 75})
 			//this.data.squares.create({x: 300, y: 100, w: 90, h: 90})
@@ -64,7 +65,7 @@ const App = Cute({
 			// need some kind of "has rendered for the first time" callback
 			this.ChangeColors()
 		},
-		ChangeColors () {
+		ChangeColors() {
 			// attach event handlers just like in vanilla javascript with `this.on('evtype', handler)`
 			//
 			// you can add M or G to the end to indicate that it should target multiple components, or fire globally.
@@ -80,7 +81,7 @@ const App = Cute({
 				}
 			})
 		},
-		CreateSquares () {
+		CreateSquares() {
 			this.on('keydownG', evt => {
 				if (evt.key === 'Escape') {
 					return this.ChangeColors()
@@ -101,7 +102,7 @@ const App = Cute({
 				})
 			})
 		},
-		DestroySquares () {
+		DestroySquares() {
 			this.on('keydownG', evt => {
 				if (evt.key === 'Escape') {
 					return this.ChangeColors()

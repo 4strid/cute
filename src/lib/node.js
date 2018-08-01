@@ -14,11 +14,6 @@ function NodeContext(screen, scheduler, dispatch) {
 		this.y = this.props.y || 0
 		this.w = this.props.w
 		this.h = this.props.h
-		//ML ADDED THIS
-		this.r = this.props.r
-		this.sa = this.props.sa
-		this.ea = this.props.ea
-		this.ccw = this.props.ccw
 		if (type.displayName) {
 			this.displayName = type.displayName
 		}
@@ -30,8 +25,8 @@ function NodeContext(screen, scheduler, dispatch) {
 			if (children.length) {
 				this.props.children = children
 			}
-			//console.log('000000000')
-			//console.log(this.props.children)
+			// console.log('000000000')
+			// console.log(this.props.children)
 		}
 		if (this.props.ref) {
 			this.ref = this.props.ref
@@ -56,19 +51,6 @@ function NodeContext(screen, scheduler, dispatch) {
 		}
 		if (!('h' in props)) {
 			props.h = this.h
-		}
-		//ML ADDED THIS
-		if (!('r' in props)) {
-			props.r = this.r
-		}
-		if (!('sa' in props)) {
-			props.sa = this.sa
-		}
-		if (!('ea' in props)) {
-			props.ea = this.ea
-		}
-		if (!('ccw' in props)) {
-			props.ccw = this.ccw
 		}
 		// this is a node that is an interactive Component that is being rerendered
 		if (this.component) {
@@ -173,7 +155,6 @@ function NodeContext(screen, scheduler, dispatch) {
 		let childrenUpdated = false
 
 		if (props.children !== undefined) {
-			//console.log('has children')
 			props.children = props.children.map(newChild => {
 				const oldChild = childMap.match(newChild)
 				//return oldChild || newChild
