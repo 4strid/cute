@@ -1,6 +1,5 @@
 import Cute from '../lib/cute'
 import { ComponentMap } from '../lib/components'
-import Square from './Square'
 import Arc from './Arc'
 import Cursor from './Cursor'
 
@@ -40,6 +39,7 @@ const App = Cute({
 		handleDestroy(evt) {
 			// a useful property added to the JS event is evt.component, the component that the
 			// event was dispatched to. passed here to ComponentMap.destroy to remove that element from the map
+			console.log(evt.component)
 			this.data.arcs.destroy(evt.component)
 		},
 	},
@@ -95,8 +95,8 @@ const App = Cute({
 				this.data.arcs.create({
 					// appended to the evt object are the useful properties localX, localY
 					// which are the coordinates with respect to the current component
-					x: evt.localX - radiusLength / 2, // centers the square on the mouse position
-					y: evt.localY - radiusLength / 2,
+					x: evt.localX, // centers the square on the mouse position
+					y: evt.localY,
 					r: radiusLength,
 					sa: 0,
 					ea: 2 * Math.PI,

@@ -35,8 +35,8 @@ function NodeContext (screen, dispatch, scheduler) {
 					return new Node(child)
 				})
 			}
-			//console.log('000000000')
-			//console.log(this.props.children)
+			// console.log('000000000')
+			// console.log(this.props.children)
 		}
 		if (this.props.ref) {
 			this.ref = this.props.ref
@@ -59,19 +59,6 @@ function NodeContext (screen, dispatch, scheduler) {
 		}
 		if (!('h' in props)) {
 			props.h = this.h
-		}
-		//ML ADDED THIS
-		if (!('r' in props)) {
-			props.r = this.r
-		}
-		if (!('sa' in props)) {
-			props.sa = this.sa
-		}
-		if (!('ea' in props)) {
-			props.ea = this.ea
-		}
-		if (!('ccw' in props)) {
-			props.ccw = this.ccw
 		}
 		// this is a node that is an interactive Component that is being rerendered
 		if (this.component) {

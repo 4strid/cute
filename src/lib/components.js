@@ -3,18 +3,18 @@ import Cute from './cute'
 import uniqid from 'uniqid'
 
 export const Clock = Cute({
-	render () {
+	render() {
 		if (!this.props.paused) {
 			this.node.scheduleUpdate()
 		}
-		return <nothing/>
+		return <nothing />
 	},
-	data () {
+	data() {
 		return {
 			time: null,
 		}
 	},
-	update (time) {
+	update(time) {
 		if (!this.props.paused) {
 			this.node.scheduleUpdate()
 		}
@@ -34,23 +34,23 @@ export const Clock = Cute({
 // call map.destroy(component) to remove a component from the map
 export const ComponentMap = Cute({
 	// renders all the nodes contained in the ComponentMap
-	render () {
+	render() {
 		this._copyProps()
 		return <layer>{[...this.data.map.values()]}</layer>
 	},
-	data () {
+	data() {
 		return {
 			map: new Map(),
 		}
 	},
 	methods: {
-		_getPrototypeNode () {
+		_getPrototypeNode() {
 			if (this.props.children.length !== 1) {
 				throw new Error('ComponentMap expects one Component as a child to be used as a prototype')
 			}
 			return this.props.children[0]
 		},
-		_copyProps () {
+		_copyProps() {
 			const prototype = this._getPrototypeNode()
 			this.data.map.forEach((_, component) => {
 				component._receiveProps(prototype.props)
@@ -66,6 +66,7 @@ export const ComponentMap = Cute({
 			const newComponent = newNode.component
 			this.data.map.set(newComponent, newNode)
 			this.node.scheduleRender()
+			console.log(this.node)
 		},
 		remove (component) {
 			//const node = this.data.map.get(component)
