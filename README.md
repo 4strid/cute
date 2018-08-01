@@ -38,11 +38,11 @@ describes the scene on the screen and how its components will interact.
 What Cute doesn't provide is, well, anything else. To emphasize just how strange that is, let's
 list some things that it doesn't provide.
 
------------------|-----
-Asset Loader?    | Nope
-World Stage?     | Nope
-Physics Engine?  | Nope
-Camera?          | Nope
+|-----------------|-----|
+|Asset Loader?    | Nope|
+|World Stage?     | Nope|
+|Physics Engine?  | Nope|
+|Camera?          | Nope|
 
 The reason being these can all be constructed as completely ordinary components. A separate
 repository will be set up as a sort of "standard library" and the two will live in harmony,
@@ -143,6 +143,10 @@ An important thing to note is that these x and y coordinates are always relative
 parent, rather than to the screen. We'll see why this is useful when we define our own components in
 a moment.
 
+Not all components will require x, y, width, and height props: they may be a fixed size, may calculate
+it on their own from some other prop, or may simply not require it to draw themselves. For instance,
+`<layer>` relies on nothing but its children, and we almost always use it without any props at all.
+
 ```jsx
 <layer x={60} y={40}>
 	<rect x={0} y={0} w={50} h={50}>
@@ -179,11 +183,14 @@ function ShadowSquare (props) {
 }
 ```
 
+A functional component must always return exactly one Cute element. To return several, we must wrap
+it in a `<layer>` or nest them in such a way that there is only one root.
+
 Notice how the coordinates of the rectangles we draw don't reference `props.x` or `props.y`. This
 is because they're drawn relative to the component, its own coordinates already having been
 accounted for. This allows for much simpler positioning, without having to say `+ props.x` all the
 time. Not only that, but as you nest components deeper and deeper, the expression you'd have to
-use to position your subcomponents would quickly become unmanageable! So we do the math for you.
+use to position your subcomponents would quickly become unmanageable! So Cute does the math for you.
 
 Recall that by default, components have position (0, 0) and the same width and height as their parent
 or to put it another way, they take up the full space of their parent. With this in mind, we can
@@ -206,6 +213,120 @@ The order in which you define your components is significant: it determines the 
 they're drawn. Components that are drawn later appear on top of ones drawn previously. Children
 are drawn after their parents.
 
+Now that our component is defined, we can use it to draw as many ShadowSquares as we want, in a
+containing component we'll call Scene.
+
+```jsx
+function Scene (props) {
+	return (
+        <layer>
+            <ShadowSquare x={5} y={5} w={50} h={50} color='antiquewhite' />
+            <ShadowSquare x={25} y={35} w={50} h={50} color='cadetblue' />
+            <ShadowSquare x={100} y={120} w={60} h={60} color='crimson' />
+        </layer>
+   )
+}
+
+Cute.attach(<Scene />, document.querySelector('.root'))
+```
+
+All the attributes we specify on the ShadowSquare elements are rolled into `props` objects
+and passed to the function that defines ShadowSquare.
+
 ### Interactive Components
 
+So far everything we've written has drawn something to the screen once and that was essentially
+the end of our program. Obviously, to make applications and games, we need our components to update
+and the user must be able to interact with them, be that through the keyboard, mouse, controller,
+or touch screen.
 
+To do this, we need to make what I call interactive components: components that interact with
+the user and with each other. We create them with the Cute function, which returns a constructor
+function to be used in JSX tags. We pass to this function an object that contains a blueprint of
+how it should appear and behave, called a plan. The simplest interactive components resemble their
+functional cousins in that their plan only contain a render function.
+
+#### render
+
+```jsx
+const OutlinedRect = Cute({
+	render () {
+		return (
+			<rect>
+				<fill color={this.props.fill}/>
+				<stroke color={this.props.stroke}/>
+			</rect>
+	   )
+	}
+})
+```
+
+This basic component relies only on its props and can't update itself, nor have we specified any ways
+the user can interact with it, but it would be eligible for collision detection and could interact with
+other components in that way. A piece of static terrain might look something like this component.
+
+#### constructor
+
+This is the function that will be used to construct our components when they are rendered for the first
+time. Any setup that does not require the component to already be rendered should go in here.
+
+This parameter is optional, but recommended for all interactive components as it is what lets you name the
+function that constructs your components. This can be tremendously useful when debugging, as if you
+do not provide a constructor, they always come out as `Component`. Which component? Hard to say.
+This function is literally the constructor that's used to build your objects, and is the return value
+of Cute() if provided.
+
+The first thing we must do in the constructor function is call `this.construct(props)`, which will
+perform the setup necessary to make the component work as intended. Though it's tempting to just use
+the props object passed to the constructor, the correct way to access the props is (after calling
+`this.construct(props)`) by referencing `this.props`.
+
+With a constructor function, we can set up a component that will actually does something other than
+just render itself once! Let's make a square that moves from left to right and bounces when it hits
+the edges of the screen.
+
+```jsx
+const SCENE_WIDTH = 400
+const SCENE_HEIGHT = 200
+
+const MovingSquare = Cute({
+    constructor: function MovingSquare (props) {
+        this.construct(props)    
+        this.direction = 1
+		this.timerID = window.setInterval(() => {
+			if (this.x + this.w > SCENE_WIDTH) {
+                this.direction = -1
+			}
+			if (this.x < 0) {
+                this.direction = 1
+			}
+            this.x += direction * 10
+		})
+    },
+	render () {
+        return <fill-rect color='darkred'>
+	}
+})
+
+Cute.attach(
+    <MovingSquare x={0} y={50} w={100} h={100} />,
+    document.querySelector('.root')
+    SCENE_WIDTH,
+    SCENE_HEIGHT
+)
+```
+
+#### data
+
+Now things are heating up! The data parameter lets us define a reactive object, which will
+automatically rerender our component when it is updated. The data parameter should be a
+function which returns an object, rather than an object itself. This may seem like extra work,
+but it makes sense when you consider that components are meant to be reusable, and that
+objects are actually references.
+
+If we were to pass the object { counter: 0 } to each component, then they would not be
+encapsulated: each component would refer to the same object, and one component updating its
+counter would cause every other one to update as well. So instead, we create a brand new
+object in the data function, and each component has its own unique copy. Another benefit is
+that in the data function, we have access to `this.props` and also any methods we define in
+the plan.
