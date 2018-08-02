@@ -162,36 +162,44 @@ function Constructor (plan, ...wrappers) {
 
 Constructor.prototype = {
 	// listen for a certain evtype. handler is removed upon state change
-	on(evtype, handler) {
+	on (evtype, handler) {
 		this.node.addEventListener(this, evtype, handler)
 	},
 	// listen for a certain evtype. handler persists through state changes
-	listen(evtype, handler) {
+	listen (evtype, handler) {
 		this.node.addPersistentListener(this, evtype, handler)
 	},
 	// removes a persistent listener
-	unlisten(evtype) {
+	unlisten (evtype) {
 		this.node.removePersistentListener(this, evtype)
 	},
-	getCollisions() {
+	getCollisions () {
 		return this.node.getCollisions(this)
 	},
 	// sets own state to the given name and attempts to call that state function
-	setState(name) {
+	setState (name) {
 		this.state.set(name)
 		if (this[name]) {
 			this[name]()
 		}
 		this.node.scheduleRender()
 	},
-	_receiveProps(props) {
+	_receiveProps (props) {
 
+
+
+		//***ML ADJUSTED THIS***
+		//---------------------------------
 		for (const k of ['x', 'y', 'w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
 				this[k] = props[k]
 			}
 		}
+		//---------------------------------
+
+
+
 
 		for (const p in props) {
 			this.props[p] = props[p]
@@ -210,6 +218,10 @@ Constructor.prototype = {
 // w and h should trigger a rerender
 // these are common among all components so we attach them to Constructor.prototype
 //
+
+
+//***ML ADJUSTED THIS***
+//---------------------------------
 for (const k of ['w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
@@ -217,15 +229,16 @@ for (const k of ['w', 'h', 'r', 'sa', 'ea', 'ccw']) {
 		get () {
 			return this.data[k]
 		},
-		set(val) {
+		set (val) {
 			this.data[k] = val
 			return val
 		},
 	})
 }
+//---------------------------------
 
 
-function State(name, component) {
+function State (name, component) {
 	this[name] = true
 	this.name = name
 	this.component = component

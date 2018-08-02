@@ -1,7 +1,7 @@
 function Arc(x, y, r, sa, ea, ccw) {
 	const arc = Object.create(Arc.prototype)
 
-		;['x', 'y', 'r', 'sa', 'ea', 'ccw'].forEach((k, i) => {
+		;['r', 'sa', 'ea', 'ccw'].forEach((k, i) => {
 			Object.defineProperty(arc, k, {
 				enumerable: true,
 				configurable: true,
