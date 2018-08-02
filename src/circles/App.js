@@ -95,6 +95,8 @@ const App = Cute({
 				this.data.arcs.create({
 					// appended to the evt object are the useful properties localX, localY
 					// which are the coordinates with respect to the current component
+					h: radiusLength * 2,
+					w: radiusLength * 2,
 					x: evt.localX, // centers the square on the mouse position
 					y: evt.localY,
 					r: radiusLength,

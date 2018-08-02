@@ -21,7 +21,7 @@ const Arc = Cute({
 	states: {
 		ChangeColors() {
 			this.on('click', () => {
-				this.data.color = "#000000"
+				this.data.color = this.randomColor()
 			})
 		},
 		CreateArcs() {

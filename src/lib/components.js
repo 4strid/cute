@@ -64,10 +64,8 @@ export const ComponentMap = Cute({
 			const newComponent = newNode.component
 			this.data.map.set(newComponent, newNode)
 			this.node.scheduleRender()
-			console.log(this.node)
 		},
 		destroy(component) {
-			console.log(component)
 			const node = this.data.map.get(component)
 			node.destroy()
 			this.data.map.delete(component)
