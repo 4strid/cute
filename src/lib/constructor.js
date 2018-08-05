@@ -38,6 +38,15 @@ function Constructor (plan, ...wrappers) {
 			plan.destroy.call(this)
 		}
 	}
+	// even this doesn't appear to work in Chrome, the functions are still called ''
+	//function nameFunction (name) {
+	//	return {[name]: function (props, node) {return construct.call(this, props, node)}}[name]
+	//}
+
+	//const Component = nameFunction(plan.displayName || 'Component')
+
+	//console.log(Component.name)
+	//console.log(Component)
 
 	prototype.construct = function (props) {
 		this.props = {}
@@ -162,45 +171,35 @@ function Constructor (plan, ...wrappers) {
 
 Constructor.prototype = {
 	// listen for a certain evtype. handler is removed upon state change
-	on (evtype, handler) {
+	on(evtype, handler) {
 		this.node.addEventListener(this, evtype, handler)
 	},
 	// listen for a certain evtype. handler persists through state changes
-	listen (evtype, handler) {
+	listen(evtype, handler) {
 		this.node.addPersistentListener(this, evtype, handler)
 	},
 	// removes a persistent listener
-	unlisten (evtype) {
+	unlisten(evtype) {
 		this.node.removePersistentListener(this, evtype)
 	},
-	getCollisions () {
+	getCollisions() {
 		return this.node.getCollisions(this)
 	},
 	// sets own state to the given name and attempts to call that state function
-	setState (name) {
+	setState(name) {
 		this.state.set(name)
 		if (this[name]) {
 			this[name]()
 		}
 		this.node.scheduleRender()
 	},
-	_receiveProps (props) {
-
-
-
-		//***ML ADJUSTED THIS***
-		//---------------------------------
-		for (const k of ['x', 'y', 'w', 'h', 'r', 'sa', 'ea', 'ccw']) {
+	_receiveProps(props) {
+		for (const k of ['x', 'y', 'w', 'h']) {
 			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
 				this[k] = props[k]
 			}
 		}
-		//---------------------------------
-
-
-
-
 		for (const p in props) {
 			this.props[p] = props[p]
 		}
@@ -218,27 +217,22 @@ Constructor.prototype = {
 // w and h should trigger a rerender
 // these are common among all components so we attach them to Constructor.prototype
 //
-
-
-//***ML ADJUSTED THIS***
-//---------------------------------
-for (const k of ['w', 'h', 'r', 'sa', 'ea', 'ccw']) {
+for (const k of ['w', 'h']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
 		configurable: true,
 		get () {
 			return this.data[k]
 		},
-		set (val) {
+		set(val) {
 			this.data[k] = val
 			return val
 		},
 	})
 }
-//---------------------------------
 
 
-function State (name, component) {
+function State(name, component) {
 	this[name] = true
 	this.name = name
 	this.component = component
