@@ -8,6 +8,10 @@ const Arc = Cute({
 					<fill color={this.data.color} />
 					<stroke color={"red"} />
 				</arc>
+				<arc x={100} y={0} r={this.props.r} sa={this.props.sa} ea={this.props.ea} ccw={this.props.ccw}>
+					<fill color={this.data.color} />
+					<stroke color={"red"} />
+				</arc>
 			</path>
 		)
 	},
