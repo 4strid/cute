@@ -100,7 +100,7 @@ const App = Cute({
 					y: evt.localY,
 					r: radiusLength,
 					sa: 0,
-					ea: 2 * Math.PI,
+					ea: 1.5 * Math.PI,
 					ccw: false
 				})
 			})
