@@ -75,7 +75,7 @@ const primitives = {
 			if (props.color) {
 				ctx.strokeStyle = props.color
 			}
-			//ML => So it looks like close path works only before stroke().
+			//ML => So it looks like close path works only before stroke()/fill() .
 			// ctx.closePath()
 			ctx.stroke()
 			drawChildren(props, ctx)
