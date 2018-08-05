@@ -3,7 +3,7 @@ import Cute from '../lib/cute'
 const Arc = Cute({
 	render() {
 		return (
-			<arc x={0} y={0} r={this.r} sa={this.sa} ea={this.ea} ccw={this.ccw}>
+			<arc x={0} y={0} r={this.props.r} sa={this.props.sa} ea={this.props.ea} ccw={this.props.ccw}>
 				<fill color={this.data.color} />
 			</arc>
 		)

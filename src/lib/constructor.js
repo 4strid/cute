@@ -194,12 +194,14 @@ Constructor.prototype = {
 		this.node.scheduleRender()
 	},
 	_receiveProps(props) {
+
 		for (const k of ['x', 'y', 'w', 'h']) {
 			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
 				this[k] = props[k]
 			}
 		}
+
 		for (const p in props) {
 			this.props[p] = props[p]
 		}

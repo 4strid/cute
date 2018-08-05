@@ -1,7 +1,7 @@
 import Cute from '../lib/cute'
 
 const Cursor = Cute({
-	render () {
+	render() {
 		let fillColor = '#000000'
 		if (this.state.CreateSquares) {
 			fillColor = '#44ff44'
@@ -13,17 +13,19 @@ const Cursor = Cute({
 		// makes a nice + shape
 		return (
 			<layer>
-				<rect w={2} h={this.h} x={this.w / 2 - 1} y={0}>
-					<fill color={fillColor} />
-				</rect>
-				<rect w={this.w} h={2} x={0} y={this.h / 2 - 1}>
-					<fill color={fillColor} />
-				</rect>
+				<path>
+					<rect w={2} h={this.h} x={this.w / 2 - 1} y={0}>
+						<fill color={fillColor} />
+					</rect>
+					<rect w={this.w} h={2} x={0} y={this.h / 2 - 1}>
+						<fill color={fillColor} />
+					</rect>
+				</path>
 			</layer>
 		)
 	},
 	states: {
-		Ready () {
+		Ready() {
 			this.on('mousemoveG', evt => {
 				// canvasX and canvasY are the mouse coordinates with respect to the canvas,
 				// handy for global mouse listeners
