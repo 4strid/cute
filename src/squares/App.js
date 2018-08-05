@@ -14,7 +14,7 @@ const App = Cute({
 					<Square handleDestroy={this.handleDestroy.bind(this)} state={this.state} />
 				</ComponentMap>
 				<Cursor state={this.state} w={8} h={8} />
-			</layer>
+			</layer >
 		)
 	},
 	// this is like `state` from React, it contains any data that might change over a component's lifetime

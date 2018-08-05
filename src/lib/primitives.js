@@ -17,6 +17,16 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
+	// path(props) {
+	// 	return ctx => {
+	// 		ctx.save()
+	// 		ctx.beginPath()
+	// 		drawChildren(props, ctx)
+	// 		// ctx.closePath()
+	// 		ctx.restore()
+	// 	}
+	// },
 	/*
 	 * creates a rectangular path for stroking/filling
 	 * calls ctx.rect() then renders any children

@@ -1,33 +1,36 @@
 import Cute from '../lib/cute'
 
 const Square = Cute({
-	render () {
+	render() {
 		return (
-			<rect w={this.w} h={this.h} x={0} y={0}>
-				<fill color={this.data.color} />
-			</rect>
+			<path>
+				<rect w={this.w} h={this.h} x={0} y={0}>
+					<fill color={this.data.color} />
+					<stroke color={"red"} />
+				</rect>
+			</path>
 		)
 	},
-	data () {
+	data() {
 		return {
 			color: this.randomColor(),
 		}
 	},
 	methods: {
-		randomColor () {
+		randomColor() {
 			return '#' + Math.floor(Math.random() * 16777215).toString(16)
 		},
 	},
 	states: {
-		ChangeColors () {
+		ChangeColors() {
 			this.on('click', () => {
 				this.data.color = this.randomColor()
 			})
 		},
-		CreateSquares () {
+		CreateSquares() {
 			// nothing to do
 		},
-		DestroySquares () {
+		DestroySquares() {
 			// this is the same pattern as in React: pass a handler down as a prop
 			this.on('click', this.props.handleDestroy)
 		},

@@ -55,8 +55,6 @@ function Constructor(plan) {
 				},
 				set(val) {
 					if (val !== data[k]) {
-						console.log('blehhhh')
-						console.log(k)
 						data[k] = val
 						node.scheduleRender()
 					} else {
@@ -149,12 +147,14 @@ Constructor.prototype = {
 		}
 	},
 	_receiveProps(props) {
+
 		for (const k of ['x', 'y', 'w', 'h']) {
 			if (props[k] !== undefined && props[k] !== this.props[k]) {
 				// call getters / setters to act appropriately
 				this[k] = props[k]
 			}
 		}
+
 		for (const p in props) {
 			this.props[p] = props[p]
 		}

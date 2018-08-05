@@ -39,7 +39,6 @@ const App = Cute({
 		handleDestroy(evt) {
 			// a useful property added to the JS event is evt.component, the component that the
 			// event was dispatched to. passed here to ComponentMap.destroy to remove that element from the map
-			console.log(evt.component)
 			this.data.arcs.destroy(evt.component)
 		},
 	},
