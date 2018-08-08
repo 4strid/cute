@@ -1,7 +1,7 @@
-function Dispatch(canvas, screen) {
+function Dispatch (canvas, screen) {
 	// the actual listener we attach to the canvas element. dispatches events
 	// to the correct components
-	function DispatchEventListener(evtype) {
+	function DispatchEventListener (evtype) {
 		return function (evt) {
 			dispatch(evtype, evt)
 		}
@@ -71,7 +71,7 @@ function Dispatch(canvas, screen) {
 
 	// get the coordinates of the mouse with respect to the canvas
 	// TODO: deal with scale / rotation
-	function addCanvasCoords(evt) {
+	function addCanvasCoords (evt) {
 		if (!evt.clientX) {
 			// non-mouse events will not have coordinates
 			evt.canvasX = canvasX
@@ -84,13 +84,13 @@ function Dispatch(canvas, screen) {
 	}
 
 	// get the coordinates of the mouse with respect to a component
-	function addLocalCoords(component, evt) {
+	function addLocalCoords (component, evt) {
 		evt.localX = evt.canvasX - component.node.screenX
 		evt.localY = evt.canvasY - component.node.screenY
 	}
 
 	// dispatches event to specified map. map might be 'local' or 'multi'
-	function dispatchToMap(map, component, evtype, evt) {
+	function dispatchToMap (map, component, evtype, evt) {
 		addLocalCoords(component, evt)
 		for (const listeners of [ephemeralListeners, persistentListeners]) {
 			const handlers = listeners[map].get(component)
@@ -101,7 +101,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// dispatches local events to ephemeral and persistent local listeners
-	function dispatchLocal(component, evtype, evt) {
+	function dispatchLocal (component, evtype, evt) {
 		if (!component) {
 			return
 		}
@@ -110,7 +110,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// dispatches events to ephemeral and persistent multi listeners
-	function dispatchMulti(components, evtype, evt) {
+	function dispatchMulti (components, evtype, evt) {
 		components.forEach(component => {
 			// this will fail for any asynchronous multi event handler, but events are massive and I don't want to copy the whole thing
 			evt.component = component
@@ -119,7 +119,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// dispatches events to either ephemeral or persistent global listeners
-	function dispatchGlobal(listeners, evtype, evt) {
+	function dispatchGlobal (listeners, evtype, evt) {
 		listeners.global[evtype].forEach((handler, component) => {
 			addLocalCoords(component, evt)
 			handler.call(component, evt)
@@ -131,7 +131,7 @@ function Dispatch(canvas, screen) {
 	let mousePrior = null
 	let mousePriorAll = []
 
-	function dispatchMouseoverMouseout(evtype, evt) {
+	function dispatchMouseoverMouseout (evtype, evt) {
 		const mouseOn = screen.queryPoint(evt.canvasX, evt.canvasY)
 		const mouseOver = screen.queryPointAll(evt.canvasX, evt.canvasY)
 		if (evtype === 'mousemove') {
@@ -167,7 +167,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// returns whether a compnent has a listener for a given evtype
-	function hasLocalListener(component, evtype) {
+	function hasLocalListener (component, evtype) {
 		for (const listeners of [persistentListeners, ephemeralListeners]) {
 			const handlers = listeners.local.get(component)
 			if (handlers && handlers[evtype]) {
@@ -179,7 +179,7 @@ function Dispatch(canvas, screen) {
 
 	// the function called when any event is sent to the canvas. determines
 	// canvas coordinates, then calls all appropriate handlers
-	function dispatch(evtype, evt) {
+	function dispatch (evtype, evt) {
 		// get canvas coordinates of evt
 		addCanvasCoords(evt)
 		// dispatch event to global handlers
@@ -198,7 +198,7 @@ function Dispatch(canvas, screen) {
 
 	// attempts to extract an evtype from an evtype of form <evtype>G
 	// if it is not a global evtype, returns undefined
-	function extractGlobalEvtype(evtype) {
+	function extractGlobalEvtype (evtype) {
 		if (evtype[evtype.length - 1] === 'G') {
 			return evtype.substring(0, evtype.length - 1)
 		}
@@ -206,7 +206,7 @@ function Dispatch(canvas, screen) {
 
 	// attempts to extract an evtype from an evtype of form <evtype>M
 	// if it is not a multi evtype, returns undefined
-	function extractMultiEvtype(evtype) {
+	function extractMultiEvtype (evtype) {
 		if (evtype[evtype.length - 1] === 'M') {
 			return evtype.substring(0, evtype.length - 1)
 		}
@@ -214,7 +214,7 @@ function Dispatch(canvas, screen) {
 
 	// adds the listener to the specified map. this might be a persistent,
 	// ephemeral, local, or multi listener
-	function addListenerToMap(map, component, evtype, handler) {
+	function addListenerToMap (map, component, evtype, handler) {
 		if (map.has(component)) {
 			map.get(component)[evtype] = handler
 		} else {
@@ -225,7 +225,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// adds a listener to ephemeral or persistent listener containers
-	function addListener(listeners, component, evtype, handler) {
+	function addListener (listeners, component, evtype, handler) {
 		const globalEvtype = extractGlobalEvtype(evtype)
 		if (globalEvtype !== undefined) {
 			return listeners.global[globalEvtype].set(component, handler)
@@ -248,7 +248,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// helper function that removes a listener from either ephemeral or persistent listeners
-	function removeListener(listeners, component, evtype) {
+	function removeListener (listeners, component, evtype) {
 		const globalEvtype = extractGlobalEvtype(evtype)
 		if (globalEvtype !== undefined) {
 			return listeners.global[globalEvtype].delete(component)
@@ -276,7 +276,7 @@ function Dispatch(canvas, screen) {
 	}
 
 	// helper functino that removes all listeners from either ephemeral or persistent listeners
-	function removeListeners(listeners, component) {
+	function removeListeners (listeners, component) {
 		listeners.local.delete(component)
 		listeners.multi.delete(component)
 		for (const evtype in listeners.global) {

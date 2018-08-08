@@ -47,7 +47,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		this.type = type
 	}
 
-	function isInteractiveComponent(node) {
+	function isInteractiveComponent (node) {
 		return Constructor.prototype.isPrototypeOf(node.type.prototype)
 	}
 
@@ -125,7 +125,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		this.screenY = this.y + this.parent.screenY
 	}
 
-	function compareProps(a, b) {
+	function compareProps (a, b) {
 		for (const k in a) {
 			// children have been reconciled, if they are simple-equivalent they're the same
 			// children's props were compared as part of reconciliation
@@ -385,12 +385,12 @@ function TextNode (text) {
 }
 
 // returns the component's key if it exists, otherwise the type
-function getKey(node) {
+function getKey (node) {
 	return node.key || node.type
 }
 
 // A Map that allows multiple insertions to the same key. Powers the children diffing algorithm.
-function MultiMap(children) {
+function MultiMap (children) {
 	this.map = new Map()
 	this.indexMap = new Map()
 
