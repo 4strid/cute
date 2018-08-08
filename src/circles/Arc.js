@@ -35,7 +35,6 @@ const Arc = Cute({
 			// nothing to do
 		},
 		DestroyArcs() {
-			// console.log(this.props.handleDestroy)
 			// this is the same pattern as in React: pass a handler down as a prop
 			this.on('click', this.props.handleDestroy)
 		},

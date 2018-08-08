@@ -99,9 +99,9 @@ const App = Cute({
 					x: evt.localX, // centers the square on the mouse position
 					y: evt.localY,
 					r: radiusLength,
-					sa: 0,
-					ea: 1.5 * Math.PI,
-					ccw: false
+					// sa: 0,
+					// ea: 1.5 * Math.PI,
+					// ccw: false
 				})
 			})
 		},
