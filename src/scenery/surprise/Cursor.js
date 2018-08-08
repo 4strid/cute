@@ -1,12 +1,12 @@
-import Cute from '../lib/cute'
+import Cute from '../../lib/cute'
 
 const Cursor = Cute({
 	render() {
 		let fillColor = '#000000'
-		if (this.state.CreateHearts) {
+		if (this.state.CreateArcs) {
 			fillColor = '#44ff44'
 		}
-		if (this.state.DestroyHearts) {
+		if (this.state.DestroyArcs) {
 			fillColor = '#ff4444'
 		}
 
