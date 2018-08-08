@@ -4,14 +4,14 @@ const Arc = Cute({
 	render() {
 		return (
 			<path>
-				<arc x={0} y={0} r={this.props.r} sa={this.props.sa} ea={this.props.ea} ccw={this.props.ccw}>
-					<fill color={this.data.color} />
-					<stroke color={"red"} />
-				</arc>
-				<arc x={100} y={0} r={this.props.r} sa={this.props.sa} ea={this.props.ea} ccw={this.props.ccw}>
-					<fill color={this.data.color} />
-					<stroke color={"red"} />
-				</arc>
+				<arc x={-(this.props.r)} y={0} r={this.props.r} sa={0.7 * Math.PI} ea={1.95 * Math.PI} ccw={this.props.ccw} />
+				<arc x={this.props.r * 2 - (this.props.r)} y={0} r={this.props.r} sa={1.05 * Math.PI} ea={0.3 * Math.PI} ccw={this.props.ccw} />
+				<line x={0} y={this.props.r} />
+				<close-path />
+				{/* <move x={1} y={0} />
+				<line x={50} y={0} /> */}
+				<fill color={this.data.color} />
+				<stroke color={"black"} />
 			</path>
 		)
 	},

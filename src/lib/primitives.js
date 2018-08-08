@@ -17,14 +17,39 @@ const primitives = {
 			ctx.restore()
 		}
 	},
-
 	path(props) {
 		return ctx => {
 			ctx.save()
 			ctx.beginPath()
 			drawChildren(props, ctx)
-			//ML => closePath() doesn't work here, I am assuming because stroke/fill usually has already happened before we get to this
-			// ctx.closePath()
+			ctx.restore()
+		}
+	},
+	line(props) {
+		return ctx => {
+			ctx.save()
+			ctx.lineTo(props.x, props.y)
+			ctx.restore()
+		}
+	},
+	move(props) {
+		return ctx => {
+			ctx.save()
+			ctx.moveTo(props.x, props.y)
+			ctx.restore()
+		}
+	},
+	'arc-to'(props) {
+		return ctx => {
+			ctx.save()
+			ctx.arcTo(props.x1, props.y1, props.x2, props.y2, props.r)
+			ctx.restore()
+		}
+	},
+	'close-path'(props) {
+		return ctx => {
+			ctx.save()
+			ctx.closePath()
 			ctx.restore()
 		}
 	},
@@ -44,13 +69,7 @@ const primitives = {
 	 */
 	arc(props) {
 		return ctx => {
-			// ctx.save()
-			// ctx.beginPath()
 			ctx.arc(0, 0, props.r, props.sa, props.ea, props.ccw)
-			drawChildren(props, ctx)
-			//ML => closePath() doesn't seem to work here either
-			// ctx.closePath();
-			// ctx.restore()
 		}
 	},
 	/*
@@ -75,8 +94,6 @@ const primitives = {
 			if (props.color) {
 				ctx.strokeStyle = props.color
 			}
-			//ML => So it looks like close path works only before stroke()/fill() .
-			// ctx.closePath()
 			ctx.stroke()
 			drawChildren(props, ctx)
 			ctx.restore()
