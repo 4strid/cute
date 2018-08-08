@@ -3,6 +3,11 @@ import { ComponentMap } from '../lib/components'
 import Square from './Square'
 import Cursor from './Cursor'
 
+console.log(Cute.canvas)
+console.log(document.querySelector('.cute-container').height)
+// console.log(document.querySelector('.cute-container').firstChild.getAttributes("height"))
+
+
 const App = Cute({
 	// renders some JSX into canvas draw calls. Just like its React counterpart.
 	//

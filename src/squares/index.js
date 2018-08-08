@@ -1,10 +1,10 @@
 import Cute from '../lib/cute'
 import App from './App'
 
-const CANVAS_WIDTH = 600
-const CANVAS_HEIGHT = 400
+const CANVAS_WIDTH = 700
+const CANVAS_HEIGHT = 500
 
-Cute.attach(<App/>, document.querySelector('.cute-container'), CANVAS_WIDTH, CANVAS_HEIGHT)
+Cute.attach(<App />, document.querySelector('.cute-container'), CANVAS_WIDTH, CANVAS_HEIGHT)
 
 // do this in JS so I can switch index.js files without editing the HTML file
 const instructions = document.createElement('p')
