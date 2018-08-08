@@ -7,8 +7,8 @@ import Constructor from './constructor'
 // Nodes are the glue between components and Cute.
 // By wrapping the Node constructor in a closure, we supply all the necessary
 // components of Cute to each node
-function NodeContext(screen, scheduler, dispatch) {
-	function Node(type, props, children) {
+function NodeContext (screen, scheduler, dispatch) {
+	function Node (type, props, children) {
 		this.props = props || {}
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
@@ -40,7 +40,7 @@ function NodeContext(screen, scheduler, dispatch) {
 		this.type = type
 	}
 
-	function isInteractiveComponent(node) {
+	function isInteractiveComponent (node) {
 		return Constructor.prototype.isPrototypeOf(node.type.prototype)
 	}
 
@@ -105,7 +105,7 @@ function NodeContext(screen, scheduler, dispatch) {
 		this.screenY = this.y + this.parent.screenY
 	}
 
-	function compareProps(a, b) {
+	function compareProps (a, b) {
 		for (const k in a) {
 			// children have been reconciled, if they are simple-equivalent they're the same
 			// children's props were compared at a previous step
@@ -321,23 +321,23 @@ function NodeContext(screen, scheduler, dispatch) {
 		return screen.getIntersections(component).filter(c => c.component !== component)
 	},
 
-		Node.prototype.destroy = function () {
-			if (this.component) {
-				dispatch.removeComponent(this.component)
-			}
-			scheduler.scheduleRender(this)
+	Node.prototype.destroy = function () {
+		if (this.component) {
+			dispatch.removeComponent(this.component)
 		}
+		scheduler.scheduleRender(this)
+	}
 
 	return Node
 }
 
 // returns the component's key if it exists, otherwise the type
-function getKey(node) {
+function getKey (node) {
 	return node.key || node.type
 }
 
 // A Map that allows multiple insertions to the same key. Powers the children diffing algorithm.
-function MultiMap(children) {
+function MultiMap (children) {
 	this.map = new Map()
 	this.indexMap = new Map()
 

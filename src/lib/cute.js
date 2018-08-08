@@ -45,7 +45,7 @@ Cute.createRef = function () {
 	return new Ref()
 }
 
-function Ref() { }
+function Ref () { }
 
 // this seems like a horrible idea lol
 Ref.prototype.reference = function (component) {

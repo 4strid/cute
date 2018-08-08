@@ -1,24 +1,24 @@
-function Arc(x, y, r, sa, ea, ccw) {
+function Arc (x, y, r, sa, ea, ccw) {
 	const arc = Object.create(Arc.prototype)
 
 		;['x', 'y', 'r', 'sa', 'ea', 'ccw'].forEach((k, i) => {
-			Object.defineProperty(arc, k, {
-				enumerable: true,
-				configurable: true,
-				writable: false,
-				value: arguments[i],
-			})
+		Object.defineProperty(arc, k, {
+			enumerable: true,
+			configurable: true,
+			writable: false,
+			value: arguments[i],
 		})
+	})
 }
 Arc.prototype.constructor = Arc
 
 Object.defineProperty(Arc.prototype, 'radius', {
 	enumerable: false,
 	configurable: true,
-	get() {
+	get () {
 		return this.r
 	},
-	set(val) {
+	set (val) {
 		return this.r = val
 	},
 })
@@ -26,10 +26,10 @@ Object.defineProperty(Arc.prototype, 'radius', {
 Object.defineProperty(Arc.prototype, 'startAngle', {
 	enumerable: false,
 	configurable: true,
-	get() {
+	get () {
 		return this.sa
 	},
-	set(val) {
+	set (val) {
 		return this.sa = val
 	},
 })
@@ -37,10 +37,10 @@ Object.defineProperty(Arc.prototype, 'startAngle', {
 Object.defineProperty(Arc.prototype, 'endAngle', {
 	enumerable: false,
 	configurable: true,
-	get() {
+	get () {
 		return this.ea
 	},
-	set(val) {
+	set (val) {
 		return this.ea = val
 	},
 })
@@ -48,10 +48,10 @@ Object.defineProperty(Arc.prototype, 'endAngle', {
 Object.defineProperty(Arc.prototype, 'counterclockwise', {
 	enumerable: false,
 	configurable: true,
-	get() {
+	get () {
 		return this.ccw
 	},
-	set(val) {
+	set (val) {
 		return this.ccw = val
 	},
 })
