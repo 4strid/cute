@@ -17,6 +17,9 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+	/*
+	 * begins path, then draws children
+	 */
 	path(props) {
 		return ctx => {
 			ctx.save()
@@ -25,13 +28,9 @@ const primitives = {
 			ctx.restore()
 		}
 	},
-	line(props) {
-		return ctx => {
-			ctx.save()
-			ctx.lineTo(props.x, props.y)
-			ctx.restore()
-		}
-	},
+	/*
+ 	 * Moves from current point in path to new point specified by (props.x, props.y)
+	 */
 	move(props) {
 		return ctx => {
 			ctx.save()
@@ -39,6 +38,20 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+	/*
+	 * Creates a straight line from current point in path to (props.x, props.y)
+	 */
+	line(props) {
+		return ctx => {
+			ctx.save()
+			ctx.lineTo(props.x, props.y)
+			ctx.restore()
+		}
+	},
+	/*
+	 * Creates an arc from two specified points (props.x1, props.y1) and (props.x2, props.y2).
+	 * Amount of curvature is given by radius props.r 
+	 */
 	'arc-to'(props) {
 		return ctx => {
 			ctx.save()
@@ -46,10 +59,26 @@ const primitives = {
 			ctx.restore()
 		}
 	},
-	'close-path'(props) {
+	/*
+	 * Creates a quadratic curve from current point in path to (props.x, props.y)
+	 * First coordinates (props.cpx, props.cpy) will designate the control point.
+	 */
+	'quad-curve'(props) {
 		return ctx => {
 			ctx.save()
-			ctx.closePath()
+			ctx.quadraticCurveTo(props.cpx, props.cpy, props.x, props.y)
+			ctx.restore()
+		}
+	},
+	/*
+	 * Creates a bezier curve from current point in path to (props.x, props.y)
+	 * First coordinates (props.cp1x, props.cp1y) will designate the first control point closest to current point.
+	 * Second coordinates (props.cp2x, props.cp2y) will designate the second control point, furtheres to current point.
+	 */
+	'bezier-curve'(props) {
+		return ctx => {
+			ctx.save()
+			ctx.bezierCurveTo(props.cp1x, props.cp1y, props.cp2x, props.cp2y, props.x, props.y)
 			ctx.restore()
 		}
 	},
@@ -70,6 +99,16 @@ const primitives = {
 	arc(props) {
 		return ctx => {
 			ctx.arc(0, 0, props.r, props.sa, props.ea, props.ccw)
+		}
+	},
+	/*
+	 * Closes a drawing path, must be placed before a stroke
+	 */
+	'close-path'(props) {
+		return ctx => {
+			ctx.save()
+			ctx.closePath()
+			ctx.restore()
 		}
 	},
 	/*
