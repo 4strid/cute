@@ -1,7 +1,7 @@
 import Cute from '../lib/cute'
 
-const Arc = Cute({
-	render() {
+const Heart = Cute({
+	render () {
 		return (
 			<path>
 				<arc x={-(this.props.r)} y={0} r={this.props.r} sa={0.7 * Math.PI} ea={1.95 * Math.PI} ccw={this.props.ccw} />
@@ -11,34 +11,34 @@ const Arc = Cute({
 				{/* <move x={1} y={0} />
 				<line x={50} y={0} /> */}
 				<fill color={this.data.color} />
-				<stroke color={"black"} />
+				<stroke color={'black'} />
 			</path>
 		)
 	},
-	data() {
+	data () {
 		return {
 			color: this.randomColor(),
 		}
 	},
 	methods: {
-		randomColor() {
+		randomColor () {
 			return '#' + Math.floor(Math.random() * 16777215).toString(16)
 		},
 	},
 	states: {
-		ChangeColors() {
+		ChangeColors () {
 			this.on('click', () => {
 				this.data.color = this.randomColor()
 			})
 		},
-		CreateArcs() {
+		CreateHearts () {
 			// nothing to do
 		},
-		DestroyArcs() {
+		DestroyHearts () {
 			// this is the same pattern as in React: pass a handler down as a prop
 			this.on('click', this.props.handleDestroy)
 		},
 	},
 })
 
-export default Arc
+export default Heart

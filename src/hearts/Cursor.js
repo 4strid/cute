@@ -1,7 +1,7 @@
 import Cute from '../lib/cute'
 
 const Cursor = Cute({
-	render() {
+	render () {
 		let fillColor = '#000000'
 		if (this.state.CreateArcs) {
 			fillColor = '#44ff44'
@@ -25,7 +25,7 @@ const Cursor = Cute({
 		)
 	},
 	states: {
-		Ready() {
+		Ready () {
 			this.on('mousemoveG', evt => {
 				// canvasX and canvasY are the mouse coordinates with respect to the canvas,
 				// handy for global mouse listeners
