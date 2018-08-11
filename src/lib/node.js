@@ -155,14 +155,14 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	// sets own props to new props. sets own isUpdated property if props or children are updated
 	Node.prototype.receiveProps = function (props) {
-		//console.log('receive props')
-		//console.log(this)
-		//console.log(props)
+		console.log('receive props')
+		console.log(this.component || this.displayName)
+		console.log(props)
 		//this.x = props.x || this.x
 		//this.y = props.y || this.y
 		const childMap = new MultiMap(this.props.children)
 		
-		let childrenUpdated = false
+		//let childrenUpdated = false
 
 		if (props.children !== undefined) {
 			//console.log('has children')
@@ -175,12 +175,17 @@ function NodeContext (screen, scheduler, dispatch) {
 				//console.log('new child props')
 				//console.log(newChild.props)
 				oldChild.receiveProps(newChild.props)
-				childrenUpdated = childrenUpdated || oldChild.isUpdated
+				//childrenUpdated = childrenUpdated || oldChild.isUpdated || oldChild.propsUpdated
 				return oldChild
+			})
+
+			// destroy any nodes left over
+			childMap.forEach(node => {
+				node.destroy()
 			})
 		}
 
-		this.propsUpdated = childrenUpdated || compareProps(this.props, props)
+		this.propsUpdated = compareProps(this.props, props)
 		this.props = props
 		if (this.propsUpdated && this.component) {
 			this.component._receiveProps(this.props)
@@ -188,8 +193,8 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.rerender = function () {
-		//console.log('rerender')
-		//console.log(this)
+		console.log('rerender')
+		console.log(this.component || this.displayName)
 		//if (screen.renderMap.has(this)) {
 			//console.log('rerendered more than once')
 			//console.log(this)
@@ -198,7 +203,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		//}
 
 		if (!this.isUpdated && !this.propsUpdated) {
-			//console.log('xxxxxxx')
+			console.log('xxxxxxx')
 			//console.log(this)
 			if (this.rendered instanceof Node) {
 				this.rendered.setParent(this)
@@ -211,7 +216,7 @@ function NodeContext (screen, scheduler, dispatch) {
 				})
 			}
 		} else {
-			//console.log('yyyyyyy')
+			console.log('yyyyyyy')
 			//console.log(this)
 			const rerendered = this.render(this.props)
 
@@ -229,6 +234,7 @@ function NodeContext (screen, scheduler, dispatch) {
 					})
 				}
 			} else if (this.rendered.type === rerendered.type) {
+				console.log('zzzzzzz')
 				this.rendered.setParent(this)
 				this.rendered.receiveProps(rerendered.props)
 				this.rendered.rerender()
@@ -339,8 +345,12 @@ function NodeContext (screen, scheduler, dispatch) {
 	Node.prototype.destroy = function () {
 		if (this.component) {
 			dispatch.removeComponent(this.component)
+			if (this.component.destroy) {
+				this.component.destroy.call(this.component)
+			}
 		}
-		scheduler.scheduleRender(this)
+		// scheduler.scheduleRender(this)
+		// I mean that can't be right, we're trying to disappear, why would we need to rerender?
 	}
 
 	return Node

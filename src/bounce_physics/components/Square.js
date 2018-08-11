@@ -26,6 +26,7 @@ const Square = Cute({
 	},
 	methods: {
 		switchColors () {
+			console.log('ye')
 			this.data.color = randomColor()
 		},
 	},

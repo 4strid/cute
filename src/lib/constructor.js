@@ -46,8 +46,9 @@ function Constructor (plan, ...wrappers) {
 		}
 		// pass the transform value up to the node
 		props.transform = plan.transform !== false
+
 		// the canonical data object that actually holds the data
-		const data = plan.data ? plan.data.call(this) : {}
+		const data = {}
 
 		// set initial positional values
 		Object.assign(data, {
@@ -56,8 +57,11 @@ function Constructor (plan, ...wrappers) {
 			w: props.w || plan.w,
 			h: props.h || plan.h,
 		})
+
 		// proxy data object whose getters and setters allow for automatic rerendering
 		this.data = {}
+
+		// do x, y, w, and h first so they're available in the plan.data function
 		for (const k in data) {
 			Object.defineProperty(this.data, k, {
 				enumerable: true,
@@ -66,17 +70,8 @@ function Constructor (plan, ...wrappers) {
 					return data[k]
 				},
 				set: (val) => {
-					if (val !== data[k]) {
-						data[k] = val
-						this.node.scheduleRender()
-					} else {
-						//console.log('blehhhh')
-						//console.log(k)
-						//console.log(data[k])
-						//console.log(val)
-						data[k] = val
-						this.node.scheduleRender()
-					}
+					data[k] = val
+					this.node.scheduleRender()
 				},
 			})
 		}
@@ -96,6 +91,26 @@ function Constructor (plan, ...wrappers) {
 					}
 				},
 			})
+		}
+
+
+		if (plan.data) {
+			const planData = plan.data.call(this)
+
+			for (const k in planData) {
+				data[k] = planData[k]
+				Object.defineProperty(this.data, k, {
+					enumerable: true,
+					configurable: true,
+					get () {
+						return data[k]
+					},
+					set: (val) => {
+						data[k] = val
+						this.node.scheduleRender()
+					},
+				})
+			}
 		}
 
 		if (props.proxy) {

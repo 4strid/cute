@@ -1,5 +1,7 @@
 import Cute from '../../../lib/cute'
 
+console.log('sanity check')
+
 const Collider = Cute({
 	render: () => <nothing/>,
 	constructor: function Collider (props) {
@@ -62,6 +64,8 @@ const Collider = Cute({
 						colliderBody.vy *= this.bounce
 					}
 					if (this.props.reaction) {
+						console.log('yeeeee')
+						console.log(colliderComponent)
 						this.props.reaction(colliderComponent, collideeComponent, collision)
 					}
 				}
