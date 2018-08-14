@@ -4,6 +4,7 @@ import Screen from './screen'
 import Dispatch from './dispatch'
 import Scheduler from './scheduler'
 import NodeContext from './node'
+import structures from './structures'
 
 const Cute = plan => {
 	return Constructor(plan)
@@ -15,6 +16,7 @@ Cute.ctx = Cute.canvas.getContext('2d')
 Cute.screen = new Screen(Cute.ctx)
 Cute.dispatch = new Dispatch(Cute.canvas, Cute.screen)
 Cute.scheduler = new Scheduler(Cute.screen)
+Cute.structures = structures
 
 const Node = NodeContext(Cute.screen, Cute.scheduler, Cute.dispatch)
 
@@ -47,21 +49,14 @@ Cute.createRef = function () {
 
 function Ref () {}
 
-// this seems like a horrible idea lol
 Ref.prototype.reference = function (component) {
-	for (const k in component) {
-		if (component[k] instanceof Function) {
-			this[k] = (...args) => component[k].call(component, ...args)
-		} else {
-			this[k] = component[k]
-		}
-	}
+	this.component = component
 }
 
-// cleaner, but more typing for the user
-//Ref.prototype.reference = function (component) {
-	//this.component = component
-//}
+Cute.store = {}
+Cute.createStore = function (name, value) {
+	this.store[name] = value || {}
+}
 
 Cute.Constructor = Constructor
 

@@ -13,14 +13,20 @@ then
 npm run develop
 ```
 
-Once compiled, open index.html in a web browser to view Squares App, the prototypal app used
-to define the interface of the framework.
+Once compiled, open index.html in a web browser to view Bounce Physics App, the prototypal app used
+to define the latest pieces of the interface of the framework. It features a general purpose "physics engine"
+so that the code for the Square components is nearly trivial.
 
 The source code for the application is found in /src. I put in some comments so you can kind
 of see how it works.
 
-There are other examples: balloons and bounce, but these will not compile or run... yet. They
-depend on features which have not yet been implemented.
+There are other examples: Squares app, which was used to define the original interface of the framework,
+and Bounce App, the app written to test the dynamic rerendering algorithm. Bounce Physics reflects the
+best, most up-to-date practices, but you may find Squares or Bounce easier to understand. Squares, in particular
+is chock full of comments that basically explain the framework's API.
+
+There's also one called Balloons, but it won't compile or run... yet, it relies on features that have not yet been
+implemented.
 
 ## enough Cute to get by
 
@@ -300,9 +306,8 @@ const MovingSquare = Cute({
 			if (this.x < 0) {
                 this.direction = 1
 			}
-            this.x += direction * 10
-		})
-    },
+            this.x += this.direction * 7
+		}, 17)
 	render () {
         return <fill-rect color='darkred'>
 	}
@@ -315,6 +320,51 @@ Cute.attach(
     SCENE_HEIGHT
 )
 ```
+
+In this example, we set a timer which sets a new value to `this.x` which is all it takes to move it
+on the screen.  All interactive components have reactive x, y, w, and h properties: setting position
+with `this.x` or `this.y` will move the component and assigning dimensions with `this.w` and `this.h`
+will cause it to rerender.
+
+We'll worry about cleaning up after ourselves (clearing the setInterval) when we have a few more
+plan parameters to work with.
+
+#### Introducing: State
+
+Until the previous example, our components had been entirely reliant on their props for information.
+MovingSquare introduced an entirely new concept: information persistently stored on the component
+itself. Its `x` property, rather than `props.x` was what determined where on the screen it should be
+drawn, and we manipulated it directly to move it around.
+
+Most of the components we write will be stateful in some way or another as it's what makes them
+dynamic and interesting.
+
+#### data
+
+The first (of two) parameters related to state is called data. The data parameter lets us define a
+reactive object which will automatically rerender our component when it is updated. The data parameter
+should be a function which returns an object, rather than an object itself. This may seem like extra work,
+but it makes sense when you consider that components are meant to be reusable, and that
+objects are actually references.
+
+If we were to define the data parameter as the object { counter: 0 }, and then passed it to
+each component, then they would not be encapsulated: each component would refer to the same
+object, and one component updating its counter would cause every other one to update as well.
+So instead, we create a brand new object in the data function, and each component has its own
+unique copy. Another benefit is that in the data function, we have access to `this.props` and
+also any methods we define in the plan, which we can use to populate the data object.
+
+The object returned by the data parameter function is made reactive and attached to the component
+during `this.construct()` and can be accessed with `this.data`. We can use the data object to
+update the component, and as a source of information in the components render function. Only
+properties that were on the object when it was first created will be reactive, so be sure to
+specify everything you need from the get go.
+
+```jsx
+
+```
+
+#### Position: data, props, and this
 
 #### data
 

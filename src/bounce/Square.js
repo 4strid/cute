@@ -49,7 +49,6 @@ const Square = Cute({
 					// collidee was to the right this frame but not last frame
 					// prevent self from actually moving into the space occupied by the square
 					//this.x = left(collidee) - this.w
-					// change 
 					this.bounce('x')
 				}
 				if (left(this) <= right(collidee) && left(this) - this.dx > right(collidee) - collidee.dx) {

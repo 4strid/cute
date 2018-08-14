@@ -86,19 +86,25 @@ Screen.prototype.draw = function () {
 // this may be part of scheduler updates
 Screen.prototype.getIntersections = function (el) {
 	const screenObj = this.map.get(el)
-	return this.tree.search(screenObj).map(screenObj => ({
-		x: screenObj.minX,
-		y: screenObj.minY,
-		w: screenObj.maxX - screenObj.minX,
-		h: screenObj.maxY - screenObj.minY,
-		top: screenObj.minY,
-		right: screenObj.maxX,
-		bottom: screenObj.maxY,
-		left: screenObj.minX,
-		dx: screenObj.dx,
-		dy: screenObj.dy,
-		component: screenObj.component,
-	}))
+	return this.tree.search(screenObj).reduce((collisions, screenObj) => {
+		const collision = {
+			x: screenObj.minX,
+			y: screenObj.minY,
+			w: screenObj.maxX - screenObj.minX,
+			h: screenObj.maxY - screenObj.minY,
+			top: screenObj.minY,
+			right: screenObj.maxX,
+			bottom: screenObj.maxY,
+			left: screenObj.minX,
+			component: screenObj.component,
+			dx: screenObj.dx,
+			dy: screenObj.dy,
+		}
+		if (screenObj.component !== el) {
+			collisions.push(collision)
+		}
+		return collisions
+	}, [])
 }
 
 // returns only the top most intersecting component

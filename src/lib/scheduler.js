@@ -35,9 +35,6 @@ function Scheduler (screen) {
 			console.log('Slowed down!')
 			console.log(elapsed)
 		}
-		if (elapsed === 0) {
-			console.log('froze time')
-		}
 		lastTime = time
 
 		for (state = UPDATING; state <= DRAWING; state++) {

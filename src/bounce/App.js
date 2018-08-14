@@ -36,14 +36,14 @@ const App = Cute({
 			return Math.random() * (MAX_SQUARE_SIZE - MIN_SQUARE_SIZE) + MIN_SQUARE_SIZE
 		},
 		handleDestroy (evt) {
-			this.data.squares.destroy(evt.component)
+			this.data.squares.component.remove(evt.component)
 		},
 	},
 	states: {
 		Ready () {
 			this.on('click', evt => {
 				const sideLength = this.randomDimensions()
-				this.data.squares.create({
+				this.data.squares.component.create({
 					// centers the square on the mouse position
 					x: evt.localX - sideLength / 2,
 					y: evt.localY - sideLength / 2,

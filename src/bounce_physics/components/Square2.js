@@ -1,6 +1,6 @@
 import Cute from '../../lib/cute'
 
-import { Body } from './physics'
+import { withBody } from './physics'
 
 const Square = Cute({
 	//displayName: 'Square',
@@ -12,11 +12,9 @@ const Square = Cute({
 	},
 	render () {
 		return (
-			<Body proxy={proxy => proxy(this, 'x', 'y', 'vx', 'vy')}>
-				<rect w={this.w} h={this.h} x={0} y={0}>
-					<fill color={this.data.color} />
-				</rect>
-			</Body>
+			<rect w={this.w} h={this.h} x={0} y={0}>
+				<fill color={this.data.color} />
+			</rect>
 		)
 	},
 	data () {
@@ -36,18 +34,17 @@ const Square = Cute({
 			})
 		},
 	},
-})
+}, withBody)
 
 // returns a random color
 function randomColor () {
-	const hex = Math.floor(Math.random() * 16777215).toString(16)
-	return '#' + '0'.repeat(6 - hex.length) + hex
+	return '#' + Math.floor(Math.random() * 16777215).toString(16)
 }
 
 // returns a random speed in pixels per second
 function randomVelocity () {
-	const MIN_V = 25
-	const MAX_V = 45
+	const MIN_V = 20
+	const MAX_V = 40
 	return Math.random() * (MAX_V - MIN_V) + MIN_V
 }
 
