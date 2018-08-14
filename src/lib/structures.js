@@ -17,6 +17,21 @@ MultiMap.prototype.getAll = function (constructor) {
 	return this.constructorMap.get(constructor)
 }
 
+MultiMap.prototype.delete = function (component) {
+	const componentMap = this.constructorMap.get(component.constructor)
+	if (componentMap) {
+		componentMap.delete(component)
+	}
+}
+
+MultiMap.prototype.forEach = function (fn) {
+	this.constructorMap.forEach((map, constructor) => {
+		map.forEach((val, component) => {
+			fn(val, component, constructor)
+		})
+	})
+}
+
 export default {
 	MultiMap,
 }

@@ -118,7 +118,7 @@ function NodeContext (screen, scheduler, dispatch) {
 	function compareProps (a, b) {
 		for (const k in a) {
 			// children have been reconciled, if they are simple-equivalent they're the same
-			// children's props were compared at a previous step
+			// children's props were compared as part of reconciliation
 			if (k === 'children') {
 				if (!('children' in b)) {
 					return true
@@ -135,10 +135,18 @@ function NodeContext (screen, scheduler, dispatch) {
 			}
 			if (k === 'state') {
 				// if state is updated, must rerender
-				if (a.state.isUpdated) {
+				if (b.state.isUpdated) {
 					return true
 				}
 				continue
+			}
+			if (a[k] instanceof Function && b[k] instanceof Function) {
+				if (a[k] === b[k]) {
+					continue
+				}
+				if (a[k].toString() === b[k].toString()) {
+					continue
+				}
 			}
 			if (!deepEqual(a[k], b[k])) {
 				return true
@@ -155,16 +163,18 @@ function NodeContext (screen, scheduler, dispatch) {
 
 	// sets own props to new props. sets own isUpdated property if props or children are updated
 	Node.prototype.receiveProps = function (props) {
-		console.log('receive props')
-		console.log(this.component || this.displayName)
-		console.log(props)
+		//console.log('receive props')
+		//console.log(this.component || this.displayName)
+		if (this.props.color) {
+			//console.log('old color ', this.props.color)
+		}
+		//console.log(props)
 		//this.x = props.x || this.x
 		//this.y = props.y || this.y
-		const childMap = new MultiMap(this.props.children)
 		
-		//let childrenUpdated = false
+		const childMap = new MultiMap(this.children)
 
-		if (props.children !== undefined) {
+		if (this.children !== undefined && props.children !== undefined) {
 			//console.log('has children')
 			props.children = props.children.map(newChild => {
 				const oldChild = childMap.match(newChild)
@@ -179,11 +189,14 @@ function NodeContext (screen, scheduler, dispatch) {
 				return oldChild
 			})
 
-			// destroy any nodes left over
-			childMap.forEach(node => {
-				node.destroy()
-			})
 		}
+
+		// destroy any nodes left over
+		childMap.forEach(node => {
+			node.destroy()
+		})
+
+		//this.children = props.children
 
 		this.propsUpdated = compareProps(this.props, props)
 		this.props = props
@@ -193,8 +206,8 @@ function NodeContext (screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.rerender = function () {
-		console.log('rerender')
-		console.log(this.component || this.displayName)
+		//console.log('rerender')
+		//console.log(this.component || this.displayName)
 		//if (screen.renderMap.has(this)) {
 			//console.log('rerendered more than once')
 			//console.log(this)
@@ -203,7 +216,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		//}
 
 		if (!this.isUpdated && !this.propsUpdated) {
-			console.log('xxxxxxx')
+			//console.log('xxxxxxx')
 			//console.log(this)
 			if (this.rendered instanceof Node) {
 				this.rendered.setParent(this)
@@ -216,14 +229,14 @@ function NodeContext (screen, scheduler, dispatch) {
 				})
 			}
 		} else {
-			console.log('yyyyyyy')
+			//console.log('yyyyyyy')
 			//console.log(this)
 			const rerendered = this.render(this.props)
 
 			if (!(rerendered instanceof Node)) {
 				this.rendered = rerendered
-				if (this.props.children) {
-					this.children = this.props.children
+				this.children = this.props.children
+				if (this.children) {
 					this.children.forEach(child => {
 						child.setParent(this)
 						if (child.rendered) {
@@ -234,7 +247,7 @@ function NodeContext (screen, scheduler, dispatch) {
 					})
 				}
 			} else if (this.rendered.type === rerendered.type) {
-				console.log('zzzzzzz')
+				//console.log('zzzzzzz')
 				this.rendered.setParent(this)
 				this.rendered.receiveProps(rerendered.props)
 				this.rendered.rerender()
@@ -247,6 +260,7 @@ function NodeContext (screen, scheduler, dispatch) {
 
 		// reset flags
 		this.isUpdated = false
+		this.propsUpdated = false
 		if (this.component) {
 			this.component.state.isUpdated = false
 		}
@@ -343,6 +357,14 @@ function NodeContext (screen, scheduler, dispatch) {
 	},
 
 	Node.prototype.destroy = function () {
+		if (this.rendered instanceof Node) {
+			this.rendered.destroy()
+		}
+		if (this.children) {
+			this.children.forEach(child => {
+				child.destroy()
+			})
+		}
 		if (this.component) {
 			dispatch.removeComponent(this.component)
 			if (this.component.destroy) {

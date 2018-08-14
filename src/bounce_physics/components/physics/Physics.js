@@ -29,7 +29,7 @@ const Physics = Cute({
 		addBody (body, component) {
 			this.bodies.set(component, body)
 		},
-		removeBody (body, component) {
+		removeBody (component) {
 			this.bodies.delete(component)
 		},
 		getBodies () {

@@ -97,6 +97,8 @@ Screen.prototype.getIntersections = function (el) {
 			bottom: screenObj.maxY,
 			left: screenObj.minX,
 			component: screenObj.component,
+			dx: screenObj.dx,
+			dy: screenObj.dy,
 		}
 		if (screenObj.component !== el) {
 			collisions.push(collision)
