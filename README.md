@@ -13,16 +13,20 @@ then
 npm run develop
 ```
 
-Once compiled, open index.html in a web browser to view Squares App, the prototypal app used
-to define the interface of the framework.
+Once compiled, open index.html in a web browser to view Bounce Physics App, the prototypal app used
+to define the latest pieces of the interface of the framework. It features a general purpose "physics engine"
+so that the code for the Square components is nearly trivial.
 
 The source code for the application is found in /src. I put in some comments so you can kind
 of see how it works.
 
-There are other examples: balloons and bounce, but these will not compile or run... yet. They
-depend on features which have not yet been implemented.
-<<<<<<< Updated upstream
-=======
+There are other examples: Squares app, which was used to define the original interface of the framework,
+and Bounce App, the app written to test the dynamic rerendering algorithm. Bounce Physics reflects the
+best, most up-to-date practices, but you may find Squares or Bounce easier to understand. Squares, in particular
+is chock full of comments that basically explain the framework's API.
+
+There's also one called Balloons, but it won't compile or run... yet, it relies on features that have not yet been
+implemented.
 
 ## enough Cute to get by
 
@@ -304,7 +308,6 @@ const MovingSquare = Cute({
 			}
             this.x += this.direction * 7
 		}, 17)
-    },
 	render () {
         return <fill-rect color='darkred'>
 	}
@@ -362,4 +365,18 @@ specify everything you need from the get go.
 ```
 
 #### Position: data, props, and this
->>>>>>> Stashed changes
+
+#### data
+
+Now things are heating up! The data parameter lets us define a reactive object, which will
+automatically rerender our component when it is updated. The data parameter should be a
+function which returns an object, rather than an object itself. This may seem like extra work,
+but it makes sense when you consider that components are meant to be reusable, and that
+objects are actually references.
+
+If we were to pass the object { counter: 0 } to each component, then they would not be
+encapsulated: each component would refer to the same object, and one component updating its
+counter would cause every other one to update as well. So instead, we create a brand new
+object in the data function, and each component has its own unique copy. Another benefit is
+that in the data function, we have access to `this.props` and also any methods we define in
+the plan.
