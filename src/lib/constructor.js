@@ -22,7 +22,6 @@ function Constructor (plan, ...wrappers) {
 			this.node.removeEventListeners(this)
 			this.state.set(state)
 			plan.states[state].call(this)
-			this.node.scheduleRender()
 		}
 	}
 
@@ -150,6 +149,9 @@ function Constructor (plan, ...wrappers) {
 		this.construct(props)
 	}
 
+	if (plan.transform === false) {
+		constructor.transform = false
+	}
 	constructor.prototype = prototype
 	constructor.prototype.constructor = constructor
 
@@ -178,6 +180,7 @@ Constructor.prototype = {
 		if (this[name]) {
 			this[name]()
 		}
+		this.node.scheduleRender()
 	},
 	_receiveProps (props) {
 
@@ -243,7 +246,7 @@ State.prototype.restore = function () {
 	if (name === undefined) {
 		throw new ReferenceError('Tried to restore state with no states on the stack')
 	}
-	this.component[name]()
+	this.component.setState(name)
 }
 
 //Constructor.prototype.constructor = Constructor

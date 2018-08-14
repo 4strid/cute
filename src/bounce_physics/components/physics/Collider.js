@@ -1,5 +1,7 @@
 import Cute from '../../../lib/cute'
 
+import storeSymbol from './symbol'
+
 const Collider = Cute({
 	render: () => <nothing/>,
 	constructor: function Collider (props) {
@@ -37,7 +39,7 @@ const Collider = Cute({
 		},
 	},
 	update () {
-		const bodies = Cute.store.physics.getBodies()
+		const bodies = Cute.store[storeSymbol].getBodies()
 		const colliders = bodies.getAll(this.props.collider)
 		if (!colliders) {
 			return

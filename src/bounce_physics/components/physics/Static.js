@@ -1,5 +1,7 @@
 import Cute from '../../../lib/cute'
 
+import storeSymbol from './symbol'
+
 const Static = Cute({
 	render () {
 		return (
@@ -11,7 +13,7 @@ const Static = Cute({
 		if (typeof this.proxyOf === 'undefined') {
 			throw new TypeError('<Static> must proxy another component')
 		}
-		Cute.store.physics.addBody(this, this.proxyOf)
+		Cute.store[storeSymbol].addBody(this, this.proxyOf)
 		this.vx = this.vx || 0
 		this.vy = this.vy || 0
 		this.dx = this.dx || 0
