@@ -3,19 +3,15 @@ import { ComponentMap, Clock } from '../lib/components'
 import Square from './components/Square'
 import PauseIcon from './components/PauseIcon'
 import Cursor from './components/Cursor'
-import Physics, { Collider } from './lib/physics'
-
-
-// TODO make components 100% of the width of their container by default. A node finds out who its parent is
-// right before rendering, so this should be ok.
+import { Physics, Collider, WorldBounds } from './components/physics'
 
 const App = Cute({
-	displayName: 'App',
 	render () {
 		return (
 			<layer>
 				<Physics>
-					<Collider collider={Square} collidee={Square} bounce={1} reaction={this.squareXsquareCollision}/>
+					<Collider collider={Square} collidee={Square} bounce={1} reaction={square => square.switchColors()}/>
+					<Collider collider={Square} collidee={WorldBounds} bounce={1} reaction={square => square.switchColors()}/>
 					<ComponentMap ref={squares => this.squares = squares}>
 						<Square handleDestroy={this.handleDestroy.bind(this)}/>
 					</ComponentMap>
@@ -25,6 +21,9 @@ const App = Cute({
 				<Clock paused={this.data.paused}/>
 			</layer>
 		)
+	},
+	constructor: function App (props) {
+		this.construct(props)
 	},
 	data () {
 		return {
@@ -38,20 +37,14 @@ const App = Cute({
 			return Math.random() * (MAX_SQUARE_SIZE - MIN_SQUARE_SIZE) + MIN_SQUARE_SIZE
 		},
 		handleDestroy (evt) {
-			this.data.squares.destroy(evt.component)
-		},
-		squareXsquareCollision (collider, collidee, collision) {
-			// we actually only need collider, but I figured I'd show you what the rest of the arguments are
-			collider.switchColors()
-			collidee
-			collision
+			this.squares.remove(evt.component)
 		},
 	},
 	states: {
 		Ready () {
 			this.on('click', evt => {
 				const sideLength = this.randomDimensions()
-				this.data.squares.create({
+				this.squares.create({
 					// centers the square on the mouse position
 					x: evt.localX - sideLength / 2,
 					y: evt.localY - sideLength / 2,

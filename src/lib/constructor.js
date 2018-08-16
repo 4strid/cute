@@ -1,7 +1,16 @@
-function Constructor (plan) {
+function Constructor (plan, ...wrappers) {
 	const prototype = Object.create(Constructor.prototype)
 
 	// attach render function
+	if (wrappers.length) {
+		prototype.render = function () {
+			let render = this.render.bind(this)
+			for (let i = wrappers.length - 1; i >= 0; i--) {
+				render = () => wrappers[i](render, this, this.props)
+			}
+			return render()
+		}
+	}
 	prototype.render = plan.render
 	// attach methods from plan
 	for (const method in plan.methods) {
@@ -16,55 +25,53 @@ function Constructor (plan) {
 			this.node.scheduleRender()
 		}
 	}
+
 	if (plan.update) {
-		//console.log('assigned update')
 		prototype.update = plan.update
 	}
 
-	// even this doesn't appear to work in Chrome, the functions are still called ''
-	//function nameFunction (name) {
-	//	return {[name]: function (props, node) {return construct.call(this, props, node)}}[name]
-	//}
+	prototype.destroy = function () {
+		if (plan.destroy) {
+			plan.destroy.call(this)
+		}
+	}
 
-	//const Component = nameFunction(plan.displayName || 'Component')
+	prototype.construct = function (props) {
+		this.props = {}
+		for (const k in props) {
+			if (k === 'key' || k === 'ref' || k === 'proxy') {
+				continue
+			}
+			this.props[k] = props[k]
+		}
+		// pass the transform value up to the node
+		props.transform = plan.transform !== false
 
-	//console.log(Component.name)
-	//console.log(Component)
-
-	function Component (props, node) {
-		//console.log('initializing component')
-		this.props = props
-		this.node = node
-
-		// set up data handlers
-		const data = plan.data ? plan.data.call(this) : {}
+		// the canonical data object that actually holds the data
+		const data = {}
 
 		// set initial positional values
 		Object.assign(data, {
 			x: props.x || plan.x || 0,
 			y: props.y || plan.y || 0,
-			w: props.w || plan.w || 0,
-			h: props.h || plan.h || 0,
+			w: props.w || plan.w,
+			h: props.h || plan.h,
 		})
+
+		// proxy data object whose getters and setters allow for automatic rerendering
 		this.data = {}
+
+		// do x, y, w, and h first so they're available in the plan.data function
 		for (const k in data) {
 			Object.defineProperty(this.data, k, {
 				enumerable: true,
+				configurable: true,
 				get () {
 					return data[k]
 				},
-				set (val) {
-					if (val !== data[k]) {
-						data[k] = val
-						node.scheduleRender()
-					} else {
-						//console.log('blehhhh')
-						//console.log(k)
-						//console.log(data[k])
-						//console.log(val)
-						data[k] = val
-						node.scheduleRender()
-					}
+				set: (val) => {
+					data[k] = val
+					this.node.scheduleRender()
 				},
 			})
 		}
@@ -73,24 +80,57 @@ function Constructor (plan) {
 		for (const k of ['x', 'y']) {
 			Object.defineProperty(this, k, {
 				enumerable: true,
+				configurable: true,
 				get () {
 					return data[k]
 				},
-				set (val) {
+				set: (val) => {
 					if (val !== data[k]) {
 						data[k] = val
-						node.scheduleMove()
+						this.node.scheduleMove()
 					}
 				},
 			})
 		}
 
 
-		// TODO: handle async loading, then call start state when ready
+		if (plan.data) {
+			const planData = plan.data.call(this)
 
-		// this leads to inconsistent state between parent and child if the
-		// parent immediately transitions to a new state. seek a better solution
-		//
+			for (const k in planData) {
+				data[k] = planData[k]
+				Object.defineProperty(this.data, k, {
+					enumerable: true,
+					configurable: true,
+					get () {
+						return data[k]
+					},
+					set: (val) => {
+						data[k] = val
+						this.node.scheduleRender()
+					},
+				})
+			}
+		}
+
+		if (props.proxy) {
+			props.proxy((proxied, ...bindings) => {
+				this.proxyOf = proxied
+				for (const binding of bindings) {
+					Object.defineProperty(this, binding, {
+						enumerable: true,
+						configurable: true,
+						get () {
+							return proxied[binding]
+						},
+						set (value) {
+							return proxied[binding] = value
+						},
+					})
+				}
+			})
+		}
+
 		// oh cool, actually the order of events is:
 		//  - parent component changes state
 		//   > schedules rerender
@@ -104,23 +144,16 @@ function Constructor (plan) {
 		}
 
 		this.state = new State(startState, this)
-
-		// attempt to call the startState function
-		if (this[startState] !== undefined) {
-			this[startState]()
-		} else if (this.Ready) {
-			this.Ready()
-		}
 	}
 
-	Component.prototype = prototype
-	Component.prototype.constructor = Component
-
-	if (plan.displayName) {
-		Component.displayName = plan.displayName
+	const constructor = plan.hasOwnProperty('constructor') ? plan.constructor : function Component (props) {
+		this.construct(props)
 	}
 
-	return Component
+	constructor.prototype = prototype
+	constructor.prototype.constructor = constructor
+
+	return constructor
 }
 
 Constructor.prototype = {
@@ -175,6 +208,7 @@ Constructor.prototype = {
 for (const k of ['w', 'h']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
+		configurable: true,
 		get () {
 			return this.data[k]
 		},

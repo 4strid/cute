@@ -1,19 +1,31 @@
 import Cute from '../../lib/cute'
 import { ComponentMap } from '../../lib/components'
 import Heart from './Heart'
+import Character from './Character'
+import OtherCharacter from './OtherCharacter'
 import Cursor from './Cursor'
 
 const App = Cute({
 	render() {
 		return (
 			<layer>
-				<fill-rect x={0} y={0} h={Cute.canvas.height} w={Cute.canvas.width} color={"#00368e"} />
-				<fill-rect x={0} y={Cute.canvas.height / 2} h={50} w={50} color={"black"} />
+				{/* Start point */}
+				<path>
+					<arc x={Cute.canvas.width / 2} y={Cute.canvas.height / 2} r={5} sa={0} ea={2 * Math.PI} />
+					<fill color="purple" />
+				</path>
+				{/* End Point */}
+				<path>
+					<arc x={(Cute.canvas.width / 2) + 100} y={(Cute.canvas.height / 2) + 100} r={5} sa={0} ea={2 * Math.PI} />
+					<fill color="purple" />
+				</path>
+				<Character xPos={Cute.canvas.width / 2} yPos={Cute.canvas.height / 2} />
+				<OtherCharacter xPos={Cute.canvas.width / 2} yPos={Cute.canvas.height / 2} />
 				<ComponentMap ref={this.data.hearts}>
 					<Heart handleDestroy={this.handleDestroy.bind(this)} state={this.state} />
 				</ComponentMap>
 				<Cursor state={this.state} w={8} h={8} />
-			</layer>
+			</layer >
 		)
 	},
 	data() {

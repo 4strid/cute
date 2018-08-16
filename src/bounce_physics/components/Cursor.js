@@ -1,7 +1,9 @@
-import Cute from '../lib/cute'
+import Cute from '../../lib/cute'
 
 const Cursor = Cute({
-	displayName: 'Cursor',
+	constructor: function Cursor (props) {
+		this.construct(props)
+	},
 	render () {
 		let fillColor = '#000000'
 		if (this.state.CreateSquares) {
