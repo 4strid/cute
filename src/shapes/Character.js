@@ -1,4 +1,4 @@
-import Cute from '../../lib/cute'
+import Cute from '../lib/cute'
 const Character = Cute({
     render() {
         return (

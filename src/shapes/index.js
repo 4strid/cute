@@ -1,8 +1,8 @@
-import Cute from '../../lib/cute'
+import Cute from '../lib/cute'
 import App from './App'
 
-const CANVAS_WIDTH = 750
-const CANVAS_HEIGHT = 550
+const CANVAS_WIDTH = 500
+const CANVAS_HEIGHT = 300
 
 Cute.attach(<App />, document.querySelector('.cute-container'), CANVAS_WIDTH, CANVAS_HEIGHT)
 
