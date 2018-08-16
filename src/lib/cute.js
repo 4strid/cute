@@ -47,23 +47,16 @@ Cute.createRef = function () {
 	return new Ref()
 }
 
-function Ref () { }
+function Ref() { }
 
 Ref.prototype.reference = function (component) {
 	this.component = component
 }
 
-<<<<<<< HEAD
-// cleaner, but more typing for the user
-//Ref.prototype.reference = function (component) {
-//this.component = component
-//}
-=======
 Cute.store = {}
 Cute.createStore = function (name, value) {
 	this.store[name] = value || {}
 }
->>>>>>> c3366eae03b71b30e5ae8b0b4c6f023652a4c824
 
 Cute.Constructor = Constructor
 

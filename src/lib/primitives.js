@@ -23,7 +23,7 @@ const primitives = {
 	'arc-to'(props) {
 		return ctx => {
 			ctx.save()
-			ctx.arcTo(0, 0, props.xb, props.yb, props.r)
+			ctx.arcTo(0, 0, props.xb - props.x, props.yb - props.y, props.r)
 			ctx.restore()
 		}
 	},
@@ -35,7 +35,7 @@ const primitives = {
 	'bezier-curve'(props) {
 		return ctx => {
 			ctx.save()
-			ctx.bezierCurveTo(props.cp1x, props.cp1y, props.cp2x, props.cp2y, 0, 0)
+			ctx.bezierCurveTo(props.cp1x - props.x, props.cp1y - props.y, props.cp2x - props.x, props.cp2y - props.y, 0, 0)
 			ctx.restore()
 		}
 	},
@@ -126,7 +126,7 @@ const primitives = {
 	'quad-curve'(props) {
 		return ctx => {
 			ctx.save()
-			ctx.quadraticCurveTo(props.cpx, props.cpy, props.x, props.y)
+			ctx.quadraticCurveTo(props.cpx - props.x, props.cpy - props.y, 0, 0)
 			ctx.restore()
 		}
 	},

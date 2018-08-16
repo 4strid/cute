@@ -17,14 +17,9 @@ const Square = Cute({
 		}
 	},
 	methods: {
-<<<<<<< HEAD
 		randomColor() {
-			return '#' + Math.floor(Math.random() * 16777215).toString(16)
-=======
-		randomColor () {
 			const hex = Math.floor(Math.random() * 16777215).toString(16)
 			return '#' + '0'.repeat(6 - hex.length) + hex
->>>>>>> c3366eae03b71b30e5ae8b0b4c6f023652a4c824
 		},
 	},
 	states: {

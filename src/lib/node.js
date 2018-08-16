@@ -6,8 +6,8 @@ import Constructor from './constructor'
 // Nodes are the glue between components and Cute.
 // By wrapping the Node constructor in a closure, we supply all the necessary
 // components of Cute to each node
-function NodeContext (screen, scheduler, dispatch) {
-	function Node (type, props, children) {
+function NodeContext(screen, scheduler, dispatch) {
+	function Node(type, props, children) {
 		this.props = props || {}
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
@@ -37,7 +37,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.type = type
 	}
 
-	function isInteractiveComponent (node) {
+	function isInteractiveComponent(node) {
 		return Constructor.prototype.isPrototypeOf(node.type.prototype)
 	}
 
@@ -115,7 +115,7 @@ function NodeContext (screen, scheduler, dispatch) {
 		this.screenY = this.y + this.parent.screenY
 	}
 
-	function compareProps (a, b) {
+	function compareProps(a, b) {
 		for (const k in a) {
 			// children have been reconciled, if they are simple-equivalent they're the same
 			// children's props were compared as part of reconciliation
@@ -171,19 +171,11 @@ function NodeContext (screen, scheduler, dispatch) {
 		//console.log(props)
 		//this.x = props.x || this.x
 		//this.y = props.y || this.y
-<<<<<<< HEAD
-		const childMap = new MultiMap(this.props.children)
 
-		let childrenUpdated = false
-
-		if (props.children !== undefined) {
-=======
-		
 		const childMap = new MultiMap(this.children)
 
 		if (this.children !== undefined && props.children !== undefined) {
 			//console.log('has children')
->>>>>>> c3366eae03b71b30e5ae8b0b4c6f023652a4c824
 			props.children = props.children.map(newChild => {
 				const oldChild = childMap.match(newChild)
 				//return oldChild || newChild
@@ -364,35 +356,35 @@ function NodeContext (screen, scheduler, dispatch) {
 		return screen.getIntersections(component)
 	},
 
-	Node.prototype.destroy = function () {
-		if (this.rendered instanceof Node) {
-			this.rendered.destroy()
-		}
-		if (this.children) {
-			this.children.forEach(child => {
-				child.destroy()
-			})
-		}
-		if (this.component) {
-			dispatch.removeComponent(this.component)
-			if (this.component.destroy) {
-				this.component.destroy.call(this.component)
+		Node.prototype.destroy = function () {
+			if (this.rendered instanceof Node) {
+				this.rendered.destroy()
 			}
+			if (this.children) {
+				this.children.forEach(child => {
+					child.destroy()
+				})
+			}
+			if (this.component) {
+				dispatch.removeComponent(this.component)
+				if (this.component.destroy) {
+					this.component.destroy.call(this.component)
+				}
+			}
+			// scheduler.scheduleRender(this)
+			// I mean that can't be right, we're trying to disappear, why would we need to rerender?
 		}
-		// scheduler.scheduleRender(this)
-		// I mean that can't be right, we're trying to disappear, why would we need to rerender?
-	}
 
 	return Node
 }
 
 // returns the component's key if it exists, otherwise the type
-function getKey (node) {
+function getKey(node) {
 	return node.key || node.type
 }
 
 // A Map that allows multiple insertions to the same key. Powers the children diffing algorithm.
-function MultiMap (children) {
+function MultiMap(children) {
 	this.map = new Map()
 	this.indexMap = new Map()
 

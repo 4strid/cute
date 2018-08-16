@@ -2,7 +2,7 @@ import Cute from '../../lib/cute'
 import { ComponentMap } from '../../lib/components'
 import Heart from './Heart'
 import Character from './Character'
-import OtherCharacter from './OtherCharacter'
+// import OtherCharacter from './OtherCharacter'
 import Cursor from './Cursor'
 
 const App = Cute({
@@ -20,7 +20,7 @@ const App = Cute({
 					<fill color="purple" />
 				</path>
 				<Character xPos={Cute.canvas.width / 2} yPos={Cute.canvas.height / 2} />
-				<OtherCharacter xPos={Cute.canvas.width / 2} yPos={Cute.canvas.height / 2} />
+				{/* <OtherCharacter xPos={Cute.canvas.width / 2} yPos={Cute.canvas.height / 2} /> */}
 				<ComponentMap ref={this.data.hearts}>
 					<Heart handleDestroy={this.handleDestroy.bind(this)} state={this.state} />
 				</ComponentMap>
