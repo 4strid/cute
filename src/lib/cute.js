@@ -6,8 +6,8 @@ import Scheduler from './scheduler'
 import NodeContext from './node'
 import structures from './structures'
 
-const Cute = plan => {
-	return Constructor(plan)
+const Cute = (plan, ...wrappers) => {
+	return Constructor(plan, ...wrappers)
 }
 
 Cute.canvas = document.createElement('canvas')

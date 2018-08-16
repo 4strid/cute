@@ -19,15 +19,18 @@ const Collider = Cute({
 			const sh = collider.h + collidee.h
 			console.log('sum', sw, sh)
 			// scaled collision direction
-			// ... idk about these deltas but we'll see if it works
-			const scx = cx / sw * collider.dx
+			//console.log('zzz', sw / 2, sh / 2)
+			//const scx = (Math.abs(cx) - sw / 2) * collider.dx
+			//const scx = (Math.abs(cx) - sw / 2) * collider.dx
+			const scx = cx / sh * collider.dx
 			const scy = cy / sh * collider.dy
 			console.log('d', collider.dx, collider.dy)
-			console.log('dd', collider.dx - collidee.dx, collider.dy - collidee.dy)
+			console.log('dd', collider.dx + collidee.dx, collider.dy + collidee.dy)
 			// should we reflect off this axis? (cast boolean to number)
 			console.log('sc', scx, scy)
 			const reflectx = (scx >= scy) * 1
 			const reflecty = (scy >= scx) * 1
+			console.log('ref', reflectx, reflecty)
 			// this is which side was hit
 			const nx = (Math.abs(scx) >= Math.abs(scy)) * Math.sign(scx)
 			const ny = (Math.abs(scy) >= Math.abs(scx)) * Math.sign(scy)

@@ -1,17 +1,21 @@
 function Constructor (plan, ...wrappers) {
 	const prototype = Object.create(Constructor.prototype)
 
+	console.log(wrappers)
+
 	// attach render function
 	if (wrappers.length) {
-		prototype.render = function () {
-			let render = this.render.bind(this)
-			for (let i = wrappers.length - 1; i >= 0; i--) {
-				render = () => wrappers[i](render, this, this.props)
+		let render = plan.render
+		for (let i = wrappers.length - 1; i >= 0; i--) {
+			const renderFn = render
+			render = function () {
+				 return wrappers[i].call(this, renderFn.bind(this), this, this.props)
 			}
-			return render()
 		}
+		prototype.render = render
+	} else {
+		prototype.render = plan.render
 	}
-	prototype.render = plan.render
 	// attach methods from plan
 	for (const method in plan.methods) {
 		prototype[method] = plan.methods[method]

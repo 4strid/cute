@@ -34,9 +34,9 @@ const Body = Cute({
 	transform: false,
 })
 
-function withBody (render, wrapped) {
+function withBody (render) {
 	return (
-		<Body proxy={proxy => proxy(wrapped, 'x', 'y', 'vx', 'vy', 'dx', 'dy')}>
+		<Body proxy={proxy => proxy(this, 'x', 'y', 'vx', 'vy', 'dx', 'dy')}>
 			{ render() }
 		</Body>
 	)

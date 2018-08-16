@@ -68,7 +68,8 @@ function NodeContext (screen, scheduler, dispatch) {
 					this.ref.reference(this.component)
 				}
 			}
-			return this.component.render()
+			const ahhhh = this.component.render()
+			return ahhhh
 		}
 		return this.type(props)
 	}
@@ -244,7 +245,6 @@ function NodeContext (screen, scheduler, dispatch) {
 					})
 				}
 			} else if (this.rendered.type === rerendered.type) {
-				//console.log('zzzzzzz')
 				this.rendered.setParent(this)
 				this.rendered.receiveProps(rerendered.props)
 				this.rendered.rerender()
