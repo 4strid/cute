@@ -20,7 +20,7 @@ const Static = Cute({
 		this.dy = this.dy || 0
 	},
 	destroy () {
-		Cute.store.physics.removeBody(this.proxyOf)
+		Cute.store[storeSymbol].removeBody(this.proxyOf)
 	},
 	transform: false,
 })

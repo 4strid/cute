@@ -29,7 +29,7 @@ const Body = Cute({
 		this.y += this.dy
 	},
 	destroy () {
-		Cute.store.physics.removeBody(this.proxyOf)
+		Cute.store[storeSymbol].removeBody(this.proxyOf)
 	},
 	transform: false,
 })
