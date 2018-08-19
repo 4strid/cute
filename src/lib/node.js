@@ -58,8 +58,9 @@ function NodeContext (screen, scheduler, dispatch) {
 		if (isInteractiveComponent(this)) {
 			this.component = new this.type(props)
 			this.component.node = this
-			this.component.setState(this.component.state.name)
-			this.transform = props.transform
+			// initialize state without triggering a rerender
+			this.component[this.component.state.name] &&
+				this.component[this.component.state.name]()
 			if (this.ref) {
 				if (this.ref instanceof Function) {
 					this.ref(this.component)
@@ -67,7 +68,8 @@ function NodeContext (screen, scheduler, dispatch) {
 					this.ref.reference(this.component)
 				}
 			}
-			return this.component.render()
+			const ahhhh = this.component.render()
+			return ahhhh
 		}
 		return this.type(props)
 	}
@@ -99,7 +101,7 @@ function NodeContext (screen, scheduler, dispatch) {
 			this.y = this.component.y
 		}
 
-		if (this.transform === false) {
+		if (this.type.transform === false) {
 			this.x = 0
 			this.y = 0
 		}
@@ -140,6 +142,7 @@ function NodeContext (screen, scheduler, dispatch) {
 				}
 				continue
 			}
+			// feels like there must be a better way to do this
 			if (a[k] instanceof Function && b[k] instanceof Function) {
 				if (a[k] === b[k]) {
 					continue
@@ -165,12 +168,7 @@ function NodeContext (screen, scheduler, dispatch) {
 	Node.prototype.receiveProps = function (props) {
 		//console.log('receive props')
 		//console.log(this.component || this.displayName)
-		if (this.props.color) {
-			//console.log('old color ', this.props.color)
-		}
 		//console.log(props)
-		//this.x = props.x || this.x
-		//this.y = props.y || this.y
 		
 		const childMap = new MultiMap(this.children)
 
@@ -209,10 +207,10 @@ function NodeContext (screen, scheduler, dispatch) {
 		//console.log('rerender')
 		//console.log(this.component || this.displayName)
 		//if (screen.renderMap.has(this)) {
-			//console.log('rerendered more than once')
-			//console.log(this)
+		//console.log('rerendered more than once')
+		//console.log(this)
 		//} else {
-			//screen.renderMap.set(this, this)
+		//screen.renderMap.set(this, this)
 		//}
 
 		if (!this.isUpdated && !this.propsUpdated) {
@@ -247,7 +245,6 @@ function NodeContext (screen, scheduler, dispatch) {
 					})
 				}
 			} else if (this.rendered.type === rerendered.type) {
-				//console.log('zzzzzzz')
 				this.rendered.setParent(this)
 				this.rendered.receiveProps(rerendered.props)
 				this.rendered.rerender()
@@ -275,11 +272,12 @@ function NodeContext (screen, scheduler, dispatch) {
 				this.component.update(time)
 			}
 			this.rendered.recursiveUpdate(time)
-		}
-		if (this.children) {
-			this.children.forEach(child => {
-				child.recursiveUpdate(time)
-			})
+		} else {
+			if (this.children) {
+				this.children.forEach(child => {
+					child.recursiveUpdate(time)
+				})
+			}
 		}
 	}
 
