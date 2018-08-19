@@ -1,17 +1,21 @@
 function Constructor (plan, ...wrappers) {
 	const prototype = Object.create(Constructor.prototype)
 
+	console.log(wrappers)
+
 	// attach render function
 	if (wrappers.length) {
-		prototype.render = function () {
-			let render = this.render.bind(this)
-			for (let i = wrappers.length - 1; i >= 0; i--) {
-				render = () => wrappers[i](render, this, this.props)
+		let render = plan.render
+		for (let i = wrappers.length - 1; i >= 0; i--) {
+			const renderFn = render
+			render = function () {
+				 return wrappers[i].call(this, renderFn.bind(this), this, this.props)
 			}
-			return render()
 		}
+		prototype.render = render
+	} else {
+		prototype.render = plan.render
 	}
-	prototype.render = plan.render
 	// attach methods from plan
 	for (const method in plan.methods) {
 		prototype[method] = plan.methods[method]
@@ -22,7 +26,6 @@ function Constructor (plan, ...wrappers) {
 			this.node.removeEventListeners(this)
 			this.state.set(state)
 			plan.states[state].call(this)
-			this.node.scheduleRender()
 		}
 	}
 
@@ -37,36 +40,41 @@ function Constructor (plan, ...wrappers) {
 	}
 
 	prototype.construct = function (props) {
-		this.props = props
-		// set up data handlers
-		const data = plan.data ? plan.data.call(this) : {}
+		this.props = {}
+		for (const k in props) {
+			if (k === 'key' || k === 'ref' || k === 'proxy') {
+				continue
+			}
+			this.props[k] = props[k]
+		}
+		// pass the transform value up to the node
+		props.transform = plan.transform !== false
+
+		// the canonical data object that actually holds the data
+		const data = {}
 
 		// set initial positional values
 		Object.assign(data, {
 			x: props.x || plan.x || 0,
 			y: props.y || plan.y || 0,
-			w: props.w || plan.w || 0,
-			h: props.h || plan.h || 0,
+			w: props.w || plan.w,
+			h: props.h || plan.h,
 		})
+
+		// proxy data object whose getters and setters allow for automatic rerendering
 		this.data = {}
+
+		// do x, y, w, and h first so they're available in the plan.data function
 		for (const k in data) {
 			Object.defineProperty(this.data, k, {
 				enumerable: true,
+				configurable: true,
 				get () {
 					return data[k]
 				},
 				set: (val) => {
-					if (val !== data[k]) {
-						data[k] = val
-						this.node.scheduleRender()
-					} else {
-						//console.log('blehhhh')
-						//console.log(k)
-						//console.log(data[k])
-						//console.log(val)
-						data[k] = val
-						this.node.scheduleRender()
-					}
+					data[k] = val
+					this.node.scheduleRender()
 				},
 			})
 		}
@@ -75,6 +83,7 @@ function Constructor (plan, ...wrappers) {
 		for (const k of ['x', 'y']) {
 			Object.defineProperty(this, k, {
 				enumerable: true,
+				configurable: true,
 				get () {
 					return data[k]
 				},
@@ -84,6 +93,43 @@ function Constructor (plan, ...wrappers) {
 						this.node.scheduleMove()
 					}
 				},
+			})
+		}
+
+		if (plan.data) {
+			const planData = plan.data.call(this)
+
+			for (const k in planData) {
+				data[k] = planData[k]
+				Object.defineProperty(this.data, k, {
+					enumerable: true,
+					configurable: true,
+					get () {
+						return data[k]
+					},
+					set: (val) => {
+						data[k] = val
+						this.node.scheduleRender()
+					},
+				})
+			}
+		}
+
+		if (props.proxy) {
+			props.proxy((proxied, ...bindings) => {
+				this.proxyOf = proxied
+				for (const binding of bindings) {
+					Object.defineProperty(this, binding, {
+						enumerable: true,
+						configurable: true,
+						get () {
+							return proxied[binding]
+						},
+						set (value) {
+							return proxied[binding] = value
+						},
+					})
+				}
 			})
 		}
 
@@ -104,8 +150,10 @@ function Constructor (plan, ...wrappers) {
 
 	const constructor = plan.hasOwnProperty('constructor') ? plan.constructor : function Component (props) {
 		this.construct(props)
-	}
 
+	if (plan.transform === false) {
+		constructor.transform = false
+	}
 	constructor.prototype = prototype
 	constructor.prototype.constructor = constructor
 
@@ -134,6 +182,7 @@ Constructor.prototype = {
 		if (this[name]) {
 			this[name]()
 		}
+		this.node.scheduleRender()
 	},
 	_receiveProps (props) {
 
@@ -164,6 +213,7 @@ Constructor.prototype = {
 for (const k of ['w', 'h']) {
 	Object.defineProperty(Constructor.prototype, k, {
 		enumerable: true,
+		configurable: true,
 		get () {
 			return this.data[k]
 		},
@@ -198,7 +248,7 @@ State.prototype.restore = function () {
 	if (name === undefined) {
 		throw new ReferenceError('Tried to restore state with no states on the stack')
 	}
-	this.component[name]()
+	this.component.setState(name)
 }
 
 //Constructor.prototype.constructor = Constructor

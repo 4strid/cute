@@ -40,13 +40,14 @@ const Square = Cute({
 
 // returns a random color
 function randomColor () {
-	return '#' + Math.floor(Math.random() * 16777215).toString(16)
+	const hex = Math.floor(Math.random() * 16777215).toString(16)
+	return '#' + '0'.repeat(6 - hex.length) + hex
 }
 
 // returns a random speed in pixels per second
 function randomVelocity () {
-	const MIN_V = 20
-	const MAX_V = 40
+	const MIN_V = 25
+	const MAX_V = 45
 	return Math.random() * (MAX_V - MIN_V) + MIN_V
 }
 

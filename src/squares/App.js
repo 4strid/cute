@@ -39,7 +39,7 @@ const App = Cute({
 		handleDestroy (evt) {
 			// a useful property added to the JS event is evt.component, the component that the
 			// event was dispatched to. passed here to ComponentMap.destroy to remove that element from the map
-			this.data.squares.destroy(evt.component)
+			this.data.squares.component.remove(evt.component)
 		},
 	},
 	// `state` in Cute has no React counterpart. It represents a finite state machine. Essentially, a component might react
@@ -91,7 +91,7 @@ const App = Cute({
 			})
 			this.on('clickG', evt => {
 				const sideLength = this.randomDimensions()
-				this.data.squares.create({
+				this.data.squares.component.create({
 					// appended to the evt object are the useful properties localX, localY
 					// which are the coordinates with respect to the current component
 					x: evt.localX - sideLength / 2, // centers the square on the mouse position

@@ -1,9 +1,10 @@
 import Cute from '../lib/cute'
 import { ComponentMap, Clock } from '../lib/components'
-import Square from './components/Square'
+import Square from './components/Square2'
 import PauseIcon from './components/PauseIcon'
 import Cursor from './components/Cursor'
-import Physics, { Collider, WorldBounds } from './lib/physics'
+import { Physics, Collider, WorldBounds } from './components/physics'
+
 
 const App = Cute({
 	render () {
@@ -37,7 +38,7 @@ const App = Cute({
 			return Math.random() * (MAX_SQUARE_SIZE - MIN_SQUARE_SIZE) + MIN_SQUARE_SIZE
 		},
 		handleDestroy (evt) {
-			this.squares.destroy(evt.component)
+			this.squares.remove(evt.component)
 		},
 	},
 	states: {
