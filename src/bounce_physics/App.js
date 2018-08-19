@@ -5,6 +5,7 @@ import PauseIcon from './components/PauseIcon'
 import Cursor from './components/Cursor'
 import { Physics, Collider, WorldBounds } from './components/physics'
 
+
 const App = Cute({
 	render () {
 		return (

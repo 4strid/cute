@@ -28,7 +28,7 @@ function NodeContext (screen, scheduler, dispatch) {
 			//console.log('000000000')
 			//console.log(this.props.children)
 		}
-		if (this.props.ref) {
+		if (this.props.ref && typeof this.props.ref === 'object') {
 			this.ref = this.props.ref
 		}
 		if (this.props.key) {

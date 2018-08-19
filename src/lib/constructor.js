@@ -96,7 +96,6 @@ function Constructor (plan, ...wrappers) {
 			})
 		}
 
-
 		if (plan.data) {
 			const planData = plan.data.call(this)
 
@@ -151,7 +150,6 @@ function Constructor (plan, ...wrappers) {
 
 	const constructor = plan.hasOwnProperty('constructor') ? plan.constructor : function Component (props) {
 		this.construct(props)
-	}
 
 	if (plan.transform === false) {
 		constructor.transform = false

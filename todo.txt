@@ -3,7 +3,6 @@
 - investigate cause of second frame taking such a long time. it's a puzzler!
 
 ...
-
 Canvas API
 
 Properties
@@ -148,4 +147,3 @@ we can do is ditch draws, which right now do not comprise the bulk of a tick's t
 
 string values for x, y, w, h
 - 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'
-

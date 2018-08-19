@@ -15,7 +15,7 @@ const Body = Cute({
 		if (typeof this.proxyOf === 'undefined') {
 			throw new TypeError('<Body> must proxy another component')
 		}
-		Cute.store[storeSymbol].addBody(this, this.proxyOf)
+    Cute.store[storeSymbol].addBody(this, this.proxyOf)
 		this.vx = this.vx || 0
 		this.vy = this.vy || 0
 		this.dx = this.dx || 0
