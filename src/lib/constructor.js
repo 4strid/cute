@@ -150,6 +150,7 @@ function Constructor (plan, ...wrappers) {
 
 	const constructor = plan.hasOwnProperty('constructor') ? plan.constructor : function Component (props) {
 		this.construct(props)
+	}
 
 	if (plan.transform === false) {
 		constructor.transform = false
