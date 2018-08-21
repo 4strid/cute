@@ -57,9 +57,11 @@ export const ComponentMap = Cute({
 			})
 		},
 		create (props) {
+			// ok this is jumping the shark a little bit...
+			const Node = this.node.constructor
 			const prototype = this._getPrototypeNode()
 			const combinedProps = {...prototype.props, ...props, key: uniqid()}
-			const newNode = <prototype.type {...combinedProps} />
+			const newNode = new Node(<prototype.type {...combinedProps} />)
 			newNode.render(newNode.props)
 			const newComponent = newNode.component
 			this.data.map.set(newComponent, newNode)

@@ -18,8 +18,9 @@ function Screen (ctx) {
 	this.screenY = 0
 }
 
-Screen.prototype.setRootElement = function (node) {
-	this.root = node
+Screen.prototype.setRootElement = function (node, Node) {
+	this.Node = Node
+	this.root = new Node(node)
 	this.root.setParent(this)
 	this.root.recursiveRender()
 	this.draw()
@@ -63,7 +64,7 @@ Screen.prototype.addToRTree = function (node) {
 	// it's a Node
 	//
 	// ... kind of hacky, but it lets us avoid the circular import of Node -> Screen -> Node
-	if (!(node.rendered instanceof Function)) {
+	if (node instanceof this.Node) {
 		this.addToRTree(node.rendered)
 	}
 	if (node.children) {
