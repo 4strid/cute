@@ -6,24 +6,39 @@ import Constructor from './constructor'
 // Nodes are the glue between components and Cute.
 // By wrapping the Node constructor in a closure, we supply all the necessary
 // components of Cute to each node
+<<<<<<< HEAD
 function NodeContext(screen, scheduler, dispatch) {
 	function Node(type, props, children) {
+=======
+function NodeContext (screen, dispatch, scheduler) {
+	function Node (params) {
+		if (params instanceof Node) {
+			console.log('sho nuff!')
+			return params
+		}
+		if (params instanceof Function) {
+			return params
+		}
+		if (typeof params === 'string') {
+			return new TextNode(params)
+		}
+		let { type, props, children } = params
+>>>>>>> d4aaadbb502ce5e8a6870782f22af96d0c16fb4f
 		this.props = props || {}
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
 		this.w = this.props.w
 		this.h = this.props.h
-		this.transform = true
 		if (type.name) {
 			this.displayName = type.name
 		}
 		if (children.length) {
 			children = flatten(children)
-			children = children.filter(child => {
-				return child instanceof Node
-			})
+			children = children.filter(child => child)
 			if (children.length) {
-				this.props.children = children
+				this.props.children = children.map(child => {
+					return new Node(child)
+				})
 			}
 			// console.log('000000000')
 			// console.log(this.props.children)
@@ -58,8 +73,9 @@ function NodeContext(screen, scheduler, dispatch) {
 		if (isInteractiveComponent(this)) {
 			this.component = new this.type(props)
 			this.component.node = this
-			this.component.setState(this.component.state.name)
-			this.transform = props.transform
+			// initialize state without triggering a rerender
+			this.component[this.component.state.name] &&
+				this.component[this.component.state.name]()
 			if (this.ref) {
 				if (this.ref instanceof Function) {
 					this.ref(this.component)
@@ -75,7 +91,7 @@ function NodeContext(screen, scheduler, dispatch) {
 	Node.prototype.recursiveRender = function () {
 		//console.log('rr')
 		//console.log(this)
-		this.rendered = this.render(this.props)
+		this.rendered = new Node(this.render(this.props))
 		// this is some kind of component
 		if (this.rendered instanceof Node) {
 			this.rendered.setParent(this)
@@ -83,8 +99,7 @@ function NodeContext(screen, scheduler, dispatch) {
 			// this is a primitive
 		} else if (this.props.children) {
 			this.children = this.props.children
-			this.props.children.forEach(child => {
-				//console.log(child)
+			this.children.forEach(child => {
 				child.setParent(this)
 				child.recursiveRender()
 			})
@@ -99,7 +114,7 @@ function NodeContext(screen, scheduler, dispatch) {
 			this.y = this.component.y
 		}
 
-		if (this.transform === false) {
+		if (this.type.transform === false) {
 			this.x = 0
 			this.y = 0
 		}
@@ -140,6 +155,7 @@ function NodeContext(screen, scheduler, dispatch) {
 				}
 				continue
 			}
+			// feels like there must be a better way to do this
 			if (a[k] instanceof Function && b[k] instanceof Function) {
 				if (a[k] === b[k]) {
 					continue
@@ -165,13 +181,14 @@ function NodeContext(screen, scheduler, dispatch) {
 	Node.prototype.receiveProps = function (props) {
 		//console.log('receive props')
 		//console.log(this.component || this.displayName)
-		if (this.props.color) {
-			//console.log('old color ', this.props.color)
-		}
 		//console.log(props)
+<<<<<<< HEAD
 		//this.x = props.x || this.x
 		//this.y = props.y || this.y
 
+=======
+		
+>>>>>>> d4aaadbb502ce5e8a6870782f22af96d0c16fb4f
 		const childMap = new MultiMap(this.children)
 
 		if (this.children !== undefined && props.children !== undefined) {
@@ -231,7 +248,7 @@ function NodeContext(screen, scheduler, dispatch) {
 		} else {
 			//console.log('yyyyyyy')
 			//console.log(this)
-			const rerendered = this.render(this.props)
+			const rerendered = new Node(this.render(this.props))
 
 			if (!(rerendered instanceof Node)) {
 				this.rendered = rerendered
@@ -247,7 +264,6 @@ function NodeContext(screen, scheduler, dispatch) {
 					})
 				}
 			} else if (this.rendered.type === rerendered.type) {
-				//console.log('zzzzzzz')
 				this.rendered.setParent(this)
 				this.rendered.receiveProps(rerendered.props)
 				this.rendered.rerender()
@@ -275,11 +291,12 @@ function NodeContext(screen, scheduler, dispatch) {
 				this.component.update(time)
 			}
 			this.rendered.recursiveUpdate(time)
-		}
-		if (this.children) {
-			this.children.forEach(child => {
-				child.recursiveUpdate(time)
-			})
+		} else {
+			if (this.children) {
+				this.children.forEach(child => {
+					child.recursiveUpdate(time)
+				})
+			}
 		}
 	}
 
@@ -303,21 +320,17 @@ function NodeContext(screen, scheduler, dispatch) {
 	}
 
 	Node.prototype.draw = function (ctx) {
-		if (this.transform) {
-			ctx.save()
-			// ctx.scale
-			// ctx.rotate
-			ctx.translate(this.x, this.y)
-		}
+		ctx.save()
+		// ctx.scale
+		// ctx.rotate
+		ctx.translate(this.x, this.y)
 		if (this.rendered instanceof Node) {
 			this.rendered.draw(ctx)
 		} else {
 			// call primitive draw function
 			this.rendered(ctx)
 		}
-		if (this.transform) {
-			ctx.restore()
-		}
+		ctx.restore()
 	}
 
 	Node.prototype.scheduleUpdate = function () {
@@ -376,6 +389,11 @@ function NodeContext(screen, scheduler, dispatch) {
 		}
 
 	return Node
+}
+
+// idk what else we need to make text rendering work
+function TextNode (text) {
+	this.text = text
 }
 
 // returns the component's key if it exists, otherwise the type

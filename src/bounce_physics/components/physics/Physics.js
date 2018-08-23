@@ -6,6 +6,7 @@ import Body, { withBody } from './Body'
 import Static, { withStatic } from './Static'
 import Collider from './Collider'
 import WorldBounds from './WorldBounds'
+import storeSymbol from './symbol'
 
 const Physics = Cute({
 	render () {
@@ -23,7 +24,7 @@ const Physics = Cute({
 		this.construct(props)
 		// Constructor => component => body
 		this.bodies = new MultiMap()
-		Cute.createStore('physics', this)
+		Cute.createStore(storeSymbol, this)
 	},
 	methods: {
 		addBody (body, component) {

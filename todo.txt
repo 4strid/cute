@@ -1,12 +1,8 @@
-- Cute.createStore('storeName', [storeValue]) storeValue is optional, otherwise it just makes it an empty object. But you could use a Map or even a Component, if you like
-- proxy prop
-- transform: false
-//Write Container API - we can just use createStore instead of a container to hold physics globally. Let's just use React's Context/Provider/Consumer API, but only once we decide we really need it.
 - Watch API (for camera)
-- destroy handlers
+- Finish / debug wrapper components
+- investigate cause of second frame taking such a long time. it's a puzzler!
 
 ...
-
 Canvas API
 
 Properties
@@ -151,4 +147,3 @@ we can do is ditch draws, which right now do not comprise the bulk of a tick's t
 
 string values for x, y, w, h
 - 'center', '50%', if we're feeling ambitious, 'center + 50', '100% - this.w', '50% - this.w / 2'
-

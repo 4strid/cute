@@ -13,7 +13,10 @@ const primitives = {
 	 */
 	arc(props) {
 		return ctx => {
+			ctx.save()
 			ctx.arc(0, 0, props.r, props.sa, props.ea, props.ccw)
+			drawChildren(props, ctx)
+			ctx.restore()
 		}
 	},
 	/*
@@ -23,7 +26,8 @@ const primitives = {
 	'arc-to'(props) {
 		return ctx => {
 			ctx.save()
-			ctx.arcTo(0, 0, props.xb - props.x, props.yb - props.y, props.r)
+			ctx.arcTo(0, 0, props.x2 - props.x, props.y2 - props.y, props.r)
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -36,6 +40,17 @@ const primitives = {
 		return ctx => {
 			ctx.save()
 			ctx.bezierCurveTo(props.cp1x - props.x, props.cp1y - props.y, props.cp2x - props.x, props.cp2y - props.y, 0, 0)
+			drawChildren(props, ctx)
+			ctx.restore()
+		}
+	},
+	/*
+	 * Clears rectangle
+	 */
+	'clear-rect'(props) {
+		return ctx => {
+			ctx.save()
+			ctx.clearRect(0, 0, props.w, props.h);
 			ctx.restore()
 		}
 	},
@@ -46,6 +61,7 @@ const primitives = {
 		return ctx => {
 			ctx.save()
 			ctx.closePath()
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -92,16 +108,18 @@ const primitives = {
 		return ctx => {
 			ctx.save()
 			ctx.lineTo(0, 0)
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
 	/*
- 	 * Moves from current point in path to new point specified by (props.x, props.y)
+ 	 * Moves from current point in path to new point specified by (0.x, props.y)
 	 */
 	move(props) {
 		return ctx => {
 			ctx.save()
 			ctx.moveTo(0, 0)
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -127,6 +145,7 @@ const primitives = {
 		return ctx => {
 			ctx.save()
 			ctx.quadraticCurveTo(props.cpx - props.x, props.cpy - props.y, 0, 0)
+			drawChildren(props, ctx)
 			ctx.restore()
 		}
 	},
@@ -136,8 +155,10 @@ const primitives = {
 	 */
 	rect(props) {
 		return ctx => {
+			ctx.save()
 			ctx.rect(0, 0, props.w, props.h)
 			drawChildren(props, ctx)
+			ctx.restore()
 		}
 	},
 	stroke(props) {

@@ -7,7 +7,7 @@ const App = Cute({
 	// renders some JSX into canvas draw calls. Just like its React counterpart.
 	//
 	// see lib/components.js for more information about <ComponentMap>
-	render () {
+	render() {
 		return (
 			<layer>
 				<ComponentMap ref={this.data.hearts}>
@@ -23,7 +23,7 @@ const App = Cute({
 	// accessed with this.data
 	//
 	// there's no such thing as setState: you just set the properties on the data object to trigger a rerender
-	data () {
+	data() {
 		return {
 			// this is like React.createRef() The interface for this will change shortly, but this is how it be for now
 			hearts: Cute.createRef(),
@@ -31,15 +31,16 @@ const App = Cute({
 	},
 	// the methods that each component will have access to. `this` refers to the current component
 	methods: {
-		randomDimensions () {
+		randomDimensions() {
 			const MIN_ARC_SIZE = 10
 			const MAX_ARC_SIZE = 50
 			return Math.random() * (MAX_ARC_SIZE - MIN_ARC_SIZE) + MIN_ARC_SIZE
 		},
-		handleDestroy (evt) {
+		handleDestroy(evt) {
 			// a useful property added to the JS event is evt.component, the component that the
 			// event was dispatched to. passed here to ComponentMap.destroy to remove that element from the map
-			this.data.hearts.destroy(evt.component)
+			// this.data.hearts.destroy(evt.component)
+			this.data.hearts.component.remove(evt.component)
 		},
 	},
 	// `state` in Cute has no React counterpart. It represents a finite state machine. Essentially, a component might react
@@ -55,7 +56,7 @@ const App = Cute({
 	//
 	// Note: it is not necessary to do if (this.state.name === 'StateName'), just poll it directly as shown above
 	states: {
-		Ready () {
+		Ready() {
 			//this.data.squares.create({x: 50, y: 50, w: 100, h: 100})
 			//this.data.squares.create({x: 100, y: 100, w: 75, h: 75})
 			//this.data.squares.create({x: 300, y: 100, w: 90, h: 90})
@@ -64,7 +65,7 @@ const App = Cute({
 			// need some kind of "has rendered for the first time" callback
 			this.ChangeColors()
 		},
-		ChangeColors () {
+		ChangeColors() {
 			// attach event handlers just like in vanilla javascript with `this.on('evtype', handler)`
 			//
 			// you can add M or G to the end to indicate that it should target multiple components, or fire globally.
@@ -80,7 +81,7 @@ const App = Cute({
 				}
 			})
 		},
-		CreateHearts () {
+		CreateHearts() {
 			this.on('keydownG', evt => {
 				if (evt.key === 'Escape') {
 					return this.ChangeColors()
@@ -91,7 +92,7 @@ const App = Cute({
 			})
 			this.on('clickG', evt => {
 				const radiusLength = this.randomDimensions()
-				this.data.hearts.create({
+				this.data.hearts.component.create({
 					// appended to the evt object are the useful properties localX, localY
 					// which are the coordinates with respect to the current component
 					h: radiusLength * 2,
@@ -102,7 +103,7 @@ const App = Cute({
 				})
 			})
 		},
-		DestroyHearts () {
+		DestroyHearts() {
 			this.on('keydownG', evt => {
 				if (evt.key === 'Escape') {
 					return this.ChangeColors()

@@ -4,6 +4,7 @@
   "description": "A canvas framework for making games and applications",
   "main": "index.js",
   "scripts": {
+	"build": "webpack --config config/webpack.config.build.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "develop": "webpack --config config/webpack.config.js --watch --progress"
   },

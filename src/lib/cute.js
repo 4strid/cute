@@ -6,28 +6,34 @@ import Scheduler from './scheduler'
 import NodeContext from './node'
 import structures from './structures'
 
-const Cute = plan => {
-	return Constructor(plan)
+const Cute = (plan, ...wrappers) => {
+	return Constructor(plan, ...wrappers)
 }
 
-Cute.canvas = document.createElement('canvas')
-Cute.ctx = Cute.canvas.getContext('2d')
-
-Cute.screen = new Screen(Cute.ctx)
-Cute.dispatch = new Dispatch(Cute.canvas, Cute.screen)
-Cute.scheduler = new Scheduler(Cute.screen)
 Cute.structures = structures
 
-const Node = NodeContext(Cute.screen, Cute.scheduler, Cute.dispatch)
-
 Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight) {
-	this.canvas.width = canvasWidth
-	this.canvas.height = canvasHeight
-	parentElement.appendChild(this.canvas)
+	return new App(RootComponent, parentElement, canvasWidth, canvasHeight)
+}
+
+function App (RootComponent, domNode, w, h) {
+	this.domNode = domNode
+	this.canvas = document.createElement('canvas')
+	this.ctx = this.canvas.getContext('2d')
+
+	this.screen = new Screen(this.ctx)
+	this.dispatch = new Dispatch(this.canvas, this.screen)
+	this.scheduler = new Scheduler(this.screen)
+	this.canvas.width = w
+	this.canvas.height = h
+
+	this.domNode.appendChild(this.canvas)
+
+	this.Node = NodeContext(this.screen, this.dispatch, this.scheduler)
+
+	this.screen.setDimensions(w, h)
+	this.screen.setRootElement(RootComponent, this.Node)
 	this.canvas.setAttribute('tabindex', '0')
-	this.canvas.focus()
-	this.screen.setDimensions(canvasWidth, canvasHeight)
-	this.screen.setRootElement(RootComponent)
 }
 
 Cute.createElement = function (type, props, ...children) {
@@ -35,9 +41,13 @@ Cute.createElement = function (type, props, ...children) {
 	//console.log(props)
 	//console.log(children)
 	if (typeof type === 'string') {
-		return new Node(primitives._lookup(type), props, children)
+		return {
+			type: primitives._lookup(type),
+			props,
+			children,
+		}
 	}
-	return new Node(type, props, children)
+	return { type, props, children }
 }
 
 // Allows you to directly reference a child component from a parent
@@ -61,3 +71,5 @@ Cute.createStore = function (name, value) {
 Cute.Constructor = Constructor
 
 export default Cute
+
+window.Cute = Cute
