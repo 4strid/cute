@@ -18,7 +18,7 @@ const Shape = Cute({
                 return (
                     //This is arc-to
                     <path>
-                        <clear-rect x={0} y={0} w={Cute.canvas.width} h={Cute.canvas.height} />
+                        <clear-rect x={0} y={0} w={this.w} h={this.h} />
                         {/* <move x={this.props.xPos - 50} y={this.props.yPos - 50} /> */}
                         <line x={this.props.xPos - 50} y={this.props.yPos - 50} />
                         <arc-to x={this.props.xPos + 50} y={this.props.yPos - 50} x2={this.props.xPos + 50} y2={this.props.yPos + 50} r={40} />
@@ -34,15 +34,16 @@ const Shape = Cute({
                 console.log(this.props.info);
                 return (
                     <path>
-                        {/* Lines don't seem to work properly */}
+                        <clear-rect x={0} y={0} w={this.w} h={this.h} />
+                        {/* Lines don't seem to work properly after being paced after an arc-to BUT it works in case 4, after a square is placed before it. Something is wrong with line/bezier-curve/arc-to/quad-curve and maybe move.*/}
                         {/* --- */}
                         <move x={this.props.xPos - 50} y={this.props.yPos - 50} />
                         <line x={this.props.xPos - 50} y={this.props.yPos} />
-                        <line x={this.props.xPos + 50} y={this.props.yPos} />
+                        <line x={this.props.xPos} y={this.props.yPos} />
                         <close-path />
                         <stroke color={"black"} />
 
-                        {/* This works, though I dont know why */}
+                        {/* This works, though */}
                         {/* --- */}
                         {/* <fill-rect x={this.props.xPos} y={this.props.yPos} w={20} h={20} color={"blue"} /> */}
                     </path>
@@ -53,12 +54,21 @@ const Shape = Cute({
                 return (
                     //This is a square
                     <path>
-                        {/* <move x={this.props.xPos - 50} y={this.props.yPos - 50} />
-                    <line x={this.props.xPos - 50} y={this.props.yPos} />
-                    <line x={this.props.xPos + 50} y={this.props.yPos} />
-                    <close-path />
-                    <stroke color={"black"} /> */}
                         <fill-rect x={this.props.xPos} y={this.props.yPos} w={10} h={10} color={"red"} />
+                    </path>
+                )
+            }
+            case 4: {
+                console.log(this.props.info);
+                return (
+                    <path>
+                        {/* It seems to work here! */}
+                        {/* --- */}
+                        <move x={this.props.xPos - 50} y={this.props.yPos - 50} />
+                        <line x={this.props.xPos - 50} y={this.props.yPos} />
+                        <line x={this.props.xPos} y={this.props.yPos} />
+                        <close-path />
+                        <stroke color={"black"} />
                     </path>
                 )
             }

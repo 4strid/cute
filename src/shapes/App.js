@@ -7,7 +7,7 @@ const App = Cute({
 	render() {
 		return (
 			<layer>
-				<Shape xPos={Cute.canvas.width / 2} yPos={Cute.canvas.height / 2} info={this.data.type} onClick={this.ChangeType()} />
+				<Shape xPos={this.w / 2} yPos={this.h / 2} info={this.data.type} onClick={this.ChangeType()} />
 				<Cursor state={this.state} w={8} h={8} />
 			</layer >
 		)
@@ -20,10 +20,10 @@ const App = Cute({
 	methods: {
 		typeChange() {
 			console.log("I'm being clicked")
-			if (this.data.type < 3) {
+			if (this.data.type < 4) {
 				this.data.type++
 			}
-			else if (this.data.type == 3) {
+			else if (this.data.type == 4) {
 				this.data.type = 0
 			}
 		}
