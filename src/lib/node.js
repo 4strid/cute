@@ -6,12 +6,8 @@ import Constructor from './constructor'
 // Nodes are the glue between components and Cute.
 // By wrapping the Node constructor in a closure, we supply all the necessary
 // components of Cute to each node
-<<<<<<< HEAD
-function NodeContext(screen, scheduler, dispatch) {
-	function Node(type, props, children) {
-=======
-function NodeContext (screen, dispatch, scheduler) {
-	function Node (params) {
+function NodeContext(screen, dispatch, scheduler) {
+	function Node(params) {
 		if (params instanceof Node) {
 			console.log('sho nuff!')
 			return params
@@ -23,7 +19,6 @@ function NodeContext (screen, dispatch, scheduler) {
 			return new TextNode(params)
 		}
 		let { type, props, children } = params
->>>>>>> d4aaadbb502ce5e8a6870782f22af96d0c16fb4f
 		this.props = props || {}
 		this.x = this.props.x || 0
 		this.y = this.props.y || 0
@@ -182,13 +177,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		//console.log('receive props')
 		//console.log(this.component || this.displayName)
 		//console.log(props)
-<<<<<<< HEAD
-		//this.x = props.x || this.x
-		//this.y = props.y || this.y
 
-=======
-		
->>>>>>> d4aaadbb502ce5e8a6870782f22af96d0c16fb4f
 		const childMap = new MultiMap(this.children)
 
 		if (this.children !== undefined && props.children !== undefined) {
@@ -392,7 +381,7 @@ function NodeContext (screen, dispatch, scheduler) {
 }
 
 // idk what else we need to make text rendering work
-function TextNode (text) {
+function TextNode(text) {
 	this.text = text
 }
 
