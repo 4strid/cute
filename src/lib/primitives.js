@@ -59,8 +59,8 @@ const primitives = {
 	 */
 	'close-path'(props) {
 		return ctx => {
-			ctx.closePath()
 			drawChildren(props, ctx)
+			ctx.closePath()
 		}
 	},
 	/*
