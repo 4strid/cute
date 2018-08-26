@@ -12,9 +12,11 @@ const Square = Cute({
 	},
 	render () {
 		return (
-			<rect w={this.w} h={this.h} x={0} y={0}>
-				<fill color={this.data.color} />
-			</rect>
+			<path>
+				<rect w={this.w} h={this.h} x={0} y={0}>
+					<fill color={this.data.color} />
+				</rect>
+			</path>
 		)
 	},
 	data () {
