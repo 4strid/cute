@@ -101,7 +101,7 @@ const primitives = {
 	move(props) {
 		return ctx => {
 			ctx.save()
-			ctx.moveTo(props.x, props.y)
+			ctx.moveTo(0, 0)
 			ctx.restore()
 		}
 	},
