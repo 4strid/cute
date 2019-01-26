@@ -8,24 +8,37 @@ const App = Cute({
     this.construct(props)
     // there's no "on first component render" hook yet (actually no hooks at all!)
     // so we'll just wait a blip...
-    setTimeout(() => {
-      this.chores.create({
-        x: 0,
-        y: 0,
-        w: 100,
-        h: 100
-      })
-    }, 40)
+    /*
+     *setTimeout(() => {
+     *  this.chores.create({
+     *    x: 0,
+     *    y: 0,
+     *    w: 100,
+     *    h: 100
+     *  })
+     *}, 40)
+     */
   },
 	// renders some JSX into canvas draw calls. Just like its React counterpart.
 	//
 	// see lib/components.js for more information about <ComponentMap>
+  // we have to include a clock so updates
 	render() {
+    /*
+		 *return (
+		 *  <layer>
+     *    <ComponentMap ref={cm => this.chores = cm}>
+     *      <Chore />
+     *    </ComponentMap>
+		 *    <Cursor w={8} h={8} />
+     *    <Clock />
+		 *  </layer >
+		 *)
+     */
 		return (
 			<layer>
-        <ComponentMap ref={chores => this.chores = chores}>
-          <Chore />
-        </ComponentMap>
+        <Chore w={100} h={100} x={0} y={0}/>
+        <Chore w={150} h={150} x={200} y={200}/>
 				<Cursor w={8} h={8} />
         <Clock />
 			</layer >

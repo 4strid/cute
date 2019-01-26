@@ -5,17 +5,18 @@ const Chore = Cute({
     this.construct(props)
     this.elapsed = 0
     this.transitionTime = 3000
+    this.decayColors = ['green', 'yellow', 'red', 'black']
   },
 	render() {
 		return (
 			<rect w={this.w} h={this.h} x={0} y={0}>
-				<fill color={this.data.color} />
+				<fill color={this.decayColors[this.data.decayLevel]} />
 			</rect>
 		)
 	},
 	data() {
 		return {
-			color: 'green',
+      decayLevel: 0
 		}
 	},
 	update (time) {
@@ -26,36 +27,22 @@ const Chore = Cute({
       this.elapsed += time
       if (this.elapsed >= this.transitionTime) {
         this.elapsed = 0
-        switch (this.state.name) {
-          case 'Danger0': this.Danger1(); break;
-          case 'Danger1': this.Danger2(); break;
-          case 'Danger2': this.Danger3(); break;
+        this.data.decayLevel++
+        if (this.data.decayLevel > 3) {
+          this.data.decayLevel = 3
         }
       }
     },
     refresh () {
       this.elapsed = 0
-      this.Danger0()
+      this.data.decayLevel = 0
     },
 	},
 	states: {
     Ready () {
-      this.listen('click', () => {
+      this.on('click', () => {
         this.refresh()
       })
-      this.Danger0()
-    },
-    Danger0 () {
-      this.data.color = 'green'
-    },
-    Danger1 () {
-      this.data.color = 'yellow'
-    },
-    Danger2 () {
-      this.data.color = 'red'
-    },
-    Danger3 () {
-      this.data.color = 'black'
     },
 	},
 })
