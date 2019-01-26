@@ -57,7 +57,7 @@ Cute.createRef = function () {
 	return new Ref()
 }
 
-function Ref () {}
+function Ref () { }
 
 Ref.prototype.reference = function (component) {
 	this.component = component

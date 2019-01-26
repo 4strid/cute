@@ -35,8 +35,8 @@ function NodeContext (screen, dispatch, scheduler) {
 					return new Node(child)
 				})
 			}
-			//console.log('000000000')
-			//console.log(this.props.children)
+			// console.log('000000000')
+			// console.log(this.props.children)
 		}
 		if (this.props.ref) {
 			this.ref = this.props.ref
@@ -91,7 +91,7 @@ function NodeContext (screen, dispatch, scheduler) {
 		if (this.rendered instanceof Node) {
 			this.rendered.setParent(this)
 			this.rendered.recursiveRender()
-		// this is a primitive
+			// this is a primitive
 		} else if (this.props.children) {
 			this.children = this.props.children
 			this.children.forEach(child => {
@@ -177,7 +177,6 @@ function NodeContext (screen, dispatch, scheduler) {
 		//console.log('receive props')
 		//console.log(this.component || this.displayName)
 		//console.log(props)
-		
 		const childMap = new MultiMap(this.children)
 
 		if (this.children !== undefined && props.children !== undefined) {
@@ -428,6 +427,5 @@ MultiMap.prototype.forEach = function (fn) {
 		}
 	})
 }
-
 
 export default NodeContext

@@ -38,6 +38,15 @@ function Constructor (plan, ...wrappers) {
 			plan.destroy.call(this)
 		}
 	}
+	// even this doesn't appear to work in Chrome, the functions are still called ''
+	//function nameFunction (name) {
+	//	return {[name]: function (props, node) {return construct.call(this, props, node)}}[name]
+	//}
+
+	//const Component = nameFunction(plan.displayName || 'Component')
+
+	//console.log(Component.name)
+	//console.log(Component)
 
 	prototype.construct = function (props) {
 		this.props = {}
@@ -49,7 +58,6 @@ function Constructor (plan, ...wrappers) {
 		}
 		// pass the transform value up to the node
 		props.transform = plan.transform !== false
-
 		// the canonical data object that actually holds the data
 		const data = {}
 

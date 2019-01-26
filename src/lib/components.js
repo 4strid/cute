@@ -7,7 +7,7 @@ export const Clock = Cute({
 		if (!this.props.paused) {
 			this.node.scheduleUpdate()
 		}
-		return <nothing/>
+		return <nothing />
 	},
 	data () {
 		return {
