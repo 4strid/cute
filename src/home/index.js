@@ -1,7 +1,5 @@
 import Cute from '../lib/cute'
 import App from './App'
+import { GAME_WIDTH, GAME_HEIGHT } from './constants'
 
-const CANVAS_WIDTH = 700
-const CANVAS_HEIGHT = 500
-
-Cute.attach(<App />, document.querySelector('.cute-container'), CANVAS_WIDTH, CANVAS_HEIGHT)
+Cute.attach(<App />, document.querySelector('.cute-container'), GAME_WIDTH, GAME_HEIGHT)
