@@ -9,7 +9,7 @@ import Constructor from './constructor'
 function NodeContext (screen, dispatch, scheduler) {
 	function Node (params) {
 		if (params instanceof Node) {
-			console.log('sho nuff!')
+			console.log('do we ever actually get Nodes?')
 			return params
 		}
 		if (params instanceof Function) {
@@ -193,7 +193,6 @@ function NodeContext (screen, dispatch, scheduler) {
 				//childrenUpdated = childrenUpdated || oldChild.isUpdated || oldChild.propsUpdated
 				return oldChild
 			})
-
 		}
 
 		// destroy any nodes left over
@@ -376,13 +375,19 @@ function NodeContext (screen, dispatch, scheduler) {
 		// I mean that can't be right, we're trying to disappear, why would we need to rerender?
 	}
 
+  function TextNode (text) {
+    this.text = text
+  }
+
+  TextNode.prototype.setParent = Node.prototype.setParent
+  TextNode.prototype.rerender = () => { console.log('ahhhh') }
+  TextNode.prototype.recursiveRender = () => { console.log('wwwww') }
+  TextNode.prototype.type = TextNode
+
 	return Node
 }
 
 // idk what else we need to make text rendering work
-function TextNode (text) {
-	this.text = text
-}
 
 // returns the component's key if it exists, otherwise the type
 function getKey (node) {
