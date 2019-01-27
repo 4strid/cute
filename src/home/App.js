@@ -4,12 +4,14 @@ import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
 import Score from './Score.js'
+import Score from './score.js'
+// import pic from 'https://pbs.twimg.com/profile_images/653345801872084992/2fZZBOGe_400x400.png'
 
 const App = Cute({
   constructor: function App (props) {
     this.construct(props)
        this.Garbage = [
-            <Garbage key='larry' w={100} h={100} />,
+            <Garbage id='x' key='larry' w={100} h={100} />,
             <Garbage key='moe' w={100} h={100} />,
             <Garbage key='curly' w={100} h={100} />,
     ]
@@ -30,7 +32,6 @@ const App = Cute({
                 <Score garbage={this.Garbage} chores={this.Chores} />
                 <Cursor w={8} h={8} />
                 <Clock />
-
 			</layer >
 		)
 	},
