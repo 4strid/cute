@@ -3,7 +3,7 @@ import { ComponentMap, Clock } from '../lib/components.js'
 import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
-import Score from './score.js'
+import Score from './Score.js'
 
 const App = Cute({
   constructor: function App (props) {
@@ -25,10 +25,10 @@ const App = Cute({
 	render() {
 		return (
 			<layer>
-                {this.Garbage}
                 {this.Chores}
+                {this.Garbage}
+                <Score garbage={this.Garbage} chores={this.Chores} />
                 <Cursor w={8} h={8} />
-                {this.Score}
                 <Clock />
 
 			</layer >

@@ -1,31 +1,12 @@
 const path = require('path');
+const common = require('./webpack.common.js')
 
 module.exports = {
+  ...common,
   entry: './src/lib/cute.js',
   mode: 'development',
   output: {
     filename: 'testbed/cute.js',
-    path: path.resolve(__dirname, '..')
+    path: path.resolve(__dirname, '..'),
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-			presets: ['babel-preset-env'],
-			plugins: [[
-			  'transform-react-jsx', {
-				'pragma': 'Cute.createElement'
-			  }
-			],
-			  'transform-object-rest-spread'
-			]
-          }
-        }
-      }
-    ]
-  }
 };

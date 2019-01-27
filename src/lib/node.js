@@ -380,8 +380,8 @@ function NodeContext (screen, dispatch, scheduler) {
   }
 
   TextNode.prototype.setParent = Node.prototype.setParent
-  TextNode.prototype.rerender = () => { console.log('ahhhh') }
-  TextNode.prototype.recursiveRender = () => { console.log('wwwww') }
+  TextNode.prototype.rerender = () => { ; }
+  TextNode.prototype.recursiveRender = () => { ; }
   TextNode.prototype.type = TextNode
 
 	return Node
