@@ -15,9 +15,9 @@ const Garbage = Cute({
             return <nothing />
         }
 		return (
-			<rect w={this.w} h={this.h}>
+			<rectangle w={this.w} h={this.h}>
 				<fill color='#facade' />
-			</rect>
+			</rectangle>
 		)
 	},
     data () {

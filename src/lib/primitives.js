@@ -106,7 +106,9 @@ const primitives = {
 		}
 	},
 	nothing() {
-		return () => { }
+    return () => {
+
+    } 
 	},
 	/*
 	 * begins path, then draws children
@@ -136,8 +138,10 @@ const primitives = {
 	 */
 	rect(props) {
 		return ctx => {
+      ctx.save()
 			ctx.rect(0, 0, props.w, props.h)
 			drawChildren(props, ctx)
+      ctx.restore()
 		}
 	},
 	stroke(props) {
@@ -164,4 +168,31 @@ const primitives = {
 	},
 }
 
-export default primitives
+const PIx2 = Math.PI * 2
+const TWOPI = PIx2
+
+const shapes = {
+  circle (props) {
+  return (
+    <path fill={props.fill} stroke={props.stroke}>
+      <arc r={props.r} sa={0} ea={PIx2} ccw={1} children={props.children} />
+    </path>
+  )},
+  rectangle (props) {
+  return (
+    <path fill={props.fill} stroke={props.stroke}>
+      <rect w={props.w} h={props.h} children={props.children} />
+    </path>
+  )},
+  square (props) {
+  return (
+    <path fill={props.fill} stroke={props.stroke}>
+      <rect w={props.s || props.w} h={props.s || props.w} children={props.children} />
+    </path>
+  )},
+}
+
+export default {
+  ...primitives,
+  ...shapes,
+}

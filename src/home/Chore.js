@@ -4,14 +4,14 @@ const Chore = Cute({
   constructor: function Chore (props) {
     this.construct(props)
     this.elapsed = 0
-    this.transitionTime = 40000
+    this.transitionTime = 2000
     this.decayColors = ['green', 'yellow', 'red', 'black']
   },
 	render() {
 		return (
-			<rect w={this.w} h={this.h} x={0} y={0}>
+			<rectangle>
 				<fill color={this.decayColors[this.data.decayLevel]} />
-			</rect>
+			</rectangle>
 		)
 	},
 	data() {
