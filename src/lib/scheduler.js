@@ -32,8 +32,8 @@ function Scheduler (screen) {
 	function tick (time) {
 		const elapsed = lastTime === null ? 0 : time - lastTime
 		if (elapsed > 17) {
-			console.log('Slowed down!')
-			console.log(elapsed)
+			//console.log('Slowed down!')
+			//console.log(elapsed)
 		}
 		lastTime = time
 

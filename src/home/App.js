@@ -4,11 +4,16 @@ import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
 import Score from './Score.js'
-import Score from './score.js'
 // import pic from 'https://pbs.twimg.com/profile_images/653345801872084992/2fZZBOGe_400x400.png'
 
 const App = Cute({
   constructor: function App (props) {
+
+    this.sky = new Image(1066, 6666)
+    this.sky.onload = () => this.data.imageReady = true
+    this.sky.src = './src/home/assets/sky2.jpg'
+
+
     this.construct(props)
        this.Garbage = [
             <Garbage id='x' key='larry' w={100} h={100} />,
@@ -16,17 +21,19 @@ const App = Cute({
             <Garbage key='curly' w={100} h={100} />,
     ]
 
+
+
     this.Chores = [
         <Chore key='laurel' w={100} h={100} x={10} y={10}/>,
         <Chore key='hardy'w={100} h={100} x={200} y={100}/>,
     ]
-    
-    //this.Score = Score(this.Garbage, this.Chores)
+
   },
 
 	render() {
 		return (
 			<layer>
+                {this.data.imageReady && <image img={this.sky} x={0} y={0} /> }
                 {this.Chores}
                 {this.Garbage}
                 <Score garbage={this.Garbage} chores={this.Chores} />
@@ -42,7 +49,9 @@ const App = Cute({
 	//
 	// there's no such thing as setState: you just set the properties on the data object to trigger a rerender
 	data() {
-		return {}
+    return {
+      imageReady: false
+    }
 	},
 	// the methods that each component will have access to. `this` refers to the current component
 	methods: {

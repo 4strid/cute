@@ -85,18 +85,17 @@ const primitives = {
    * image MUST be already loaded before calling this method
    */ 
   image (props) {
-    const { image, x: dx, y: dy, sx, sy, dw, dh, sw, sh } = props
+    console.log(props)
     return ctx => {
+      const { img, x: dx, y: dy, dw, dh, sx, sy, sw, sh } = props
       // ez way to make sure they're all defined
       if (!Number.isNaN(sx + sy + sw + sh + dw + dh)) {
-        ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
-        return
+        ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+      } else if (!Number.isNaN(dw + dh)) {
+        ctx.drawImage(img, dx, dy, dw, dh)
+      } else {
+        ctx.drawImage(img, dx, dy)
       }
-      if (!Number.isNaN(dw + dh)) {
-        ctx.drawImage(image, dx, dy, dw, dh)
-        return
-      }
-      ctx.drawImage(image, dx, dy)
     }
   },
 
