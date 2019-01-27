@@ -13,6 +13,7 @@ const Cat = Cute({
     this.SIT_CHANCE = .001
     this.CHANGE_DIRECTION = .01
     this.FIRE_CHANCE = .0005
+    this.MEOW_CHANCE = .001
   },
 	render() {
 		return (
@@ -30,6 +31,10 @@ const Cat = Cute({
 	},
 	methods: {
         	move(){
+                // meow sometimes
+                if (Math.random() < this.MEOW_CHANCE)
+                    meowSound.play()
+
                 // stop sometimes
                 if (Math.random() < this.SIT_CHANCE)
                     this.sit = ! this.sit
@@ -52,9 +57,9 @@ const Cat = Cute({
             }
 	},
 	states: {
-        Ready() {
-        },
-	},
+    Ready () {
+    },
+    },
 })
 
 export default Cat

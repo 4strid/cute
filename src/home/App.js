@@ -4,7 +4,6 @@ import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
 import Score from './Score.js'
-import Score from './score.js'
 import {Sound, music} from './Sound.js'
 import Cat from './Cat.js'
 

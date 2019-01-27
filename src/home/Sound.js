@@ -25,5 +25,8 @@ export const fireSound = new Sound('https://www.partnersinrhyme.com/files/sounds
 
 export const meowSound = new Sound('./audio/meow.mp3');
 
+// backup meow
+// export const meowSound = new Sound('http://soundbible.com/mp3/Cat Meow-SoundBible.com-1453940411.mp3');
+
 // credit  Kitty In The Window by Podington Bear 
 export const music = new Sound('./audio/song.mp3', true);

@@ -45,6 +45,7 @@ const Garbage = Cute({
         if(this.data.visible) {
             this.data.visible=false
             trashSound.play()
+            console.log('trash')
         }
       })
     },
