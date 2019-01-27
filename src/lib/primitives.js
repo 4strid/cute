@@ -154,6 +154,24 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+  text (props) {
+    const { font, fill, stroke, w: maxwidth, children } = props
+    return ctx => {
+      let { text } = props
+      text = text || ''
+      if (children && children.length) {
+        text += children.map(c => c.text).join('\n')
+      }
+
+      ctx.save()
+      if (font) { ctx.font = font }
+      if (typeof fill === 'string') ctx.fillStyle = fill 
+      if (fill)  ctx.fillText(text, 0, 0, maxwidth) 
+      if (typeof stroke === 'string') ctx.fillStyle = stroke
+      if (stroke)  ctx.strokeText(text, 0, 0, maxwidth)
+      ctx.restore()
+    }
+  },
 	/*
 	 * looks up primitive by name and returns a function that takes props
 	 * this in turn returns a function that takes the canvas context and
