@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
   entry: './src/lib/cute.js',
-  mode: 'production',
+  mode: 'development',
   output: {
-    filename: 'cute.js',
+    filename: 'testbed/cute.js',
     path: path.resolve(__dirname, '..')
   },
   module: {
