@@ -1,32 +1,13 @@
 const path = require('path');
+const common = require('./webpack.common.js')
 
 module.exports = {
+  ...common,
   entry: './src/index.js',
   mode: 'development',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, '..')
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            //presets: ['babel-preset-env'],
-			plugins: [[
-			  'transform-react-jsx', {
-				'pragma': 'Cute.createElement'
-			  }
-			],
-			  'transform-object-rest-spread'
-			]
-          }
-        }
-      }
-    ]
   },
   devtool: 'cheap-module-eval-source-map',
 };

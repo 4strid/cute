@@ -11,6 +11,7 @@ const Cute = (plan, ...wrappers) => {
 }
 
 Cute.structures = structures
+Cute.primitives = primitives
 
 Cute.attach = function (RootComponent, parentElement, canvasWidth, canvasHeight) {
 	return new App(RootComponent, parentElement, canvasWidth, canvasHeight)

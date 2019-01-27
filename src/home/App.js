@@ -3,6 +3,7 @@ import { ComponentMap, Clock } from '../lib/components.js'
 import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
+import Score from './Score.js'
 import Score from './score.js'
 import {Sound, music} from './Sound.js'
 import Cat from './Cat.js'
@@ -12,7 +13,7 @@ const App = Cute({
   constructor: function App (props) {
     this.construct(props)
        this.Garbage = [
-            <Garbage id ='x' key='larry' w={100} h={100} />,
+            <Garbage id='x' key='larry' w={100} h={100} />,
             <Garbage key='moe' w={100} h={100} />,
             <Garbage key='curly' w={100} h={100} />,
     ]
@@ -33,11 +34,11 @@ const App = Cute({
 	render() {
 		return (
 			<layer>
-                {this.Garbage}
                 {this.Chores}
+                {this.Garbage}
                 {this.Cat}
+                <Score garbage={this.Garbage} chores={this.Chores} />
                 <Cursor w={8} h={8} />
-                {this.Score}
                 <Clock />
 			</layer >
 		)

@@ -8,6 +8,7 @@ function drawChildren(props, ctx) {
 }
 
 const primitives = {
+
 	/*
 	 * creates an arc path for stroking/filling
 	 * calls ctx.arc() then renders any children
@@ -17,6 +18,7 @@ const primitives = {
 			ctx.arc(0, 0, props.r, props.sa, props.ea, props.ccw)
 		}
 	},
+
 	/*
 	 * Creates an arc from two specified points (props.x1, props.y1) and (props.x2, props.y2).
 	 * Amount of curvature is given by radius props.r 
@@ -28,6 +30,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	/*
 	 * Creates a bezier curve from current point in path to (props.x, props.y)
 	 * First coordinates (props.cp1x, props.cp1y) will designate the first control point closest to current point.
@@ -40,6 +43,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	'close-path'(props) {
 		return ctx => {
 			ctx.save()
@@ -47,6 +51,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	/*
 	 * fills its enclosing path
 	 * calls ctx.fill()
@@ -62,6 +67,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	'fill-rect' (props) {
 		return ctx => {
 			ctx.save()
@@ -73,6 +79,27 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
+  /*
+   * wrapper for 2D context drawImage method. You don't have to remember the order of the params lol
+   * image MUST be already loaded before calling this method
+   */ 
+  image (props) {
+    const { image, x: dx, y: dy, sx, sy, dw, dh, sw, sh } = props
+    return ctx => {
+      // ez way to make sure they're all defined
+      if (!Number.isNaN(sx + sy + sw + sh + dw + dh)) {
+        ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
+        return
+      }
+      if (!Number.isNaN(dw + dh)) {
+        ctx.drawImage(image, dx, dy, dw, dh)
+        return
+      }
+      ctx.drawImage(image, dx, dy)
+    }
+  },
+
 	/*
 	 * renders its children and does nothing else
 	 */
@@ -83,6 +110,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	/*
 	 * Creates a straight line from current point in path to (props.x, props.y)
 	 */
@@ -93,6 +121,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	/*
  	 * Moves from current point in path to new point specified by (props.x, props.y)
 	 */
@@ -103,9 +132,11 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	nothing() {
     return () => { ; }
 	},
+
 	/*
 	 * begins path, then draws children
 	 */
@@ -120,6 +151,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	/*
 	 * Creates a quadratic curve from current point in path to (props.x, props.y)
 	 * First coordinates (props.cpx, props.cpy) will designate the control point.
@@ -131,6 +163,7 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
 	/*
 	 * creates a rectangular path for stroking/filling
 	 * calls ctx.rect() then renders any children
@@ -143,6 +176,7 @@ const primitives = {
       ctx.restore()
 		}
 	},
+
 	stroke(props) {
 		return ctx => {
 			ctx.save()
@@ -154,8 +188,22 @@ const primitives = {
 			ctx.restore()
 		}
 	},
+
+  'text-style' (props) {
+    const { font, textAlign, textBaseline, direction } = props.style || props
+    ctx.save()
+    if (font) { ctx.font = font }
+    if (textAlign) { ctx.textAlign = textAlign }
+    if (textBaseline) { ctx.textBaseline = textBaseline }
+    if (direction) { ctx.direction = direction }
+    drawChildren(props, ctx)
+    ctx.restore()
+  },
+
   text (props) {
-    const { font, fill, stroke, w: maxwidth, children } = props
+    let { fill } = props
+    const { stroke, w: maxwidth, children } = props
+    const { font, textAlign, textBaseline, direction } = props.style || props
     return ctx => {
       let { text } = props
       text = text || ''
@@ -163,8 +211,14 @@ const primitives = {
         text += children.map(c => c.text).join('\n')
       }
 
+      if (!fill && !stroke) {
+        fill = true
+      }
       ctx.save()
       if (font) { ctx.font = font }
+      if (textAlign) { ctx.textAlign = textAlign }
+      if (textBaseline) { ctx.textBaseline = textBaseline }
+      if (direction) { ctx.direction = direction }
       if (typeof fill === 'string') ctx.fillStyle = fill 
       if (fill)  ctx.fillText(text, 0, 0, maxwidth) 
       if (typeof stroke === 'string') ctx.fillStyle = stroke
@@ -172,6 +226,7 @@ const primitives = {
       ctx.restore()
     }
   },
+
 	/*
 	 * looks up primitive by name and returns a function that takes props
 	 * this in turn returns a function that takes the canvas context and
