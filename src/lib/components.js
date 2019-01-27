@@ -73,5 +73,8 @@ export const ComponentMap = Cute({
 			this.data.map.delete(component)
 			this.node.scheduleRender()
 		},
+    getAll () {
+      return this.data.map.values()
+    },
 	},
 })
