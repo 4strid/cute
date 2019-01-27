@@ -4,7 +4,9 @@ import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
 import Score from './score.js'
-// import pic from 'https://pbs.twimg.com/profile_images/653345801872084992/2fZZBOGe_400x400.png'
+import {Sound, music} from './Sound.js'
+import Cat from './Cat.js'
+
 
 const App = Cute({
   constructor: function App (props) {
@@ -19,7 +21,12 @@ const App = Cute({
         <Chore key='laurel' w={100} h={100} x={10} y={10}/>,
         <Chore key='hardy'w={100} h={100} x={200} y={100}/>,
     ]
-    
+
+    this.Cat = [
+		<Cat w={100} h={100} x={300} y={300}/>,
+    ]
+
+    // music.play()
     //this.Score = Score(this.Garbage, this.Chores)
   },
 
@@ -28,6 +35,7 @@ const App = Cute({
 			<layer>
                 {this.Garbage}
                 {this.Chores}
+                {this.Cat}
                 <Cursor w={8} h={8} />
                 {this.Score}
                 <Clock />
