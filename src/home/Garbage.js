@@ -1,8 +1,6 @@
 import Cute from '../lib/cute'
 import { GAME_WIDTH, GAME_HEIGHT } from './constants'
-
-
-
+import {Sound, trashSound} from './Sound.js'
 
 const Garbage = Cute({
   constructor: function garbage  (props) {
@@ -15,7 +13,7 @@ const Garbage = Cute({
             return <nothing />
         }
 		return (
-			<rectangle w={this.w} h={this.h}>
+			<rectangle id='trash' w={this.w} h={this.h}>
 				<fill color='#facade' />
 			</rectangle>
 		)
@@ -46,6 +44,7 @@ const Garbage = Cute({
       this.on('click', () => {
         if(this.data.visible) {
             this.data.visible=false
+            trashSound.play()
         }
       })
     },
