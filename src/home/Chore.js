@@ -4,7 +4,7 @@ const Chore = Cute({
   constructor: function Chore (props) {
     this.construct(props)
     this.elapsed = 0
-    this.transitionTime = 3000
+    this.transitionTime = 40000
     this.decayColors = ['green', 'yellow', 'red', 'black']
   },
 	render() {
