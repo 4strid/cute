@@ -1,5 +1,5 @@
-function Constructor (plan, ...wrappers) {
-	const prototype = Object.create(Constructor.prototype)
+function Component (plan, ...wrappers) {
+	const prototype = Object.create(Component.prototype)
 
 	console.log(wrappers)
 
@@ -169,7 +169,7 @@ function Constructor (plan, ...wrappers) {
 	return constructor
 }
 
-Constructor.prototype = {
+Component.prototype = {
 	// listen for a certain evtype. handler is removed upon state change
 	on (evtype, handler) {
 		this.node.addEventListener(this, evtype, handler)
@@ -186,7 +186,7 @@ Constructor.prototype = {
 		return this.node.getCollisions(this)
 	},
 	// sets own state to the given name and attempts to call that state function
-	setState (name) {
+                setState (name) {
 		this.state.set(name)
 		if (this[name]) {
 			this[name]()
@@ -217,10 +217,10 @@ Constructor.prototype = {
 
 // attach w, h convenience getters and setters
 // w and h should trigger a rerender
-// these are common among all components so we attach them to Constructor.prototype
+// these are common among all components so we attach them to Component.prototype
 //
 for (const k of ['w', 'h']) {
-	Object.defineProperty(Constructor.prototype, k, {
+	Object.defineProperty(Component.prototype, k, {
 		enumerable: true,
 		configurable: true,
 		get () {
@@ -260,6 +260,6 @@ State.prototype.restore = function () {
 	this.component.setState(name)
 }
 
-//Constructor.prototype.constructor = Constructor
+//Component.prototype.constructor = Component
 
-export default Constructor
+export default Component

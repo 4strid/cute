@@ -215,13 +215,11 @@ function Dispatch (canvas, screen) {
 	// adds the listener to the specified map. this might be a persistent,
 	// ephemeral, local, or multi listener
 	function addListenerToMap (map, component, evtype, handler) {
-		if (map.has(component)) {
-			map.get(component)[evtype] = handler
-		} else {
+		if (!map.has(component)) {
 			const handlers = {}
-			handlers[evtype] = handler
 			map.set(component, handlers)
 		}
+    map.get(component)[evtype] = handler
 	}
 
 	// adds a listener to ephemeral or persistent listener containers

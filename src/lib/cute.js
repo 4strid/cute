@@ -25,7 +25,7 @@ function App (RootComponent, domNode, w, h) {
 	this.dispatch = new Dispatch(this.canvas, this.screen)
 	this.scheduler = new Scheduler(this.screen)
 	this.canvas.width = w
-	this.canvas.height = h
+ this.canvas.height = h
 
 	this.domNode.appendChild(this.canvas)
 
