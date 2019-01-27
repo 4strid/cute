@@ -3,46 +3,34 @@ import { ComponentMap, Clock } from '../lib/components.js'
 import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
+import Score from './score.js'
 
 const App = Cute({
   constructor: function App (props) {
     this.construct(props)
-    // there's no "on first component render" hook yet (actually no hooks at all!)
-    // so we'll just wait a blip...
-    /*
-     *setTimeout(() => {
-     *  this.chores.create({
-     *    x: 0,
-     *    y: 0,
-     *    w: 100,
-     *    h: 100
-     *  })
-     *}, 40)
-     */
+       this.Garbage = [
+            <Garbage key='larry' w={100} h={100} />,
+            <Garbage key='moe' w={100} h={100} />,
+            <Garbage key='curly' w={100} h={100} />,
+    ]
+
+    this.Chores = [
+        <Chore key='laurel' w={100} h={100} x={10} y={10}/>,
+        <Chore key='hardy'w={100} h={100} x={200} y={100}/>,
+    ]
+    
+    //this.Score = Score(this.Garbage, this.Chores)
   },
-	// renders some JSX into canvas draw calls. Just like its React counterpart.
-	//
-	// see lib/components.js for more information about <ComponentMap>
-  // we have to include a clock so updates
+
 	render() {
-    /*
-		 *return (
-		 *  <layer>
-     *    <ComponentMap ref={cm => this.chores = cm}>
-     *      <Chore />
-     *    </ComponentMap>
-		 *    <Cursor w={8} h={8} />
-     *    <Clock />
-		 *  </layer >
-		 *)
-     */
 		return (
 			<layer>
-        <Chore w={100} h={100} x={0} y={0}/>
-        <Chore w={150} h={150} x={200} y={200}/>
-        <Garbage w={50} h={50} />
-				<Cursor w={8} h={8} />
-        <Clock />
+                {this.Garbage}
+                {this.Chores}
+                <Cursor w={8} h={8} />
+                {this.Score}
+                <Clock />
+
 			</layer >
 		)
 	},
