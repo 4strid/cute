@@ -5,13 +5,18 @@ import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
 import Score from './Score.js'
 // import pic from 'https://pbs.twimg.com/profile_images/653345801872084992/2fZZBOGe_400x400.png'
+import {Sound, music} from './Sound.js'
+import Cat from './Cat.js'
 
 const App = Cute({
   constructor: function App (props) {
 
+    // in constructor
     this.sky = new Image(1066, 6666)
     this.sky.onload = () => this.data.imageReady = true
     this.sky.src = './src/home/assets/sky2.jpg'
+    // in render...
+    // {this.data.imageReady && <image img={this.sky} x={0} y={0} /> }
 
 
     this.construct(props)
@@ -28,6 +33,12 @@ const App = Cute({
         <Chore key='hardy'w={100} h={100} x={200} y={100}/>,
     ]
 
+    this.Cat = [
+		<Cat w={100} h={100} x={300} y={300}/>,
+    ]
+
+    // music.play()
+    //this.Score = Score(this.Garbage, this.Chores)
   },
 
 	render() {
@@ -36,6 +47,7 @@ const App = Cute({
                 {this.data.imageReady && <image img={this.sky} x={0} y={0} /> }
                 {this.Chores}
                 {this.Garbage}
+                {this.Cat}
                 <Score garbage={this.Garbage} chores={this.Chores} />
                 <Cursor w={8} h={8} />
                 <Clock />
