@@ -14,16 +14,20 @@ const Cat = Cute({
     this.CHANGE_DIRECTION = .01
     this.FIRE_CHANCE = .0005
     this.MEOW_CHANCE = .001
+
+    this.img = new Image(200, 170)
+    setTimeout(() => { this.data.imageReady = true }, 300)
+    this.img.src = './src/home/assets/Cat/catstand.png'
+
   },
 	render() {
 		return (
-			<rectangle id='cat' w={this.w} h={this.h}>
-				<fill color='purple' />
-			</rectangle>
+      this.data.imageReady ? <image img={this.img} x={this.x / 4 - 200} y={this.y / 4 - 150} /> : <nothing />
 		)
 	},
     data () {
         return {
+          imageReady: false
         }
     },
     update (time) {

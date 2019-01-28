@@ -4,6 +4,7 @@ import Chore from './Chore.js'
 import Garbage from './Garbage.js'
 import Cursor from './Cursor.js'
 import Score from './Score.js'
+import Room from './Room.js'
 // import pic from 'https://pbs.twimg.com/profile_images/653345801872084992/2fZZBOGe_400x400.png'
 import {Sound, music} from './Sound.js'
 import Cat from './Cat.js'
@@ -20,18 +21,6 @@ const App = Cute({
 
 
     this.construct(props)
-       this.Garbage = [
-            <Garbage id='x' key='larry' w={100} h={100} />,
-            <Garbage key='moe' w={100} h={100} />,
-            <Garbage key='curly' w={100} h={100} />,
-    ]
-
-
-
-    this.Chores = [
-        <Chore key='laurel' w={100} h={100} x={10} y={10}/>,
-        <Chore key='hardy'w={100} h={100} x={200} y={100}/>,
-    ]
 
     this.Cat = [
 		<Cat w={100} h={100} x={300} y={300}/>,
@@ -45,10 +34,9 @@ const App = Cute({
 		return (
 			<layer>
                 {this.data.imageReady && <image img={this.sky} x={0} y={0} /> }
-                {this.Chores}
-                {this.Garbage}
+                <Room x={0} y={0} w={1066} h={600} updateScore={this.updateScore.bind(this)} />
                 {this.Cat}
-                <Score garbage={this.Garbage} chores={this.Chores} />
+                <Score score={this.score} />
                 <Cursor w={8} h={8} />
                 <Clock />
 			</layer >
@@ -67,6 +55,9 @@ const App = Cute({
 	},
 	// the methods that each component will have access to. `this` refers to the current component
 	methods: {
+    updateScore (update) {
+      this.score += update
+    }
 	},
 	// `state` in Cute has no React counterpart. It represents a finite state machine. Essentially, a component might react
 	// to events differently based on what state it is in, so event handlers are called in a State transition function

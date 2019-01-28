@@ -23,10 +23,10 @@ export const trashSound = new Sound('https://www.partnersinrhyme.com/files/sound
 
 export const fireSound = new Sound('https://www.partnersinrhyme.com/files/sounds1/MP3/ambience/fire/forest_fire.mp3', true);
 
-export const meowSound = new Sound('./audio/meow.mp3');
+export const meowSound = new Sound('./src/home/assets/meow.mp3');
 
 // backup meow
 // export const meowSound = new Sound('http://soundbible.com/mp3/Cat Meow-SoundBible.com-1453940411.mp3');
 
 // credit  Kitty In The Window by Podington Bear 
-export const music = new Sound('./audio/song.mp3', true);
+//export const music = new Sound('./audio/song.mp3', true);

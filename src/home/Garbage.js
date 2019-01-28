@@ -6,21 +6,24 @@ const Garbage = Cute({
   constructor: function garbage  (props) {
     this.construct(props)
     this.elapsed = 0
-    this.transitionTime = 1000
+    this.transitionTime = 5000
+
+    this.img = new Image(243, 172)
+    setTimeout(() => { this.data.imageReady = true }, 300)
+    this.img.src = './src/home/assets/Trash.png'
   },
 	render() {
-        if (!this.data.visible) {
-            return <nothing />
-        }
+      if (!this.data.visible) {
+          return <nothing />
+      }
 		return (
-			<rectangle id='trash' w={this.w} h={this.h}>
-				<fill color='#facade' />
-			</rectangle>
+      this.data.imageReady ? <image img={this.img} x={0} y={0} /> : <nothing />
 		)
 	},
     data () {
         return {
             visible: false,
+            imageReady: false,
         }
     },
     update (time) {
@@ -34,8 +37,6 @@ const Garbage = Cute({
                     this.data.visible=true;
                     this.x = Math.random() * (GAME_WIDTH - this.w)
                     this.y = Math.random() * (GAME_HEIGHT-this.h)
-            
-                   // this.render()
                 }
             }
 	},
