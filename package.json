@@ -4,7 +4,7 @@
   "description": "A canvas framework for making games and applications",
   "main": "index.js",
   "scripts": {
-	"build": "webpack --config config/webpack.config.build.js",
+    "build": "webpack --config config/webpack.config.build.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "develop": "webpack --config config/webpack.config.js --watch --progress"
   },
@@ -32,6 +32,6 @@
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "webpack": "^4.6.0",
-    "webpack-cli": "^2.0.15"
+    "webpack-cli": "^3.3.6"
   }
 }

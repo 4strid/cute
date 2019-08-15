@@ -1,0 +1,48 @@
+corrections:
+
+createElement
+-------------
+- primitives should be Nodes just like everything else
+  primitives[type] -> (#render => (setProps(props), this), #draw (ctx) => ...)
+- Functional components should be Nodes just like everything else
+  type -> (#render => (setProps(props) ? fn(props) : this), #draw = Node#draw)
+- Eliminates weird checks and inconsistencies. a Node is a Node is a Node.
+- Still some weirdness in that only Primitives have Children but I think in the refactor it'll become clear how this
+resolves. almost certainly more neatly than it currently does!
+
+Node
+----
+- still not super comfortable with NodeContext, not convinced there should be a separation between Component and Node
+  > no this is definitely wrong: the fact that components must know about their nodes and nodes must know about their
+  components strongly implicates this erroneous separation. Combine into ComponentNode, move Node.prototype methods into
+  Component prototype. This will clean up a lot of weirdness.
+- don't deep compare props, rely on immutability of props and instantiate new objects when necessary
+  > this may get us into the 13 ms range
+
+
+Screen
+------
+Screens are the abstraction for "root level object" and so should contain their own dispatches and schedulers.
+These should be passed to the root ComponentNode which will recursively pass it to its children. Try to avoid storing
+it as a property <can't because of how this.addListener and this.scheduleDraw work>
+
+Dispatch
+--------
+consider following React's on<X> pattern for less prop drilling of methods? <not super great given Cute's "state" system>
+not super convinced about the value of State. I love that it passes from parent to child effortlessly but it's somewhat redundant with data?
+
+Proxy
+-----
+This is certainly not the API we want. Bounce Physics is an absolute mess.
+
+Refs
+----
+Hear me out, I think you should just be able to give subcomponents "names" which can then be referenced as this[name] or this.<tbd>.[name]
+This is possible because the render function can pass the parent component in as an argument, allowing for ez binding
+by string name. Attach to this.refs or this.namespace or something. if feeling extremely silly, defineProperty it onto
+this.children.
+
+awesome sauce:
+allow for different iterable data structures to store this.children in! ComponentMaps become a datastructure that keeps track of its
+component children, preventing reinstantiation upon reconciliation! FlatLists to do something like Perspective
+OH OH OH when a component's parent changes, put it in a global ComponentMap to see if it comes back up somewhere else.
