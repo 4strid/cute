@@ -1,9 +1,7 @@
-import primitives from './primitives'
 import Constructor from './constructor'
 import Screen from './screen'
 import Dispatch from './dispatch'
 import Scheduler from './scheduler'
-import NodeContext from './node'
 import structures from './structures'
 
 const Cute = (plan, ...wrappers) => {

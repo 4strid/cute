@@ -367,6 +367,46 @@ Node.prototype.destroy = function () {
   // I mean that can't be right, we're trying to disappear, why would we need to rerender?
 }
 
+function ComponentNode (type, props, children) {
+  this.props = props || {};
+}
+
+function PrimitiveNode (drawFn, props, children) {
+  this.draw = drawFn;
+  this.props = props;
+  this.children = children || [];
+}
+
+PrimitiveNode.prototype.render = function (props) {
+  this.receiveProps(props);
+  return this;
+}
+
+function FunctionNode (renderFn) {
+  // render(props, parent) <- renderFn(props, parent)
+  this.renderFn = renderFn;
+}
+
+FunctionNode.prototype.render = function (props, parent) {
+  this.receiveProps(props);
+  // if updated rerender ? idk
+  return this.renderFn(props);
+}
+
+FunctionNode.prototype.draw = ComponentNode.prototype.draw;
+
+function TextNode (text) {
+	this.text = text
+}
+
+TextNode.prototype.render = function () {
+  return this;
+}
+
+TextNode.prototype.draw = function () {
+  // noop
+}
+
 // returns the component's key if it exists, otherwise the type
 function getKey (node) {
 	return node.key || node.type

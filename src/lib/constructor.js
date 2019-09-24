@@ -1,7 +1,6 @@
+// NOTE: do not use wrappers until further notice lol
 function Constructor (plan, ...wrappers) {
 	const prototype = Object.create(Constructor.prototype)
-
-	console.log(wrappers)
 
 	// attach render function
 	if (wrappers.length) {

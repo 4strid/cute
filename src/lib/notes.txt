@@ -24,7 +24,7 @@ Screen
 ------
 Screens are the abstraction for "root level object" and so should contain their own dispatches and schedulers.
 These should be passed to the root ComponentNode which will recursively pass it to its children. Try to avoid storing
-it as a property <can't because of how this.addListener and this.scheduleDraw work>
+it as a property <can't because of how this.addListener and this.scheduleDraw work> I can't think of a way not to save these
 
 Dispatch
 --------
@@ -39,8 +39,11 @@ Refs
 ----
 Hear me out, I think you should just be able to give subcomponents "names" which can then be referenced as this[name] or this.<tbd>.[name]
 This is possible because the render function can pass the parent component in as an argument, allowing for ez binding
-by string name. Attach to this.refs or this.namespace or something. if feeling extremely silly, defineProperty it onto
-this.children.
+by string name. Attach to this.namespace <name tbd>
+
+Drawing
+-------
+Coordinates should be function scoped (just like var variables!) which should basically solve the weirdness of shapes (I hope)
 
 awesome sauce:
 allow for different iterable data structures to store this.children in! ComponentMaps become a datastructure that keeps track of its

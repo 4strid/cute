@@ -4,21 +4,19 @@ import uniqid from 'uniqid'
 
 export const Clock = Cute({
 	render () {
-		if (!this.props.paused) {
-			this.node.scheduleUpdate()
-		}
 		return <nothing />
 	},
 	data () {
 		return {
-			time: null,
+			time: 0,
 		}
 	},
 	update (time) {
 		if (!this.props.paused) {
-			this.node.scheduleUpdate()
+			this.data.time = time;
 		}
 		// ensures the clock is rendered every frame
+    // shouldn't this work?
 		// this.data.time = time
 	},
 })
