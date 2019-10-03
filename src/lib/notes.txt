@@ -12,12 +12,16 @@ resolves. almost certainly more neatly than it currently does!
 
 Node
 ----
-- still not super comfortable with NodeContext, not convinced there should be a separation between Component and Node
-  > no this is definitely wrong: the fact that components must know about their nodes and nodes must know about their
-  components strongly implicates this erroneous separation. Combine into ComponentNode, move Node.prototype methods into
-  Component prototype. This will clean up a lot of weirdness.
+- Fully separate Nodes and Components
+- Allow for insertion of Components into a JSX tree either via <Component> or { Component() }
 - don't deep compare props, rely on immutability of props and instantiate new objects when necessary
   > this may get us into the 13 ms range
+
+Rerendering
+-----------
+- We were just about to settle on "always rerender everything" but there's a way better answer here: never rerender anything.
+- Separate props from children, and you'll find a parent component never needs to rerender due to its child components changing. In fact
+  only nodes children of a component which updated ever need to rerender! The problem solves itself.
 
 
 Screen
@@ -26,10 +30,15 @@ Screens are the abstraction for "root level object" and so should contain their 
 These should be passed to the root ComponentNode which will recursively pass it to its children. Try to avoid storing
 it as a property <can't because of how this.addListener and this.scheduleDraw work> I can't think of a way not to save these
 
+RATHER: we totally can avoid storing it as a property because Components can keep track of their own event listeners rather than a centralized
+dispatch!
+
 Dispatch
 --------
 consider following React's on<X> pattern for less prop drilling of methods? <not super great given Cute's "state" system>
 not super convinced about the value of State. I love that it passes from parent to child effortlessly but it's somewhat redundant with data?
+
+RATHER: nah I love State! it's DATA that perhaps need not exist :)
 
 Proxy
 -----
@@ -40,6 +49,8 @@ Refs
 Hear me out, I think you should just be able to give subcomponents "names" which can then be referenced as this[name] or this.<tbd>.[name]
 This is possible because the render function can pass the parent component in as an argument, allowing for ez binding
 by string name. Attach to this.namespace <name tbd>
+
+RATHER: do it the other way around; allow for sticking Components directly into a JSX tree and store them wherever you want (as this[whatever])
 
 Drawing
 -------
