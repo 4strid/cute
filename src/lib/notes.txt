@@ -40,6 +40,8 @@ not super convinced about the value of State. I love that it passes from parent 
 
 RATHER: nah I love State! it's DATA that perhaps need not exist :)
 
+Invert this from centralized to  decentralized
+
 Proxy
 -----
 This is certainly not the API we want. Bounce Physics is an absolute mess.

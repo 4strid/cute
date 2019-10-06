@@ -1,17 +1,21 @@
 import rbush from 'rbush'
 
+import Dispatch from './dispatch'
+
 // Holds the tree that contains all components
 //
 // used for drawing and collision detection
 //
 // screen.root is the root element of the application
-function Screen (ctx) {
+function Screen (canvas) {
 	// the drawing context of the canvas
 	this.ctx = ctx
 	// map from component to screen element
 	this.map = new Map()
 	// r-tree for calculating intersections
 	this.tree = rbush()
+  // event dispatch
+  this.dispatch = new Dispatch()
 
 	// screen is the parent of the root node so it must have coordinates
 	this.screenX = 0
